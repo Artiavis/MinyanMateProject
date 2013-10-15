@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Represents the editable details of a single minyan -->
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/minyanSettingsFragment"
+    class=".MinyanSettingsFragment" >
+
+</fragment>

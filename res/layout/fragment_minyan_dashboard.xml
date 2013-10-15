@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Is an abstraction over fragment_minyan_list, useful for adding tablet support -->
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/minyanDashboard"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    class=".MinyanListFragment" >
+    
+
+</fragment>
