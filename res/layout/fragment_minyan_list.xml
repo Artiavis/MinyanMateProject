@@ -6,5 +6,12 @@
     android:id="@+id/minyanListFragment"
     class=".MinyanListFragment" >
     
+    <ExpandableListView 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/minyanList">
+        
+        
+    </ExpandableListView>
 
 </fragment>
