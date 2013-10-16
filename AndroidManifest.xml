@@ -29,6 +29,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+	    <provider
+	        android:authorities="org.minyanmate.minyanmate.contentprovider"
+	        android:name=".contentprovider.MinyanMateContentProvider"
+	        android:exported="false" >
+	    </provider>
     </application>
+    
+
 
 </manifest>
