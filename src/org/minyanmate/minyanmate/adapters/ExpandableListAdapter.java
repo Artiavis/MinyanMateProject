@@ -1,4 +1,4 @@
-package org.minyanmate.minyanmate.views;
+package org.minyanmate.minyanmate.adapters;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +13,7 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
 
 // http://www.androidhive.info/2013/07/android-expandable-list-view-tutorial/
+
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 	private Context context;
@@ -47,11 +48,14 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		// TODO bind events to textbox and to checkbox
 		TextView txtListChild = (TextView) convertView.findViewById(R.id.minyanTimeTextview);
 		
+
 		
 		txtListChild.setText(childText);
 		return convertView;
 		
 	}
+	
+	
 
 	@Override
 	public int getChildrenCount(int groupPosition) {

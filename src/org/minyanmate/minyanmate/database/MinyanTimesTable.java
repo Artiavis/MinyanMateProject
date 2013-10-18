@@ -7,7 +7,7 @@ public class MinyanTimesTable {
 
 	public static final String TABLE_MINYAN_TIMES = "minyan_times";
 	public static final String COLUMN_ID = "_id";
-	public static final String COLUMN_DAY = "day"; // 1 - 7
+	public static final String COLUMN_DAY = "day_num"; // 1 - 7
 	public static final String COLUMN_PRAYER_NUM = "prayer_num"; // 1 - 3
 	public static final String COLUMN_PRAYER_HOUR = "prayer_hour"; // 0 - 23
 	public static final String COLUMN_PRAYER_MIN = "prayer_min"; // 0 - 59
