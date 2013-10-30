@@ -1,5 +1,6 @@
 package org.minyanmate.minyanmate.contentprovider;
 
+import org.minyanmate.minyanmate.database.MinyanContactsTable;
 import org.minyanmate.minyanmate.database.MinyanMateDatabaseHelper;
 import org.minyanmate.minyanmate.database.MinyanTimesTable;
 
@@ -21,6 +22,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 	private static final int TIME_ID = 2;
 	private static final int CONTACTS = 3;
 	private static final int CONTACT_ID = 4;
+	
 	
 	private static final String AUTHORITY = "org.minyanmate.minyanmate.contentprovider";
 	private static final String PATH_TIMES = "times";
@@ -63,7 +65,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 				queryBuilder.appendWhere(MinyanTimesTable.COLUMN_ID + "=" + uri.getLastPathSegment());
 				// Fall through
 			case TIMES:
-				queryBuilder.setTables(MinyanTimesTable.TABLE_MINYAN_TIMES);	
+				queryBuilder.setTables(MinyanTimesTable.TABLE_MINYAN_TIMES);
 				break;
 
 			case CONTACT_ID:
@@ -77,6 +79,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 		}
 		
 		SQLiteDatabase db = database.getWritableDatabase();
+		
 		Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
 		
 		cursor.setNotificationUri(getContext().getContentResolver(), uri);
@@ -126,7 +129,8 @@ public class MinyanMateContentProvider extends ContentProvider {
 //			return Uri.parse(PATH_CONTACTS + "/" + id);
 			
 		case CONTACTS:
-		
+			id = sqlDb.insert(MinyanContactsTable.TABLE_MINYAN_CONTACTS, null, values);
+			getContext().getContentResolver().notifyChange(uri, null);
 			return Uri.parse(PATH_CONTACTS + "/" + id);
 		
 		default:
@@ -142,8 +146,14 @@ public class MinyanMateContentProvider extends ContentProvider {
 		SQLiteDatabase db = database.getWritableDatabase();
 		int rowsUpdated = 0;
 		switch (uriType) {
+			case TIMES:
+				rowsUpdated = db.update(MinyanTimesTable.TABLE_MINYAN_TIMES,
+						values, selection, selectionArgs);
+				break;
 			case TIME_ID:
 				// TODO implement this
+				rowsUpdated = db.update(MinyanTimesTable.TABLE_MINYAN_TIMES, values,
+						MinyanTimesTable.COLUMN_ID + "=?", new String[] { uri.getLastPathSegment() });
 				break;
 		
 			default:

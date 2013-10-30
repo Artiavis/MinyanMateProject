@@ -12,8 +12,8 @@ public class MinyanContactsTable {
 			+ TABLE_MINYAN_CONTACTS
 			+ "(" 
 			+ COLUMN_ID + " integer primary key autoincrement, "
-			+ COLUMN_CONTACT_URI + "text, " 
-			+ COLUMN_MINYAN_TIME_ID + "int not null" + ");";
+			+ COLUMN_CONTACT_URI + " text, " 
+			+ COLUMN_MINYAN_TIME_ID + " int not null" + ");";
 	
 	public static void onCreate(SQLiteDatabase database) {
 		database.execSQL(DATABASE_CREATE);
@@ -23,5 +23,5 @@ public class MinyanContactsTable {
 			int newVersion) {
 		database.execSQL("DROP TABLE IF EXISTS " + TABLE_MINYAN_CONTACTS);
 		onCreate(database);
-	}
+	} 
 }

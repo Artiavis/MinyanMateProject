@@ -48,7 +48,7 @@ public class ExpandablePrayerTimesListAdapter extends CursorTreeAdapter {
 		
 		TextView day = (TextView) view.findViewById(R.id.minyanDayHeader);
 		
-		day.setText(cursor.getInt(cursor.getColumnIndex(MinyanTimesTable.COLUMN_DAY)));
+		day.setText(cursor.getInt(cursor.getColumnIndex(MinyanTimesTable.COLUMN_DAY_NUM)));
 	}
 
 	
