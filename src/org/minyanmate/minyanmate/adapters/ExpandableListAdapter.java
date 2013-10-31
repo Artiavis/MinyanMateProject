@@ -82,6 +82,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(context, MinyanSettingsActivity.class);
+				intent.putExtra("prayerId", childPrayer.getId());
 				context.startActivity(intent);
 				
 			}

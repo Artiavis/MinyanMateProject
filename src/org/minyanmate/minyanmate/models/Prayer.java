@@ -12,6 +12,7 @@ public class Prayer {
 
 	private int _id;
 	private String day;
+	private String prayerName;
 	private int dayNum;
 	private int prayerNum;
 	private int hour;
@@ -20,12 +21,12 @@ public class Prayer {
 	private List<Contact> contactList;
 	
 	public Prayer(int id, String day, int dayNum, 
-			int prayerNum, int hour, int minute, boolean isActive) {
-		this(day, dayNum, prayerNum, hour, minute, isActive);
+			int prayerNum, String prayerName, int hour, int minute, boolean isActive) {
+		this(day, dayNum, prayerNum, prayerName, hour, minute, isActive);
 		this._id = id;
 	}
 	
-	public Prayer(String day, int dayNum, int prayerNum, int hour,
+	public Prayer(String day, int dayNum, int prayerNum, String prayerName, int hour,
 			int minute, boolean isActive) {
 		this.day = day;
 		this.dayNum = dayNum;
@@ -33,6 +34,7 @@ public class Prayer {
 		this.hour = hour;
 		this.minute = minute;
 		this.isActive = isActive;
+		this.prayerName = prayerName;
 	}
 	
 	public int getPrayerNum() {
@@ -63,26 +65,30 @@ public class Prayer {
 		return _id;
 	}
 	
+	public String getPrayerName() {
+		return prayerName;
+	}
+	
+	public static Prayer prayerFromCursor(Cursor cursor) {
+		
+		int id = cursor.getInt(cursor.getColumnIndex(MinyanTimesTable.COLUMN_ID));			
+		int dayNum = cursor.getInt(cursor.getColumnIndex(MinyanTimesTable.COLUMN_DAY_NUM));
+		int hour = cursor.getInt(cursor.getColumnIndex(MinyanTimesTable.COLUMN_PRAYER_HOUR));
+		int min = cursor.getInt(cursor.getColumnIndex(MinyanTimesTable.COLUMN_PRAYER_MIN));
+		int prayerNum = cursor.getInt(cursor.getColumnIndex(MinyanTimesTable.COLUMN_PRAYER_NUM));
+		boolean isActive = (cursor.getInt(cursor.getColumnIndex(MinyanTimesTable.COLUMN_IS_ACTIVE)) == 1 ? true : false);
+		String dayName = cursor.getString(cursor.getColumnIndex(MinyanTimesTable.COLUMN_DAY_NAME));
+		String prayerName = cursor.getString(cursor.getColumnIndex(MinyanTimesTable.COLUMN_PRAYER_NAME));
+		
+		return new Prayer(id, dayName, dayNum, prayerNum, prayerName, hour, min, isActive);
+	}
+	
 	public static List<Prayer> cursorToPrayerList(Cursor cursor) {
 		
 		List<Prayer> prayerList = new ArrayList<Prayer>();
-		Prayer temp;
 		while(cursor.moveToNext()) {
-			
-			int id = cursor.getInt(cursor.getColumnIndex(MinyanTimesTable.COLUMN_ID));			
-			int dayNum = cursor.getInt(cursor.getColumnIndex(MinyanTimesTable.COLUMN_DAY_NUM));
-			int hour = cursor.getInt(cursor.getColumnIndex(MinyanTimesTable.COLUMN_PRAYER_HOUR));
-			int min = cursor.getInt(cursor.getColumnIndex(MinyanTimesTable.COLUMN_PRAYER_MIN));
-			int prayerNum = cursor.getInt(cursor.getColumnIndex(MinyanTimesTable.COLUMN_PRAYER_NUM));
-			boolean isActive = (cursor.getInt(cursor.getColumnIndex(MinyanTimesTable.COLUMN_IS_ACTIVE)) == 1 ? true : false);
-			
-			String dayName = cursor.getString(cursor.getColumnIndex(MinyanTimesTable.COLUMN_DAY_NAME));
-			
-			temp = new Prayer(id, dayName, dayNum, prayerNum, hour, min, isActive);
-			prayerList.add(temp);
+			prayerList.add(prayerFromCursor(cursor));
 		}
-		
-		temp = null;
 		
 		return prayerList;
 	}

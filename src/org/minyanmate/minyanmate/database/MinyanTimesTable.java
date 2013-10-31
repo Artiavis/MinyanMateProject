@@ -14,6 +14,7 @@ public class MinyanTimesTable {
 	public static final String COLUMN_PRAYER_MIN = "prayer_min"; // 0 - 59
 	public static final String COLUMN_IS_ACTIVE = "is_active"; // {0, 1} 
 	public static final String COLUMN_DAY_NAME = "day_name"; // Sun - Saturday
+	public static final String COLUMN_PRAYER_NAME = "prayer_name";
 	
 	private static final String DATABASE_CREATE = "create table "
 			+ TABLE_MINYAN_TIMES
@@ -22,6 +23,7 @@ public class MinyanTimesTable {
 			+ COLUMN_DAY_NUM + " int not null, " 
 			+ COLUMN_DAY_NAME + " text not null, "
 			+ COLUMN_PRAYER_NUM + " int not null, " 
+			+ COLUMN_PRAYER_NAME + " text not null, "
 			+ COLUMN_PRAYER_HOUR + " int not null, " 
 			+ COLUMN_PRAYER_MIN + " int not null, "
 			+ COLUMN_IS_ACTIVE + " int not null" + ");";
@@ -41,6 +43,7 @@ public class MinyanTimesTable {
 				time.put(COLUMN_PRAYER_NUM, j);
 				time.put(COLUMN_PRAYER_HOUR, 8 + 6*(j-1));
 				time.put(COLUMN_DAY_NAME, days.get(i));
+				time.put(COLUMN_PRAYER_NAME, prayers.get(j));
 				time.put(COLUMN_PRAYER_MIN, 0);
 				time.put(COLUMN_IS_ACTIVE, 0);
 				database.insert(TABLE_MINYAN_TIMES, null, time);
@@ -63,5 +66,12 @@ public class MinyanTimesTable {
 		days.append(5, "Thursday");
 		days.append(6, "Friday");
 		days.append(7, "Saturday");
+	}
+	
+	private static final SparseArray<String> prayers = new SparseArray<String>(3);
+	static {
+		prayers.append(1, "Shacharis");
+		prayers.append(2, "Mincha");
+		prayers.append(3, "Maariv");
 	}
 }
