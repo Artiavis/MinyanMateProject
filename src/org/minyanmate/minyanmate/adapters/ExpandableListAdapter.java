@@ -73,7 +73,9 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 		CheckBox chkBox = (CheckBox) convertView.findViewById(R.id.minyanTimeCheckbox);
 
 		
-		txtListChild.setText(String.valueOf(childPrayer.getHour()));
+		txtListChild.setText(childPrayer.getPrayerName() + " - " +
+				MinyanSettingsActivity.formatTimeTextView(context, 
+				childPrayer.getHour(), childPrayer.getMinute()));
 		chkBox.setChecked(childPrayer.isActive());
 		
 		

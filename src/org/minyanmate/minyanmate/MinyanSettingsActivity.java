@@ -70,7 +70,7 @@ public class MinyanSettingsActivity extends FragmentActivity
 		return super.onOptionsItemSelected(item);
 	}
 	
-	private static String formatTimeTextView(Context context, int hour, int minute) {
+	public static String formatTimeTextView(Context context, int hour, int minute) {
 		SimpleDateFormat format;
 		if (DateFormat.is24HourFormat(context)) {
 			format = new SimpleDateFormat("HH:mm", Locale.getDefault());

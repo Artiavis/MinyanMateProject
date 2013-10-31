@@ -40,7 +40,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 	private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 	static {
 		sURIMatcher.addURI(AUTHORITY, PATH_CONTACTS, CONTACTS);
-		sURIMatcher.addURI(AUTHORITY, PATH_CONTACTS + "/#", CONTACT_ID);
+		sURIMatcher.addURI(AUTHORITY, PATH_CONTACTS + "/*", CONTACT_ID);
 		sURIMatcher.addURI(AUTHORITY, PATH_TIMES, TIMES);
 		sURIMatcher.addURI(AUTHORITY, PATH_TIMES + "/#", TIME_ID);
 	}
@@ -69,9 +69,9 @@ public class MinyanMateContentProvider extends ContentProvider {
 				break;
 
 			case CONTACT_ID:
-				// TODO create a contacts table
+				queryBuilder.appendWhere(MinyanContactsTable.COLUMN_ID + "=" + uri.getLastPathSegment());
 			case CONTACTS:
-			
+				queryBuilder.setTables(MinyanContactsTable.TABLE_MINYAN_CONTACTS);
 				break;
 			
 			default:
@@ -95,11 +95,13 @@ public class MinyanMateContentProvider extends ContentProvider {
 		int rowsDeleted = 0;
 		switch (uriType) {
 			case CONTACTS:
-				rowsDeleted = db.delete(null, selection, selectionArgs);
+				rowsDeleted = db.delete(MinyanContactsTable.TABLE_MINYAN_CONTACTS, 
+						selection, selectionArgs);
 				break;
 				
 			case CONTACT_ID:
-				rowsDeleted = db.delete(null, selection, selectionArgs);
+				rowsDeleted = db.delete(MinyanContactsTable.TABLE_MINYAN_CONTACTS, 
+						MinyanContactsTable.COLUMN_ID + "=?", new String[] { uri.getLastPathSegment()});
 				break;
 				
 			default:
