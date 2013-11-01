@@ -15,7 +15,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Contacts;
+import android.provider.ContactsContract.PhoneLookup;
 import android.provider.ContactsContract.Contacts.Data;
 
 public class MinyanMateContentProvider extends ContentProvider {
@@ -90,20 +92,12 @@ public class MinyanMateContentProvider extends ContentProvider {
 				queryBuilder.setTables(MinyanContactsTable.TABLE_MINYAN_CONTACTS);
 				cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, 
 						MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY + " asc");
-				cursor.setNotificationUri(getContext().getContentResolver(), uri);
+				cursor.setNotificationUri(getContext().getContentResolver(), uri);		
 				
-				String[] desiredAttributes = new String[] { 
-						Contacts._ID,
-						Contacts.PHOTO_THUMBNAIL_URI,
-						Contacts.DISPLAY_NAME,
-//						Data.DATA1,
-						Contacts.LOOKUP_KEY
-				};				
+				Cursor contacts = getContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, 
+						ContactMatrix.attrArray, null, null, Contacts.LOOKUP_KEY + " asc");
 				
-				Cursor contacts = getContext().getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, 
-						desiredAttributes, null, null, Contacts.LOOKUP_KEY + " asc");
-				
-				MatrixCursor m = new MatrixCursor(desiredAttributes);
+				MatrixCursor m = new MatrixCursor(ContactMatrix.attrArray);
 				
 				CursorJoiner joiner = new CursorJoiner(cursor, 
 						new String[] { MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY }, 
@@ -121,13 +115,14 @@ public class MinyanMateContentProvider extends ContentProvider {
 							contacts.getLong(contacts.getColumnIndex(Contacts._ID)),
 							contacts.getString(contacts.getColumnIndex(Contacts.PHOTO_THUMBNAIL_URI)),
 							contacts.getString(contacts.getColumnIndex(Contacts.DISPLAY_NAME)),
-//							contacts.getString(contacts.getColumnIndex(Data.DATA1)),
+							contacts.getString(contacts.getColumnIndex(Data.DATA1)),
 							contacts.getString(contacts.getColumnIndex(Contacts.LOOKUP_KEY))
 						});
 						
 						break;
 					}
 				}
+				m.setNotificationUri(getContext().getContentResolver(), uri);
 				
 				return m;
 			
@@ -190,7 +185,6 @@ public class MinyanMateContentProvider extends ContentProvider {
 	}
 
 
-
 	@Override
 	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
 		int uriType = sURIMatcher.match(uri);
@@ -213,5 +207,23 @@ public class MinyanMateContentProvider extends ContentProvider {
 		
 		getContext().getContentResolver().notifyChange(uri, null);
 		return rowsUpdated;
+	}
+	
+	
+	
+	public static class ContactMatrix {
+		public static final String[] attrArray = new String[] {
+					Contacts._ID,
+					Contacts.PHOTO_THUMBNAIL_URI,
+					Contacts.DISPLAY_NAME,
+					Phone.NUMBER,
+					Contacts.LOOKUP_KEY
+		};
+		
+		public static final int ID = 0;
+		public static final int THUMBNAIL_PHOTO_URI = 1;
+		public static final int NAME = 2;
+		public static final int NUM = 3;
+		public static final int KEY = 4;
 	}
 }

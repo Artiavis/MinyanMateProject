@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
+import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider.ContactMatrix;
 import org.minyanmate.minyanmate.database.MinyanContactsTable;
 import org.minyanmate.minyanmate.database.MinyanTimesTable;
 import org.minyanmate.minyanmate.models.Prayer;
@@ -28,6 +29,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -141,7 +143,6 @@ public class MinyanSettingsActivity extends FragmentActivity
 				values.put(MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY, lookUpKey);
 				
 				getContentResolver().insert(MinyanMateContentProvider.CONTENT_URI_CONTACTS, values);
-				getSupportLoaderManager().restartLoader(CONTACT_LOADER, null, this);
 			}
 			break;
 			
@@ -233,38 +234,33 @@ public class MinyanSettingsActivity extends FragmentActivity
 						@Override
 						public void bindView(View view, Context context,
 								Cursor cur) {
-							// TODO Auto-generated method stub
 							
 							QuickContactBadge badge = (QuickContactBadge) view.findViewById(R.id.removableContactBadge);
 							TextView nameText = (TextView) view.findViewById(R.id.removableContactName);
 							ImageButton imgButton = (ImageButton) view.findViewById(R.id.removableRemoveButton);
 							
-							nameText.setText(cur.getString(2));
+							long contactId = cur.getLong(ContactMatrix.ID);
+							final String lookUpKey = cur.getString(ContactMatrix.KEY);
+							Uri thumbnailPhotoUri = Contacts.getLookupUri(contactId, lookUpKey);
 							
-							long id = cur.getLong(0);
-							final String l = cur.getString(3);
+							nameText.setText(cur.getString(2));						
+							badge.assignContactUri(thumbnailPhotoUri);
 							
-							Uri uri = Contacts.getLookupUri(id, l);
-							badge.assignContactUri(uri);
-							
-							if (null == (cur.getString(1)))
+							if (null == (cur.getString(ContactMatrix.THUMBNAIL_PHOTO_URI)))
 								badge.setImageResource(R.drawable.add_contact);
 							else {
-								Uri imageuri = Uri.parse(cur.getString(1));
+								Uri imageuri = Uri.parse(cur.getString(ContactMatrix.THUMBNAIL_PHOTO_URI));
 								badge.setImageURI(imageuri);
 							}
-							
-							 
-							
+		
 							imgButton.setOnClickListener(new OnClickListener() {
 							
-								// TODO why isn't the content URI getting the update automatically?
 								@Override
 								public void onClick(View v) {
 									getContentResolver().delete(MinyanMateContentProvider.CONTENT_URI_CONTACTS, 
 											MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY + "=?"
 											+ " and " + MinyanContactsTable.COLUMN_MINYAN_TIME_ID + "=?", 
-											new String[] { l, String.valueOf(prayerId) });
+											new String[] { lookUpKey, String.valueOf(prayerId) });
 								}
 							});
 						}
