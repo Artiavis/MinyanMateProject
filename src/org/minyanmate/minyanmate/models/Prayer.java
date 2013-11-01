@@ -8,6 +8,12 @@ import org.minyanmate.minyanmate.database.MinyanTimesTable;
 
 import android.database.Cursor;
 
+/**
+ * A model class containing the attributes of objects from the 
+ * {@link MinyanTimesTable#TABLE_MINYAN_TIMES} table. Contains 
+ * {@link Prayer#prayerFromCursor(Cursor)} and {@link Prayer#cursorToPrayerList(Cursor)}
+ * static helper methods to pull Prayer objects from the cursors.
+ */
 public class Prayer {
 
 	private int _id;
@@ -17,16 +23,17 @@ public class Prayer {
 	private int prayerNum;
 	private int hour;
 	private int minute;
+	private long scheduleWindowLength;
 	private boolean isActive;
-	private List<Contact> contactList;
+	private List<Contact> contactList; // not yet used
 	
 	public Prayer(int id, String day, int dayNum, 
-			int prayerNum, String prayerName, int hour, int minute, boolean isActive) {
-		this(day, dayNum, prayerNum, prayerName, hour, minute, isActive);
+			int prayerNum, String prayerName, long winLen, int hour, int minute, boolean isActive) {
+		this(day, dayNum, prayerNum, prayerName, winLen, hour, minute, isActive);
 		this._id = id;
 	}
 	
-	public Prayer(String day, int dayNum, int prayerNum, String prayerName, int hour,
+	public Prayer(String day, int dayNum, int prayerNum, String prayerName, long winLen, int hour,
 			int minute, boolean isActive) {
 		this.day = day;
 		this.dayNum = dayNum;
@@ -34,6 +41,7 @@ public class Prayer {
 		this.hour = hour;
 		this.minute = minute;
 		this.isActive = isActive;
+		this.scheduleWindowLength = winLen;
 		this.prayerName = prayerName;
 	}
 	
@@ -65,14 +73,28 @@ public class Prayer {
 		return _id;
 	}
 	
+	public long getSchedulingWindowLength() {
+		return scheduleWindowLength;
+	}
+	
 	public String getPrayerName() {
 		return prayerName;
 	}
 	
+	/**
+	 * A helper function to extract the columns from a cursor over the 
+	 * {@link MinyanTimesTable#TABLE_MINYAN_TIMES} and returns a new {@link Prayer} object
+	 * based upon it. 
+	 * <p>
+	 * @param cursor a cursor over the {@link MinyanTimesTable#TABLE_MINYAN_TIMES} table
+	 * which is already moved to a specific row. 
+	 * @return prayer, a new {@link Prayer} object
+	 */
 	public static Prayer prayerFromCursor(Cursor cursor) {
 		
 		int id = cursor.getInt(cursor.getColumnIndex(MinyanTimesTable.COLUMN_ID));			
 		int dayNum = cursor.getInt(cursor.getColumnIndex(MinyanTimesTable.COLUMN_DAY_NUM));
+		long winLen = cursor.getLong(cursor.getColumnIndex(MinyanTimesTable.COLUMN_SCHEDULE_WINDOW));
 		int hour = cursor.getInt(cursor.getColumnIndex(MinyanTimesTable.COLUMN_PRAYER_HOUR));
 		int min = cursor.getInt(cursor.getColumnIndex(MinyanTimesTable.COLUMN_PRAYER_MIN));
 		int prayerNum = cursor.getInt(cursor.getColumnIndex(MinyanTimesTable.COLUMN_PRAYER_NUM));
@@ -80,9 +102,17 @@ public class Prayer {
 		String dayName = cursor.getString(cursor.getColumnIndex(MinyanTimesTable.COLUMN_DAY_NAME));
 		String prayerName = cursor.getString(cursor.getColumnIndex(MinyanTimesTable.COLUMN_PRAYER_NAME));
 		
-		return new Prayer(id, dayName, dayNum, prayerNum, prayerName, hour, min, isActive);
+		return new Prayer(id, dayName, dayNum, prayerNum, prayerName, winLen,hour, min, isActive);
 	}
 	
+	/**
+	 * Given a cursor over a set of multiple results from the 
+	 * {@link MinyanTimesTable#TABLE_MINYAN_TIMES} table, iterate over the cursor using
+	 * {@link Prayer#prayerFromCursor(Cursor)} to generate a list of {@link Prayer} objects.
+	 * <p>
+	 * @param cursor a new cursor over the {@link MinyanTimesTable#TABLE_MINYAN_TIMES} table.
+	 * @return prayerList, a list of new {@link Prayer} objects
+	 */
 	public static List<Prayer> cursorToPrayerList(Cursor cursor) {
 		
 		List<Prayer> prayerList = new ArrayList<Prayer>();

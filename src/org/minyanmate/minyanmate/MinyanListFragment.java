@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.minyanmate.minyanmate.adapters.ExpandableListAdapter;
+import org.minyanmate.minyanmate.adapters.PrayerExpandableListAdapter;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.database.MinyanTimesTable;
 import org.minyanmate.minyanmate.models.Prayer;
@@ -28,7 +28,7 @@ public class MinyanListFragment extends Fragment implements
 	public MinyanListFragment() {
 	}
 	
-	ExpandableListAdapter listAdapter;
+	PrayerExpandableListAdapter listAdapter;
 	ExpandableListView expListView;
 	
 	List<String> listDataHeader;
@@ -52,7 +52,7 @@ public class MinyanListFragment extends Fragment implements
 		// TODO define and obtain the cursor for these data
 		listDataHeader = new ArrayList<String>();
 		listDataChild = new HashMap<String, List<Prayer>>();
-		listAdapter = new ExpandableListAdapter(context, listDataHeader, listDataChild);
+		listAdapter = new PrayerExpandableListAdapter(context, listDataHeader, listDataChild);
 		
 		expListView.setAdapter(listAdapter);
 		

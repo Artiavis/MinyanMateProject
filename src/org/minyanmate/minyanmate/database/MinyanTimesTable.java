@@ -1,19 +1,76 @@
 package org.minyanmate.minyanmate.database;
 
+import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
+
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.SparseArray;
 
+
+/**
+ * A class containing the column descriptions and {@link MinyanTimesTable#onCreate(SQLiteDatabase)}
+ * and {@link MinyanTimesTable#onUpgrade(SQLiteDatabase, int, int)} commands. Used to dereference
+ * columns from the {@link MinyanMateContentProvider}.
+ */
 public class MinyanTimesTable {
 
 	public static final String TABLE_MINYAN_TIMES = "minyan_times";
+	
+	/**
+	 * Describes the unique integer identifier of a row.
+	 */
 	public static final String COLUMN_ID = "_id";
-	public static final String COLUMN_DAY_NUM = "day_num"; // 1 - 7
-	public static final String COLUMN_PRAYER_NUM = "prayer_num"; // 1 - 3
-	public static final String COLUMN_PRAYER_HOUR = "prayer_hour"; // 0 - 23
-	public static final String COLUMN_PRAYER_MIN = "prayer_min"; // 0 - 59
-	public static final String COLUMN_IS_ACTIVE = "is_active"; // {0, 1} 
-	public static final String COLUMN_DAY_NAME = "day_name"; // Sun - Saturday
+	
+	/**
+	 * An integer describing the day, from 1 - 7, with Sunday always corresponding
+	 * to 1 and Saturday always corresponding to 7.
+	 */
+	public static final String COLUMN_DAY_NUM = "day_num"; 
+	
+	/**
+	 * An integer enumerating the prayer service, from 1 - 3, with 1 always
+	 * corresponding to Shacharis (morning prayer) and 3 always corresponding with
+	 * Maariv (evening prayer).
+	 */
+	public static final String COLUMN_PRAYER_NUM = "prayer_num";
+	
+	/**
+	 * A long in milliseconds describing the length of the time of the scheduling window
+	 * assigned to a given prayer. 
+	 * <p>
+	 * For instance, the scheduling for Shacharis (morning
+	 * prayer) may begin 10 or 11 hours in advance, ie the night before, to allow
+	 * a sufficient amount of time for people to respond.
+	 */
+	public static final String COLUMN_SCHEDULE_WINDOW = "sched_win_len";
+	
+	/**
+	 * An integer describing the hour of the prayer during that day 0 - 23.
+	 */
+	public static final String COLUMN_PRAYER_HOUR = "prayer_hour";
+	
+	/**
+	 * An integer describing the minute of the prayer, 0 - 59.
+	 */
+	public static final String COLUMN_PRAYER_MIN = "prayer_min";
+	
+	/**
+	 * A integer (which should be converted to a boolean) describing whether the specified
+	 * minyan should be included in the scheduler.
+	 * <p>
+	 * 0 should be false, 1 should be true.
+	 */
+	public static final String COLUMN_IS_ACTIVE = "is_active";
+	
+	/**
+	 * A string corresponding with {@link MinyanTimesTable#COLUMN_DAY_NUM}, Sunday - Saturday.
+	 */
+	public static final String COLUMN_DAY_NAME = "day_name";
+	
+	/**
+	 * A string corresponding with {@link MinyanTimesTable#COLUMN_PRAYER_NUM}, indicating
+	 * the name of the service (Shacharis, Mincha, Maariv).
+	 */
 	public static final String COLUMN_PRAYER_NAME = "prayer_name";
 	
 	private static final String DATABASE_CREATE = "create table "
@@ -24,6 +81,7 @@ public class MinyanTimesTable {
 			+ COLUMN_DAY_NAME + " text not null, "
 			+ COLUMN_PRAYER_NUM + " int not null, " 
 			+ COLUMN_PRAYER_NAME + " text not null, "
+			+ COLUMN_SCHEDULE_WINDOW + " text nt null, "
 			+ COLUMN_PRAYER_HOUR + " int not null, " 
 			+ COLUMN_PRAYER_MIN + " int not null, "
 			+ COLUMN_IS_ACTIVE + " int not null" + ");";
@@ -45,6 +103,7 @@ public class MinyanTimesTable {
 				time.put(COLUMN_DAY_NAME, days.get(i));
 				time.put(COLUMN_PRAYER_NAME, prayers.get(j));
 				time.put(COLUMN_PRAYER_MIN, 0);
+				time.put(COLUMN_SCHEDULE_WINDOW, 3600);
 				time.put(COLUMN_IS_ACTIVE, 0);
 				database.insert(TABLE_MINYAN_TIMES, null, time);
 			}

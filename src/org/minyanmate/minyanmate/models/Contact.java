@@ -7,6 +7,13 @@ import android.database.Cursor;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 
+/**
+ * This will be useful for the scheduling assistant services, but until
+ * those are developed everything here is subject to change. Should probably
+ * be given a similar interface as {@link Prayer}.
+ * @author Jeff
+ *
+ */
 public class Contact {
 
 	private int id;

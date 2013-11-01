@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import org.minyanmate.minyanmate.adapters.RemovableContactListAdapter;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider.ContactMatrix;
 import org.minyanmate.minyanmate.database.MinyanContactsTable;
@@ -20,6 +21,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Contacts;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
@@ -40,7 +42,14 @@ import android.widget.ListView;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
+/**
+ * Provides access to general details about a weekly minyan event, and permits
+ * changing the time and invite list. Is called from {@link MinyanListFragment}
+ * and can subsequently call the Android contact picker or {@link PickMultipleContactsActivity}.
+ *
+ */
 public class MinyanSettingsActivity extends FragmentActivity
 	implements LoaderManager.LoaderCallbacks<Cursor>{
 	
@@ -91,6 +100,14 @@ public class MinyanSettingsActivity extends FragmentActivity
 		return super.onOptionsItemSelected(item);
 	}
 	
+	/**
+	 * Formats hour in 0-23 format and minute into the current locale, specifically
+	 * choosing between HH:mm and h:mm aa time formats.
+	 * @param context
+	 * @param hour
+	 * @param minute
+	 * @return formattedTimeString
+	 */
 	public static String formatTimeTextView(Context context, int hour, int minute) {
 		SimpleDateFormat format;
 		if (DateFormat.is24HourFormat(context)) {
@@ -104,18 +121,29 @@ public class MinyanSettingsActivity extends FragmentActivity
 		return format.format(time.getTime());
 	}
 	
-	
+	/**
+	 * The onClick event handler to select a single Contact using Android's contact picker
+	 * @param view
+	 */
 	public void pickNewContact(View view) {
 		// TODO stuff
 		Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
 		startActivityForResult(intent, PICK_CONTACT);
 	}
 	
+	/**
+	 * The onClick event handler to select multiple contacts using the {@link PickMultipleContactsActivity} 
+	 * activity.
+	 * @param view
+	 */
 	public void pickNewGroup(View view) {
 		// TODO stuff
 	}
 	
-	
+	/**
+	 * The onClick event handler to edit the minyan start time. Creates a {@link TimePickerFragment}.
+	 * @param view
+	 */
 	public void pickNewTime(View view) {
 		TimePickerFragment newFragment = new TimePickerFragment();
 		newFragment.initialize(prayer.getId(), timeTextView, prayer.getHour(), prayer.getMinute());
@@ -129,20 +157,10 @@ public class MinyanSettingsActivity extends FragmentActivity
 		switch(reqCode) {
 		case (PICK_CONTACT) :
 			if (resultCode == Activity.RESULT_OK) {
-				// TODO make sure this is the right code
-				Uri contactData = data.getData();
-				String lookUpKey = null;
 				
-				Cursor tempCursor = getContentResolver().query(contactData, 
-						new String[] { Contacts.LOOKUP_KEY }, null, null, null);
-				if (tempCursor.moveToFirst()) 
-					lookUpKey = tempCursor.getString(tempCursor.getColumnIndex(Contacts.LOOKUP_KEY));
+				Uri result = data.getData();
+				saveContactData(result);
 				
-				ContentValues values = new ContentValues();
-				values.put(MinyanContactsTable.COLUMN_MINYAN_TIME_ID, prayerId);
-				values.put(MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY, lookUpKey);
-				
-				getContentResolver().insert(MinyanMateContentProvider.CONTENT_URI_CONTACTS, values);
 			}
 			break;
 			
@@ -154,6 +172,41 @@ public class MinyanSettingsActivity extends FragmentActivity
 		}
 	}
 	
+	/**
+	 * Given a Uri for a contact, confirm the associated contact has a phone number,
+	 * and if so, save the result.
+	 * @param data
+	 */
+	private void saveContactData(Uri data) {
+		String lookUpKey = null;
+		
+		lookUpKey = data.getPathSegments().get(2);
+		Cursor temp = getContentResolver().query(Phone.CONTENT_URI, null, Phone.LOOKUP_KEY + "=?", 
+				new String[] { lookUpKey }, null);
+		
+		if (temp.moveToFirst()) {
+			if ( temp.getString(temp.getColumnIndex(Phone.NUMBER)) != null)
+			{
+				// Save result
+				ContentValues values = new ContentValues();
+				values.put(MinyanContactsTable.COLUMN_MINYAN_TIME_ID, prayerId);
+				values.put(MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY, lookUpKey);
+				
+				getContentResolver().insert(MinyanMateContentProvider.CONTENT_URI_CONTACTS, values);
+				
+				// Signal success
+				Toast.makeText(this, "Added successfully!", Toast.LENGTH_SHORT).show();
+			} else // this code doesn't appear to be reachable, either a phone uri exists or it doesn't
+				Toast.makeText(this, "Contact has no phone number! Not added!", Toast.LENGTH_SHORT).show();
+		} else {
+			Toast.makeText(this, "Failed to save contact!", Toast.LENGTH_SHORT).show();
+		}
+	}
+
+	/**
+	 * A DialogFragment with a Time Picker, used to update the time of a prayer
+	 * when it calls back to onTimeSet
+	 */
 	public static class TimePickerFragment extends DialogFragment 
 		implements TimePickerDialog.OnTimeSetListener {
 		
@@ -168,6 +221,10 @@ public class MinyanSettingsActivity extends FragmentActivity
 					DateFormat.is24HourFormat(getActivity()));
 		}
 		
+		/**
+		 * The callback from {@link TimePickerDialog.OnTimeSetListener}, pushes
+		 * changes back to the {@link MinyanMateContentProvider}.
+		 */
 		@Override
 		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 			ContentValues values = new ContentValues();
@@ -213,6 +270,11 @@ public class MinyanSettingsActivity extends FragmentActivity
 		return null;
 	}
 
+	/**
+	 * When the CursorLoader finishes loading the requested data from the
+	 * {@link MinyanMateContentProvider}, populate
+	 * the page elements.
+	 */
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		
@@ -228,51 +290,7 @@ public class MinyanSettingsActivity extends FragmentActivity
 			
 		case CONTACT_LOADER:
 			
-			CursorAdapter adapter = new CursorAdapter(this,
-					cursor, false) {
-
-						@Override
-						public void bindView(View view, Context context,
-								Cursor cur) {
-							
-							QuickContactBadge badge = (QuickContactBadge) view.findViewById(R.id.removableContactBadge);
-							TextView nameText = (TextView) view.findViewById(R.id.removableContactName);
-							ImageButton imgButton = (ImageButton) view.findViewById(R.id.removableRemoveButton);
-							
-							long contactId = cur.getLong(ContactMatrix.ID);
-							final String lookUpKey = cur.getString(ContactMatrix.KEY);
-							Uri thumbnailPhotoUri = Contacts.getLookupUri(contactId, lookUpKey);
-							
-							nameText.setText(cur.getString(2));						
-							badge.assignContactUri(thumbnailPhotoUri);
-							
-							if (null == (cur.getString(ContactMatrix.THUMBNAIL_PHOTO_URI)))
-								badge.setImageResource(R.drawable.add_contact);
-							else {
-								Uri imageuri = Uri.parse(cur.getString(ContactMatrix.THUMBNAIL_PHOTO_URI));
-								badge.setImageURI(imageuri);
-							}
-		
-							imgButton.setOnClickListener(new OnClickListener() {
-							
-								@Override
-								public void onClick(View v) {
-									getContentResolver().delete(MinyanMateContentProvider.CONTENT_URI_CONTACTS, 
-											MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY + "=?"
-											+ " and " + MinyanContactsTable.COLUMN_MINYAN_TIME_ID + "=?", 
-											new String[] { lookUpKey, String.valueOf(prayerId) });
-								}
-							});
-						}
-
-						@Override
-						public View newView(Context context, Cursor cur,
-								ViewGroup viewGroup) {
-							return LayoutInflater.from(context).
-									inflate(R.layout.fragment_removable_contact, viewGroup, false);
-						}
-				
-			};
+			CursorAdapter adapter = new RemovableContactListAdapter(this, cursor, prayerId, false);
 			contactList.setAdapter(adapter);
 			
 			break;
@@ -282,7 +300,18 @@ public class MinyanSettingsActivity extends FragmentActivity
 	}
 
 	@Override
-	public void onLoaderReset(Loader<Cursor> arg0) {
+	public void onLoaderReset(Loader<Cursor> loader) {
+		switch (loader.getId()){
+		case TIME_LOADER:
+			
+			break;
 		
+		case CONTACT_LOADER:
+			contactList.setAdapter(null);
+			break;
+			
+			default:
+				
+		}
 	}
 }

@@ -25,13 +25,19 @@ import android.widget.TextView;
 
 // http://www.androidhive.info/2013/07/android-expandable-list-view-tutorial/
 
-public class ExpandableListAdapter extends BaseExpandableListAdapter {
+/**
+ * An adapter for generating headers and children for an 
+ * {@link android.widget.ExpandableListView} using a list of {@link Prayer}s.
+ * @author Jeff
+ *
+ */
+public class PrayerExpandableListAdapter extends BaseExpandableListAdapter {
 
 	private Context context;
 	private List<String> _listDataHeader;
 	private HashMap<String, List<Prayer>> _listDataChild;
 	
-	public ExpandableListAdapter(Context context, List<String> listDataHeader,
+	public PrayerExpandableListAdapter(Context context, List<String> listDataHeader,
 			HashMap<String, List<Prayer>> listChildData) {
 		
 		this.context = context;
@@ -68,7 +74,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 			convertView = infl.inflate(R.layout.minyan_time, null);
 		}
 		
-		// TODO bind events to textbox and to checkbox
 		TextView txtListChild = (TextView) convertView.findViewById(R.id.minyanTimeTextview);
 		CheckBox chkBox = (CheckBox) convertView.findViewById(R.id.minyanTimeCheckbox);
 
@@ -94,7 +99,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 			
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				ContentValues values = new ContentValues();
 				values.put(MinyanTimesTable.COLUMN_IS_ACTIVE, ((CheckBox) v).isChecked() ? 1 : 0);
 				
