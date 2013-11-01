@@ -13,7 +13,11 @@ public class MinyanContactsTable {
 			+ "(" 
 			+ COLUMN_ID + " integer primary key autoincrement, "
 			+ COLUMN_CONTACT_LOOKUP_URI + " text, " 
-			+ COLUMN_MINYAN_TIME_ID + " int not null" + ");";
+			+ COLUMN_MINYAN_TIME_ID + " int not null, " 
+				+ "unique(" + COLUMN_CONTACT_LOOKUP_URI + ", "
+				+ COLUMN_MINYAN_TIME_ID 
+				+ ") on conflict replace"
+			+ ");";
 	
 	public static void onCreate(SQLiteDatabase database) {
 		database.execSQL(DATABASE_CREATE);

@@ -29,5 +29,43 @@
             />
         
     </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        
+        <ImageButton
+            android:id="@+id/minyan_setting_add_contactButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/add_contact"
+            android:onClick="pickNewContact" />
+        
+        <ImageButton 
+            android:id="@+id/minyan_setting_add_groupButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/add_group"
+            android:onClick="pickNewGroup" />
+        
+    </LinearLayout>
+    
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.1"
+        >
+        
+        <ListView 
+            android:id="@+id/minyan_setting_contactsList"
+            android:layout_height="fill_parent"
+            android:layout_width="fill_parent"
+            android:dividerHeight="2dp"
+            />
+        
+    </LinearLayout>
 
 </LinearLayout>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+    
+    <QuickContactBadge 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:id="@+id/deleteableContactBadge"
+        android:layout_alignParentLeft="true"
+        />
+    
+    <TextView 
+        android:id="@+id/deletableContactName"
+        android:gravity="center_vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+                android:layout_alignTop="@id/deleteableContactBadge"
+        android:layout_alignBottom="@id/deleteableContactBadge"
+        android:layout_toRightOf="@id/deleteableContactBadge"
+        
+
+        />
+    
+    <ImageButton 
+        android:id="@+id/deleteablediscardbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:src="@drawable/discard"
+        android:onClick="removeContact"
+        android:layout_alignRight="@id/deletableContactName"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@id/deleteableContactBadge"
+        android:layout_alignBottom="@id/deleteableContactBadge"
+        />
+    
+
+</RelativeLayout>

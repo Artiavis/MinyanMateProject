@@ -9,9 +9,12 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.provider.ContactsContract;
+import android.provider.ContactsContract.Contacts;
 
 public class MinyanMateContentProvider extends ContentProvider {
 
@@ -56,6 +59,8 @@ public class MinyanMateContentProvider extends ContentProvider {
 			String sortOrder) {
 		
 		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+		SQLiteDatabase db = database.getWritableDatabase();
+		Cursor cursor;
 		
 		int uriType = sURIMatcher.match(uri);
 		
@@ -66,25 +71,32 @@ public class MinyanMateContentProvider extends ContentProvider {
 				// Fall through
 			case TIMES:
 				queryBuilder.setTables(MinyanTimesTable.TABLE_MINYAN_TIMES);
-				break;
+				cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
+				cursor.setNotificationUri(getContext().getContentResolver(), uri);
+				return cursor;
+
 
 			case CONTACT_ID:
 				queryBuilder.appendWhere(MinyanContactsTable.COLUMN_ID + "=" + uri.getLastPathSegment());
 			case CONTACTS:
 				queryBuilder.setTables(MinyanContactsTable.TABLE_MINYAN_CONTACTS);
-				break;
+				cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
+				cursor.setNotificationUri(getContext().getContentResolver(), uri);
+				
+				String[] desiredAttributes = new String[] { 
+						MinyanContactsTable.COLUMN_ID,
+						Contacts.PHOTO_THUMBNAIL_URI,
+						Contacts.DISPLAY_NAME,
+						ContactsContract.Data.DATA1
+				};
+				
+				MatrixCursor m = new MatrixCursor(desiredAttributes);
+				
+				return m;
 			
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
-		
-		SQLiteDatabase db = database.getWritableDatabase();
-		
-		Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
-		
-		cursor.setNotificationUri(getContext().getContentResolver(), uri);
-	
-		return cursor;
 	}
 	
 	
