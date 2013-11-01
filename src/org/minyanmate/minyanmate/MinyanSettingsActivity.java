@@ -16,13 +16,14 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.Contacts;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
@@ -30,8 +31,11 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.QuickContactBadge;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -109,10 +113,6 @@ public class MinyanSettingsActivity extends FragmentActivity
 		// TODO stuff
 	}
 	
-	public void removeContact(View view) {
-		// TODO stuff
-	}
-	
 	
 	public void pickNewTime(View view) {
 		TimePickerFragment newFragment = new TimePickerFragment();
@@ -129,15 +129,19 @@ public class MinyanSettingsActivity extends FragmentActivity
 			if (resultCode == Activity.RESULT_OK) {
 				// TODO make sure this is the right code
 				Uri contactData = data.getData();
+				String lookUpKey = null;
 				
-				// THese are probably not necessary since we're writing to the database anyway
-//				String id = null;
-//				Cursor cr = getContentResolver().query(contactData, null, null, null, null);
-//				if (cr.moveToFirst()) {
-//					id = cr.getString(cr.getColumnIndex(ContactsContract.Contacts._ID));
-//					buildContactData(id);
-//					contactIds.add(id);
-//				}
+				Cursor tempCursor = getContentResolver().query(contactData, 
+						new String[] { Contacts.LOOKUP_KEY }, null, null, null);
+				if (tempCursor.moveToFirst()) 
+					lookUpKey = tempCursor.getString(tempCursor.getColumnIndex(Contacts.LOOKUP_KEY));
+				
+				ContentValues values = new ContentValues();
+				values.put(MinyanContactsTable.COLUMN_MINYAN_TIME_ID, prayerId);
+				values.put(MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY, lookUpKey);
+				
+				getContentResolver().insert(MinyanMateContentProvider.CONTENT_URI_CONTACTS, values);
+				getSupportLoaderManager().restartLoader(CONTACT_LOADER, null, this);
 			}
 			break;
 			
@@ -199,7 +203,9 @@ public class MinyanSettingsActivity extends FragmentActivity
 		case CONTACT_LOADER:
 			return new CursorLoader(this,
 					MinyanMateContentProvider.CONTENT_URI_CONTACTS,
-					null, MinyanContactsTable.COLUMN_MINYAN_TIME_ID + "=?", 
+					new String[] { MinyanContactsTable.COLUMN_MINYAN_TIME_ID, 
+						MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY },
+					MinyanContactsTable.COLUMN_MINYAN_TIME_ID + "=?", 
 					new String[] { String.valueOf(this.prayerId) }, null);
 		}
 
@@ -228,15 +234,46 @@ public class MinyanSettingsActivity extends FragmentActivity
 						public void bindView(View view, Context context,
 								Cursor cur) {
 							// TODO Auto-generated method stub
-							cur = (MatrixCursor) cur;
 							
+							QuickContactBadge badge = (QuickContactBadge) view.findViewById(R.id.removableContactBadge);
+							TextView nameText = (TextView) view.findViewById(R.id.removableContactName);
+							ImageButton imgButton = (ImageButton) view.findViewById(R.id.removableRemoveButton);
+							
+							nameText.setText(cur.getString(2));
+							
+							long id = cur.getLong(0);
+							final String l = cur.getString(3);
+							
+							Uri uri = Contacts.getLookupUri(id, l);
+							badge.assignContactUri(uri);
+							
+							if (null == (cur.getString(1)))
+								badge.setImageResource(R.drawable.add_contact);
+							else {
+								Uri imageuri = Uri.parse(cur.getString(1));
+								badge.setImageURI(imageuri);
+							}
+							
+							 
+							
+							imgButton.setOnClickListener(new OnClickListener() {
+							
+								// TODO why isn't the content URI getting the update automatically?
+								@Override
+								public void onClick(View v) {
+									getContentResolver().delete(MinyanMateContentProvider.CONTENT_URI_CONTACTS, 
+											MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY + "=?"
+											+ " and " + MinyanContactsTable.COLUMN_MINYAN_TIME_ID + "=?", 
+											new String[] { l, String.valueOf(prayerId) });
+								}
+							});
 						}
 
 						@Override
 						public View newView(Context context, Cursor cur,
 								ViewGroup viewGroup) {
 							return LayoutInflater.from(context).
-									inflate(R.layout.fragment_deletable_contact, viewGroup, false);
+									inflate(R.layout.fragment_removable_contact, viewGroup, false);
 						}
 				
 			};

@@ -9,12 +9,14 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.CursorJoiner;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
+import android.provider.ContactsContract.Contacts.Data;
 
 public class MinyanMateContentProvider extends ContentProvider {
 
@@ -79,18 +81,53 @@ public class MinyanMateContentProvider extends ContentProvider {
 			case CONTACT_ID:
 				queryBuilder.appendWhere(MinyanContactsTable.COLUMN_ID + "=" + uri.getLastPathSegment());
 			case CONTACTS:
+				
+				/**
+				 * use CursorJoiner and MatrixCursor to create a cursor of a data abstraction
+				 * representing the JOIN of the stored contact keys and the phone's contact info
+				 */
+				
 				queryBuilder.setTables(MinyanContactsTable.TABLE_MINYAN_CONTACTS);
-				cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
+				cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, 
+						MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY + " asc");
 				cursor.setNotificationUri(getContext().getContentResolver(), uri);
 				
 				String[] desiredAttributes = new String[] { 
-						MinyanContactsTable.COLUMN_ID,
+						Contacts._ID,
 						Contacts.PHOTO_THUMBNAIL_URI,
 						Contacts.DISPLAY_NAME,
-						ContactsContract.Data.DATA1
-				};
+//						Data.DATA1,
+						Contacts.LOOKUP_KEY
+				};				
+				
+				Cursor contacts = getContext().getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, 
+						desiredAttributes, null, null, Contacts.LOOKUP_KEY + " asc");
 				
 				MatrixCursor m = new MatrixCursor(desiredAttributes);
+				
+				CursorJoiner joiner = new CursorJoiner(cursor, 
+						new String[] { MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY }, 
+						contacts, new String[] { Contacts.LOOKUP_KEY });
+				
+				for (CursorJoiner.Result joinerResult : joiner) {
+					switch (joinerResult) {
+					case LEFT: // Ignore LEFT JOIN
+						break;
+					case RIGHT: // Ignore RIGHT JOIN
+						break;
+					case BOTH: // Only do things on inner joins
+						
+						m.addRow(new Object[] {
+							contacts.getLong(contacts.getColumnIndex(Contacts._ID)),
+							contacts.getString(contacts.getColumnIndex(Contacts.PHOTO_THUMBNAIL_URI)),
+							contacts.getString(contacts.getColumnIndex(Contacts.DISPLAY_NAME)),
+//							contacts.getString(contacts.getColumnIndex(Data.DATA1)),
+							contacts.getString(contacts.getColumnIndex(Contacts.LOOKUP_KEY))
+						});
+						
+						break;
+					}
+				}
 				
 				return m;
 			

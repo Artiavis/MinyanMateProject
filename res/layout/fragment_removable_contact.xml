@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+    
+    <ImageButton 
+        android:id="@+id/removableRemoveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/discard"
+        android:layout_alignParentRight="true"
+
+        />
+    
+     <QuickContactBadge
+         android:id="@+id/removableContactBadge"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignBottom="@id/removableRemoveButton"
+         android:layout_alignLeft="@id/removableRemoveButton"
+         android:layout_alignParentLeft="true"
+         android:layout_alignTop="@id/removableRemoveButton" />
+    
+     <TextView 
+        android:id="@+id/removableContactName"
+        android:gravity="center_vertical"
+        android:layout_width="fill_parent"
+        android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
+        android:layout_height="match_parent"
+        android:layout_alignTop="@id/removableContactBadge"
+        android:layout_alignBottom="@id/removableContactBadge"
+        android:layout_toRightOf="@id/removableContactBadge"
+        android:layout_toLeftOf="@id/removableRemoveButton"
+
+        />
+
+    
+
+    
+
+    
+
+    
+
+</RelativeLayout>

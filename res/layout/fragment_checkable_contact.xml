@@ -16,6 +16,7 @@
         android:id="@+id/multiple_checkable_contact_name"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
+        android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
         />
 
 </LinearLayout>
