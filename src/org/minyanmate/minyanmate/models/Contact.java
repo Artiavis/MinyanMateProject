@@ -10,7 +10,7 @@ import android.provider.ContactsContract.Contacts;
 /**
  * This will be useful for the scheduling assistant services, but until
  * those are developed everything here is subject to change. Should probably
- * be given a similar interface as {@link Prayer}.
+ * be given a similar interface as {@link MinyanSchedule}.
  * @author Jeff
  *
  */

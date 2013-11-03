@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.minyanmate.minyanmate.adapters.PrayerExpandableListAdapter;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-import org.minyanmate.minyanmate.database.MinyanTimesTable;
-import org.minyanmate.minyanmate.models.Prayer;
+import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
+import org.minyanmate.minyanmate.models.MinyanSchedule;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -22,17 +22,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 
-public class MinyanListFragment extends Fragment implements
+public class MinyanScheduleListFragment extends Fragment implements
 	LoaderManager.LoaderCallbacks<Cursor> {
 	
-	public MinyanListFragment() {
+	public MinyanScheduleListFragment() {
 	}
 	
 	PrayerExpandableListAdapter listAdapter;
 	ExpandableListView expListView;
 	
 	List<String> listDataHeader;
-	HashMap<String, List<Prayer>> listDataChild;
+	HashMap<String, List<MinyanSchedule>> listDataChild;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,7 +51,7 @@ public class MinyanListFragment extends Fragment implements
 		
 		// TODO define and obtain the cursor for these data
 		listDataHeader = new ArrayList<String>();
-		listDataChild = new HashMap<String, List<Prayer>>();
+		listDataChild = new HashMap<String, List<MinyanSchedule>>();
 		listAdapter = new PrayerExpandableListAdapter(context, listDataHeader, listDataChild);
 		
 		expListView.setAdapter(listAdapter);
@@ -63,23 +63,23 @@ public class MinyanListFragment extends Fragment implements
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
 		CursorLoader cursorLoader = new CursorLoader(getActivity(), 
 				MinyanMateContentProvider.CONTENT_URI_TIMES, null, null, null, 
-				MinyanTimesTable.COLUMN_DAY_NUM + ", " 
-				+ MinyanTimesTable.COLUMN_PRAYER_HOUR + ", "
-				+ MinyanTimesTable.COLUMN_PRAYER_MIN);
+				MinyanSchedulesTable.COLUMN_DAY_NUM + ", " 
+				+ MinyanSchedulesTable.COLUMN_PRAYER_HOUR + ", "
+				+ MinyanSchedulesTable.COLUMN_PRAYER_MIN);
 		return cursorLoader;
 	}
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		
-		List<Prayer> prayerTimes = Prayer.cursorToPrayerList(data);
-		listDataChild = new HashMap<String, List<Prayer>>();
+		List<MinyanSchedule> prayerTimes = MinyanSchedule.cursorToPrayerList(data);
+		listDataChild = new HashMap<String, List<MinyanSchedule>>();
 		listDataHeader = new ArrayList<String>();
-		for(Prayer prayer : prayerTimes) {
+		for(MinyanSchedule prayer : prayerTimes) {
 			// if new Day, add it to headers and create a new map entry
 			if( !listDataHeader.contains(prayer.getDay())) {
 				listDataHeader.add(prayer.getDay());
-				List<Prayer> temp = new ArrayList<Prayer>();
+				List<MinyanSchedule> temp = new ArrayList<MinyanSchedule>();
 				temp.add(prayer);
 				listDataChild.put(prayer.getDay(), temp);
 				

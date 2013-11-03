@@ -124,7 +124,7 @@ public class PickMultipleContactsActivity extends ListActivity
             }
 
             // Goes back to the Manage Groups screen
-            i = new Intent(this, MinyanSettingsActivity.class);
+            i = new Intent(this, MinyanScheduleSettingsActivity.class);
             startActivity(i);
             break;  
     }

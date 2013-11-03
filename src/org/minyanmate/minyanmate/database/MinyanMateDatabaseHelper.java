@@ -14,19 +14,32 @@ public class MinyanMateDatabaseHelper extends SQLiteOpenHelper {
 	}
 	
 	@Override
+	public void onOpen(SQLiteDatabase db) {
+		super.onOpen(db);
+		
+		if (!db.isReadOnly())
+			db.execSQL("PRAGMA foreign_keys=ON;");
+	}
+	
+	@Override
 	public void onCreate(SQLiteDatabase database) {
-		MinyanTimesTable.onCreate(database);
+		
+
+		
+		MinyanSchedulesTable.onCreate(database);
 		MinyanDaysTable.onCreate(database);
 		MinyanContactsTable.onCreate(database);
-		// TODO create all the other tables here
+		MinyanEventsTable.onCreate(database);
+		MinyanGoersTable.onCreate(database);
 	}
 	
 	@Override
 	public void onUpgrade(SQLiteDatabase database, int oldVersion,
 			int newVersion) {
 		MinyanDaysTable.onUpgrade(database, oldVersion, newVersion);
-		MinyanTimesTable.onUpgrade(database, oldVersion, newVersion);
+		MinyanSchedulesTable.onUpgrade(database, oldVersion, newVersion);
 		MinyanContactsTable.onUpgrade(database, oldVersion, newVersion);
-		// TODO upgrade all the other tables here
+		MinyanEventsTable.onUpgrade(database, oldVersion, newVersion);
+		MinyanGoersTable.onUpgrade(database, oldVersion, newVersion);
 	}
 }

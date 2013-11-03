@@ -8,13 +8,13 @@ import android.util.SparseArray;
 
 
 /**
- * A class containing the column descriptions and {@link MinyanTimesTable#onCreate(SQLiteDatabase)}
- * and {@link MinyanTimesTable#onUpgrade(SQLiteDatabase, int, int)} commands. Used to dereference
+ * A class containing the column descriptions and {@link MinyanSchedulesTable#onCreate(SQLiteDatabase)}
+ * and {@link MinyanSchedulesTable#onUpgrade(SQLiteDatabase, int, int)} commands. Used to dereference
  * columns from the {@link MinyanMateContentProvider}.
  */
-public class MinyanTimesTable {
+public class MinyanSchedulesTable {
 
-	public static final String TABLE_MINYAN_TIMES = "minyan_times";
+	public static final String TABLE_MINYAN_SCHEDULES = "minyan_schedules";
 	
 	/**
 	 * Describes the unique integer identifier of a row.
@@ -32,7 +32,7 @@ public class MinyanTimesTable {
 	 * corresponding to Shacharis (morning prayer) and 3 always corresponding with
 	 * Maariv (evening prayer).
 	 */
-	public static final String COLUMN_PRAYER_NUM = "prayer_num";
+	public static final String COLUMN_PRAYER_NUM = "schedule_num";
 	
 	/**
 	 * A long in milliseconds describing the length of the time of the scheduling window
@@ -63,18 +63,20 @@ public class MinyanTimesTable {
 	public static final String COLUMN_IS_ACTIVE = "is_active";
 	
 	/**
-	 * A string corresponding with {@link MinyanTimesTable#COLUMN_DAY_NUM}, Sunday - Saturday.
+	 * A string corresponding with {@link MinyanSchedulesTable#COLUMN_DAY_NUM}, Sunday - Saturday.
 	 */
 	public static final String COLUMN_DAY_NAME = "day_name";
 	
 	/**
-	 * A string corresponding with {@link MinyanTimesTable#COLUMN_PRAYER_NUM}, indicating
+	 * A string corresponding with {@link MinyanSchedulesTable#COLUMN_PRAYER_NUM}, indicating
 	 * the name of the service (Shacharis, Mincha, Maariv).
 	 */
 	public static final String COLUMN_PRAYER_NAME = "prayer_name";
 	
+	public static final String COLUMN_SCHEDULE_MESSAGE = "invite_msg";
+	
 	private static final String DATABASE_CREATE = "create table "
-			+ TABLE_MINYAN_TIMES
+			+ TABLE_MINYAN_SCHEDULES
 			+ "(" 
 			+ COLUMN_ID + " integer primary key autoincrement, "
 			+ COLUMN_DAY_NUM + " int not null, " 
@@ -84,7 +86,8 @@ public class MinyanTimesTable {
 			+ COLUMN_SCHEDULE_WINDOW + " text nt null, "
 			+ COLUMN_PRAYER_HOUR + " int not null, " 
 			+ COLUMN_PRAYER_MIN + " int not null, "
-			+ COLUMN_IS_ACTIVE + " int not null" + ");";
+			+ COLUMN_IS_ACTIVE + " int not null, " 
+			+ COLUMN_SCHEDULE_MESSAGE + " text not null" + ");";
 	
 	public static void onCreate(SQLiteDatabase database) {
 		database.execSQL(DATABASE_CREATE);
@@ -105,14 +108,15 @@ public class MinyanTimesTable {
 				time.put(COLUMN_PRAYER_MIN, 0);
 				time.put(COLUMN_SCHEDULE_WINDOW, 3600);
 				time.put(COLUMN_IS_ACTIVE, 0);
-				database.insert(TABLE_MINYAN_TIMES, null, time);
+				time.put(COLUMN_SCHEDULE_MESSAGE, "test!");
+				database.insert(TABLE_MINYAN_SCHEDULES, null, time);
 			}
 		}
 	}
 	
 	public static void onUpgrade(SQLiteDatabase database, int oldVersion,
 			int newVersion) {
-		database.execSQL("DROP TABLE IF EXISTS " + TABLE_MINYAN_TIMES);
+		database.execSQL("DROP TABLE IF EXISTS " + TABLE_MINYAN_SCHEDULES);
 		onCreate(database);
 	}
 	

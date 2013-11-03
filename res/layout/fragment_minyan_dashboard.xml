@@ -11,7 +11,7 @@
         android:id="@+id/include_minyan_list"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
-        class="org.minyanmate.minyanmate.MinyanListFragment" >
+        class="org.minyanmate.minyanmate.MinyanScheduleListFragment" >
         
 
     </fragment>

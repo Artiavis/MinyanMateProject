@@ -22,19 +22,22 @@ public class MinyanContactsTable {
 	public static final String COLUMN_CONTACT_LOOKUP_KEY = "contact_lookup_key";
 	
 	/**
-	 * Returns an integer with a primary key to the {@link MinyanTimesTable#TABLE_MINYAN_TIMES} table.
+	 * Returns an integer with a primary key to the {@link MinyanSchedulesTable#TABLE_MINYAN_SCHEDULES} table.
 	 */
-	public static final String COLUMN_MINYAN_TIME_ID = "minyan_time_id";
+	public static final String COLUMN_MINYAN_SCHEDULE_ID = "minyan_schedule_id";
 	
 	private static final String DATABASE_CREATE = "create table "
 			+ TABLE_MINYAN_CONTACTS
 			+ "(" 
 			+ COLUMN_ID + " integer primary key autoincrement, "
 			+ COLUMN_CONTACT_LOOKUP_KEY + " text, " 
-			+ COLUMN_MINYAN_TIME_ID + " int not null, " 
+			+ COLUMN_MINYAN_SCHEDULE_ID + " int not null, " 
 				+ "unique(" + COLUMN_CONTACT_LOOKUP_KEY + ", "
-				+ COLUMN_MINYAN_TIME_ID 
-				+ ") on conflict replace"
+				+ COLUMN_MINYAN_SCHEDULE_ID 
+				+ ") on conflict replace, "
+				+ "foreign key(" + COLUMN_MINYAN_SCHEDULE_ID + ") references "
+				+ MinyanSchedulesTable.TABLE_MINYAN_SCHEDULES + "(" + MinyanSchedulesTable.COLUMN_ID
+				+ ")" 
 			+ ");";
 	
 	public static void onCreate(SQLiteDatabase database) {

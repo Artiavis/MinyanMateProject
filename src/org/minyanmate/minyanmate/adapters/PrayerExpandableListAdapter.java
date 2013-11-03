@@ -3,11 +3,11 @@ package org.minyanmate.minyanmate.adapters;
 import java.util.HashMap;
 import java.util.List;
 
-import org.minyanmate.minyanmate.MinyanSettingsActivity;
+import org.minyanmate.minyanmate.MinyanScheduleSettingsActivity;
 import org.minyanmate.minyanmate.R;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-import org.minyanmate.minyanmate.database.MinyanTimesTable;
-import org.minyanmate.minyanmate.models.Prayer;
+import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
+import org.minyanmate.minyanmate.models.MinyanSchedule;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -27,7 +27,7 @@ import android.widget.TextView;
 
 /**
  * An adapter for generating headers and children for an 
- * {@link android.widget.ExpandableListView} using a list of {@link Prayer}s.
+ * {@link android.widget.ExpandableListView} using a list of {@link MinyanSchedule}s.
  * @author Jeff
  *
  */
@@ -35,10 +35,10 @@ public class PrayerExpandableListAdapter extends BaseExpandableListAdapter {
 
 	private Context context;
 	private List<String> _listDataHeader;
-	private HashMap<String, List<Prayer>> _listDataChild;
+	private HashMap<String, List<MinyanSchedule>> _listDataChild;
 	
 	public PrayerExpandableListAdapter(Context context, List<String> listDataHeader,
-			HashMap<String, List<Prayer>> listChildData) {
+			HashMap<String, List<MinyanSchedule>> listChildData) {
 		
 		this.context = context;
 		this._listDataHeader = listDataHeader;
@@ -50,7 +50,7 @@ public class PrayerExpandableListAdapter extends BaseExpandableListAdapter {
 		this._listDataHeader = newHeaders;
 	}
 	
-	public void setDataChildren(HashMap<String, List<Prayer>> newkidsontheblock) {
+	public void setDataChildren(HashMap<String, List<MinyanSchedule>> newkidsontheblock) {
 		this._listDataChild = newkidsontheblock;
 	}
 	
@@ -67,7 +67,7 @@ public class PrayerExpandableListAdapter extends BaseExpandableListAdapter {
 	@Override
 	public View getChildView(int groupPosition, int childPosition,
 			boolean isLastChild, View convertView, ViewGroup parent) {
-		final Prayer childPrayer = (Prayer) getChild(groupPosition, childPosition);
+		final MinyanSchedule childPrayer = (MinyanSchedule) getChild(groupPosition, childPosition);
 		
 		if (convertView == null) {
 			LayoutInflater infl = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -79,7 +79,7 @@ public class PrayerExpandableListAdapter extends BaseExpandableListAdapter {
 
 		
 		txtListChild.setText(childPrayer.getPrayerName() + " - " +
-				MinyanSettingsActivity.formatTimeTextView(context, 
+				MinyanScheduleSettingsActivity.formatTimeTextView(context, 
 				childPrayer.getHour(), childPrayer.getMinute()));
 		chkBox.setChecked(childPrayer.isActive());
 		
@@ -88,7 +88,7 @@ public class PrayerExpandableListAdapter extends BaseExpandableListAdapter {
 			
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(context, MinyanSettingsActivity.class);
+				Intent intent = new Intent(context, MinyanScheduleSettingsActivity.class);
 				intent.putExtra("prayerId", childPrayer.getId());
 				context.startActivity(intent);
 				
@@ -100,7 +100,7 @@ public class PrayerExpandableListAdapter extends BaseExpandableListAdapter {
 			@Override
 			public void onClick(View v) {
 				ContentValues values = new ContentValues();
-				values.put(MinyanTimesTable.COLUMN_IS_ACTIVE, ((CheckBox) v).isChecked() ? 1 : 0);
+				values.put(MinyanSchedulesTable.COLUMN_IS_ACTIVE, ((CheckBox) v).isChecked() ? 1 : 0);
 				
 				context.getContentResolver().update(
 						Uri.parse(MinyanMateContentProvider.CONTENT_URI_TIMES + "/" + childPrayer.getId()),

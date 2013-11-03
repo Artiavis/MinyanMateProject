@@ -112,9 +112,9 @@ public class MinyanMateActivity extends FragmentActivity implements
 			case 0:
 				return new ActiveMinyanFragment();
 			case 1:
-				return new MinyanDashboardFragment();
+				return new MinyanScheduleDashboardFragment();
 			default:
-				return new MinyanDashboardFragment();
+				return new MinyanScheduleDashboardFragment();
 			}
 		}
 

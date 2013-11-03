@@ -9,7 +9,6 @@
         android:targetSdkVersion="16" />
     
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     
@@ -36,7 +35,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MinyanSettingsActivity"
+            android:name=".MinyanScheduleSettingsActivity"
             android:label="@string/title_edit_minyans"
             android:parentActivityName="org.minyanmate.minyanmate.MinyanMateActivity"
             >
@@ -50,6 +49,18 @@
 	        android:name=".contentprovider.MinyanMateContentProvider"
 	        android:exported="false" >
 	    </provider>
+	    
+	    <receiver android:name="org.minyanmate.minyanmate.RegisterMinyansOnBootReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        
+	    <receiver android:name="org.minyanmate.minyanmate.LogMinyanGoerOnSmsReceiver" >
+            <intent-filter>
+                <action android:name="android.provider.telephony.SMS_RECIEVED" />
+            </intent-filter>
+        </receiver>
     </application>
     
 

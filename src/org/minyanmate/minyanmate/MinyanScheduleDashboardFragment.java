@@ -6,9 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class MinyanDashboardFragment extends Fragment {
+public class MinyanScheduleDashboardFragment extends Fragment {
 
-	public MinyanDashboardFragment() {
+	public MinyanScheduleDashboardFragment() {
 	}
 	
 	@Override

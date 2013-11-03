@@ -8,8 +8,8 @@ import org.minyanmate.minyanmate.adapters.RemovableContactListAdapter;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider.ContactMatrix;
 import org.minyanmate.minyanmate.database.MinyanContactsTable;
-import org.minyanmate.minyanmate.database.MinyanTimesTable;
-import org.minyanmate.minyanmate.models.Prayer;
+import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
+import org.minyanmate.minyanmate.models.MinyanSchedule;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -46,11 +46,11 @@ import android.widget.Toast;
 
 /**
  * Provides access to general details about a weekly minyan event, and permits
- * changing the time and invite list. Is called from {@link MinyanListFragment}
+ * changing the time and invite list. Is called from {@link MinyanScheduleListFragment}
  * and can subsequently call the Android contact picker or {@link PickMultipleContactsActivity}.
  *
  */
-public class MinyanSettingsActivity extends FragmentActivity
+public class MinyanScheduleSettingsActivity extends FragmentActivity
 	implements LoaderManager.LoaderCallbacks<Cursor>{
 	
 	public static final int TIME_LOADER = 1;
@@ -59,7 +59,7 @@ public class MinyanSettingsActivity extends FragmentActivity
 	public final static int PICK_MULTIPLE_CONTACTS = 20;
 	
 	private int prayerId;
-	private Prayer prayer;
+	private MinyanSchedule prayer;
 	TextView timeTextView;
 	ListView contactList;
 	
@@ -93,7 +93,7 @@ public class MinyanSettingsActivity extends FragmentActivity
 //			NavUtils.navigateUpFromSameTask(this);
 			Intent intent = new Intent(getBaseContext(), MinyanMateActivity.class);
 			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-			MinyanSettingsActivity.this.finish();
+			MinyanScheduleSettingsActivity.this.finish();
 			return true;
 		}
 		
@@ -189,7 +189,7 @@ public class MinyanSettingsActivity extends FragmentActivity
 			{
 				// Save result
 				ContentValues values = new ContentValues();
-				values.put(MinyanContactsTable.COLUMN_MINYAN_TIME_ID, prayerId);
+				values.put(MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID, prayerId);
 				values.put(MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY, lookUpKey);
 				
 				getContentResolver().insert(MinyanMateContentProvider.CONTENT_URI_CONTACTS, values);
@@ -228,8 +228,8 @@ public class MinyanSettingsActivity extends FragmentActivity
 		@Override
 		public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 			ContentValues values = new ContentValues();
-			values.put(MinyanTimesTable.COLUMN_PRAYER_HOUR, hourOfDay);
-			values.put(MinyanTimesTable.COLUMN_PRAYER_MIN, minute);
+			values.put(MinyanSchedulesTable.COLUMN_PRAYER_HOUR, hourOfDay);
+			values.put(MinyanSchedulesTable.COLUMN_PRAYER_MIN, minute);
 			view.getContext().getContentResolver().update(
 					Uri.parse(MinyanMateContentProvider.CONTENT_URI_TIMES + "/" + id),
 					values,
@@ -261,9 +261,9 @@ public class MinyanSettingsActivity extends FragmentActivity
 		case CONTACT_LOADER:
 			return new CursorLoader(this,
 					MinyanMateContentProvider.CONTENT_URI_CONTACTS,
-					new String[] { MinyanContactsTable.COLUMN_MINYAN_TIME_ID, 
+					new String[] { MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID, 
 						MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY },
-					MinyanContactsTable.COLUMN_MINYAN_TIME_ID + "=?", 
+					MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID + "=?", 
 					new String[] { String.valueOf(this.prayerId) }, null);
 		}
 
@@ -282,7 +282,7 @@ public class MinyanSettingsActivity extends FragmentActivity
 		
 		case TIME_LOADER:
 			cursor.moveToFirst();
-			prayer = Prayer.prayerFromCursor(cursor);
+			prayer = MinyanSchedule.prayerFromCursor(cursor);
 			timeTextView.setText(formatTimeTextView(this, prayer.getHour(), prayer.getMinute()));
 			setTitle(prayer.getDay() + " - " + prayer.getPrayerName());
 		

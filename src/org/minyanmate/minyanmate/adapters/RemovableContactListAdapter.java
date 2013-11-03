@@ -18,6 +18,14 @@ import android.widget.ImageButton;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
 
+
+/**
+ * An adapter for a {@link android.widget.ListView} for a list of contacts
+ * with QuickContactBadges (with photos), names, and a button for removing
+ * said contact from the list (and database).
+ * @author Jeff
+ *
+ */
 public class RemovableContactListAdapter extends CursorAdapter {
 
 	private int prayerId;
@@ -58,7 +66,7 @@ public class RemovableContactListAdapter extends CursorAdapter {
 			public void onClick(View v) {
 				c.getContentResolver().delete(MinyanMateContentProvider.CONTENT_URI_CONTACTS, 
 						MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY + "=?"
-						+ " and " + MinyanContactsTable.COLUMN_MINYAN_TIME_ID + "=?", 
+						+ " and " + MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID + "=?", 
 						new String[] { lookUpKey, String.valueOf(prayerId) });
 			}
 		});
