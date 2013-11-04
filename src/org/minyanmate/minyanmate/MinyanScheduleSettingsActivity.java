@@ -80,6 +80,7 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 		
 		getSupportLoaderManager().initLoader(TIME_LOADER, null, this); // for times
 		getSupportLoaderManager().initLoader(CONTACT_LOADER, null, this); // for contacts
+		// TODO for window
 		
 		timeTextView = (TextView) findViewById(R.id.minyan_setting_timeTextView);
 		contactList = (ListView) findViewById(R.id.minyan_setting_contactsList);
@@ -126,7 +127,6 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 	 * @param view
 	 */
 	public void pickNewContact(View view) {
-		// TODO stuff
 		Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
 		startActivityForResult(intent, PICK_CONTACT);
 	}
@@ -146,8 +146,13 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 	 */
 	public void pickNewTime(View view) {
 		TimePickerFragment newFragment = new TimePickerFragment();
-		newFragment.initialize(prayer.getId(), timeTextView, prayer.getHour(), prayer.getMinute());
+		newFragment.initialize(prayer.getId(), prayer.getHour(), prayer.getMinute(), prayer);
 		newFragment.show(getSupportFragmentManager(), "timePicker");
+	}
+	
+	public void pickNewScheduleWindow(View view) {
+		// TODO this
+		
 	}
 	
 	
@@ -192,10 +197,10 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 				values.put(MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID, prayerId);
 				values.put(MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY, lookUpKey);
 				
-				getContentResolver().insert(MinyanMateContentProvider.CONTENT_URI_CONTACTS, values);
-				
-				// Signal success
-				Toast.makeText(this, "Added successfully!", Toast.LENGTH_SHORT).show();
+				if ( getContentResolver().insert(MinyanMateContentProvider.CONTENT_URI_CONTACTS, values) != null)
+					Toast.makeText(this, "Added successfully!", Toast.LENGTH_SHORT).show();
+				else
+					Toast.makeText(this, "Failed to save contact!", Toast.LENGTH_SHORT).show();
 			} else // this code doesn't appear to be reachable, either a phone uri exists or it doesn't
 				Toast.makeText(this, "Contact has no phone number! Not added!", Toast.LENGTH_SHORT).show();
 		} else {
@@ -204,7 +209,7 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 	}
 
 	/**
-	 * A DialogFragment with a Time Picker, used to update the time of a prayer
+	 * A DialogFragment with a Time Picker, used to update the time of a schedule
 	 * when it calls back to onTimeSet
 	 */
 	public static class TimePickerFragment extends DialogFragment 
@@ -213,6 +218,7 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 		private int id;
 		private int minute;
 		private int hour;
+		private MinyanSchedule prayer;
 		
 		@Override
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -230,6 +236,34 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 			ContentValues values = new ContentValues();
 			values.put(MinyanSchedulesTable.COLUMN_PRAYER_HOUR, hourOfDay);
 			values.put(MinyanSchedulesTable.COLUMN_PRAYER_MIN, minute);
+			
+			long windowLength = prayer.getSchedulingWindowLength();
+			Cursor nextSchedule = view.getContext().getContentResolver().query(
+					Uri.parse(MinyanMateContentProvider.CONTENT_URI_TIMES + "/" + (id + 1)), 
+					null, null, null, null);
+			
+			if (nextSchedule.moveToFirst() ) {
+				MinyanSchedule nextSched = MinyanSchedule.prayerFromCursor(nextSchedule);
+				long endTime = prayer.getHour() * 3600 + prayer.getMinute() * 60;
+				long startTime = (nextSched.getPrayerNum() == 1 ? 1 : 0)*24*3600 
+						+ nextSched.getHour()*3600 + nextSched.getMinute() * 60;
+				
+				if (startTime - windowLength > endTime) {
+					view.getContext().getContentResolver().update(
+							Uri.parse(MinyanMateContentProvider.CONTENT_URI_TIMES + "/" + id),
+							values,
+//							MinyanTimesTable.COLUMN_ID + "=?", new String[] { String.valueOf(childPrayer.getId()) }
+							null, null
+							);
+				} else {
+					Toast.makeText(view.getContext(), "Failed to save new time! There "
+							+ "may be another minyan scheduled to soon!", Toast.LENGTH_SHORT).show();
+					return;
+				}
+			}
+			
+			
+			
 			view.getContext().getContentResolver().update(
 					Uri.parse(MinyanMateContentProvider.CONTENT_URI_TIMES + "/" + id),
 					values,
@@ -239,17 +273,87 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 			
 		}
 		
-		public void initialize(int id, TextView txt, int hour, int minute) {
+		public void initialize(int id, int hour, int minute, MinyanSchedule sched) {
 			this.minute = minute;
 			this.hour = hour;
 			this.id = id;
+			this.prayer = sched;
 		}
 		
 	}
 
+	public static class WindowSchedulePickerFragent extends DialogFragment 
+	implements TimePickerDialog.OnTimeSetListener {
+	
+	private int id;
+	private int minute;
+	private int hour;
+	private MinyanSchedule prayer;
+	
+	@Override
+	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		
+		return new TimePickerDialog(getActivity(), this, hour, minute,
+				false);
+	}
+	
+	/**
+	 * The callback from {@link WindowSchedulePickerFragent.OnTimeSetListener}, pushes
+	 * changes back to the {@link MinyanMateContentProvider}.
+	 */
+	@Override
+	public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+		
+		ContentValues values = new ContentValues();
+		long windowLength = 3600 * hourOfDay + 60*minute;
+		values.put(MinyanSchedulesTable.COLUMN_SCHEDULE_WINDOW, 3600*hourOfDay + 60*minute);
+		
+		if (id != 1) {
+			Cursor previousSchedule = view.getContext().getContentResolver().query(
+					Uri.parse(MinyanMateContentProvider.CONTENT_URI_TIMES + "/" + (id - 1)), 
+					null, null, null, null);
+			
+			previousSchedule.moveToFirst();
+			MinyanSchedule sched = MinyanSchedule.prayerFromCursor(previousSchedule);
+			long absEndTime = (sched.getHour() * 3600 + sched.getMinute() * 60 + 30*60);
+			long startTime = (sched.getPrayerNum() == 3 ? 1 : 0)*24*60*60 + prayer.getHour() * 3600 + sched.getMinute() * 60;
+			// check whether there's a sufficient amount of time between this minyan and the previous one
+			if (  startTime - windowLength > absEndTime) {
+				view.getContext().getContentResolver().update(
+						Uri.parse(MinyanMateContentProvider.CONTENT_URI_TIMES + "/" + id),
+						values,
+//						MinyanTimesTable.COLUMN_ID + "=?", new String[] { String.valueOf(childPrayer.getId()) }
+						null, null
+						);
+			} else {
+				Toast.makeText(view.getContext(), "Failed to save new window! There may "
+						+ "be a minyan scheduled to recently!", Toast.LENGTH_SHORT).show();
+				return;
+			}
+		} 
+		
+		view.getContext().getContentResolver().update(
+				Uri.parse(MinyanMateContentProvider.CONTENT_URI_TIMES + "/" + id),
+				values,
+//				MinyanTimesTable.COLUMN_ID + "=?", new String[] { String.valueOf(childPrayer.getId()) }
+				null, null
+				);
+	}
+	
+	public void initialize(int id, int hour, int minute, MinyanSchedule sched) {
+		this.minute = minute;
+		this.hour = hour;
+		this.id = id;
+		this.prayer = sched;
+	}
+	
+}
+	
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
+		
+		// TODO for window
 		
 		switch (id) {
 		case TIME_LOADER:
@@ -277,6 +381,8 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 	 */
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		
+		// TODO for window
 		
 		switch( loader.getId()) {
 		

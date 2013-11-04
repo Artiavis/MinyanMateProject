@@ -79,6 +79,14 @@ public class MinyanSchedule {
 		return scheduleWindowLength;
 	}
 	
+	public int getSchedulingWindowHours() {
+		return (int) scheduleWindowLength / (3600);
+	}
+	
+	public int getSchedulingWindowMinutes() {
+		return (int) scheduleWindowLength % (3600);
+	}
+	
 	public String getPrayerName() {
 		return prayerName;
 	}

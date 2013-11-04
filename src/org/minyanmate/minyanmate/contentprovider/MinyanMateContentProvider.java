@@ -5,6 +5,7 @@ import org.minyanmate.minyanmate.database.MinyanEventsTable;
 import org.minyanmate.minyanmate.database.MinyanGoersTable;
 import org.minyanmate.minyanmate.database.MinyanMateDatabaseHelper;
 import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
+import org.minyanmate.minyanmate.database.MinyanSubscriptionsTable;
 
 import android.content.ContentProvider;
 import android.content.ContentResolver;
@@ -283,9 +284,27 @@ public class MinyanMateContentProvider extends ContentProvider {
 //			return Uri.parse(PATH_CONTACTS + "/" + id);
 			
 		case CONTACTS:
-			id = sqlDb.insert(MinyanContactsTable.TABLE_MINYAN_CONTACTS, null, values);
-			getContext().getContentResolver().notifyChange(uri, null);
-			return Uri.parse(PATH_CONTACTS + "/" + id);
+			// If desubscribed, do not allow adding
+			Cursor subscrier = sqlDb.query(MinyanSubscriptionsTable.TABLE_SUBSCRIPTIONS, 
+					null, MinyanSubscriptionsTable.COLUMN_CONTACT_LOOKUP_KEY + "=?", 
+					new String[] { (String) values.get(MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY) }, 
+					null, null, null);
+			
+			boolean isSubscribed = true;
+			
+			if (subscrier.moveToFirst()) {
+				
+				isSubscribed = (subscrier.getInt(subscrier.getColumnIndex(MinyanSubscriptionsTable.COLUMN_IS_SUBSCRIBED)) 
+						== 1) ? true : false;
+			}
+			
+			
+			if (isSubscribed) {
+				id = sqlDb.insert(MinyanContactsTable.TABLE_MINYAN_CONTACTS, null, values);
+				getContext().getContentResolver().notifyChange(uri, null);
+				return Uri.parse(PATH_CONTACTS + "/" + id);
+			} else
+				return null;
 		
 		case EVENTS:
 			id = sqlDb.insert(MinyanEventsTable.TABLE_MINYAN_EVENTS, null, values);
