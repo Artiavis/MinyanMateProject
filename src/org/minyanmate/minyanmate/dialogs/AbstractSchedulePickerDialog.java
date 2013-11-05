@@ -49,7 +49,7 @@ implements TimePickerDialog.OnTimeSetListener {
 					null, "ABS(" + id + "- " + MinyanSchedulesTable.COLUMN_ID + "=1" , null, 
 					MinyanSchedulesTable.COLUMN_ID + "ASC");
 			
-			long thisWindowLength = this.schedule.getSchedulingWindowLength(); // assume constant
+			long thisWindowLength = thisScheduleWindow; // assume constant
 			long thisScheduleStartTime = 3600*thisScheduleHour + 60*thisScheduleMinute;
 			long thisScheduleEndTime = thisScheduleStartTime + 30*60; // 30 minutes later
 			
