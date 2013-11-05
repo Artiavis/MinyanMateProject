@@ -61,11 +61,11 @@ public class MinyanGoersTable {
 	private static final String DATABASE_CREATE = "create table " 
 			+ TABLE_MINYAN_INVITEES 
 			+ "(" 
-			+ COLUMN_ID + " int primary key autoincrement, " 
-			+ COLUMN_MINYAN_EVENT_ID + " int not null, " 
-			+ COLUMN_IS_RANDOM + " int not null, " 
+			+ COLUMN_ID + " integer primary key autoincrement, " 
+			+ COLUMN_MINYAN_EVENT_ID + " integer not null, " 
+			+ COLUMN_IS_RANDOM + " integer not null, " 
 			+ COLUMN_LOOKUP_KEY + " text, " 
-			+ COLUMN_RANDOM_NAME + "text, "
+			+ COLUMN_RANDOM_NAME + " text, "
 			+ "foreign key(" + COLUMN_MINYAN_EVENT_ID + ") references " 
 				+ MinyanEventsTable.TABLE_MINYAN_EVENTS + "(" + MinyanEventsTable.COLUMN_ID 
 				+ ") "

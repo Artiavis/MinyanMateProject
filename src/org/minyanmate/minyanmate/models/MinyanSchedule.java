@@ -11,7 +11,7 @@ import android.database.Cursor;
 /**
  * A model class containing the attributes of objects from the 
  * {@link MinyanSchedulesTable#TABLE_MINYAN_SCHEDULES} table. Contains 
- * {@link MinyanSchedule#prayerFromCursor(Cursor)} and {@link MinyanSchedule#cursorToPrayerList(Cursor)}
+ * {@link MinyanSchedule#schedFromCursor(Cursor)} and {@link MinyanSchedule#cursorToPrayerList(Cursor)}
  * static helper methods to pull Prayer objects from the cursors.
  */
 public class MinyanSchedule {
@@ -104,7 +104,7 @@ public class MinyanSchedule {
 	 * which is already moved to a specific row. 
 	 * @return prayer, a new {@link MinyanSchedule} object
 	 */
-	public static MinyanSchedule prayerFromCursor(Cursor cursor) {
+	public static MinyanSchedule schedFromCursor(Cursor cursor) {
 		
 		int id = cursor.getInt(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_ID));			
 		int dayNum = cursor.getInt(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_DAY_NUM));
@@ -123,7 +123,7 @@ public class MinyanSchedule {
 	/**
 	 * Given a cursor over a set of multiple results from the 
 	 * {@link MinyanSchedulesTable#TABLE_MINYAN_SCHEDULES} table, iterate over the cursor using
-	 * {@link MinyanSchedule#prayerFromCursor(Cursor)} to generate a list of {@link MinyanSchedule} objects.
+	 * {@link MinyanSchedule#schedFromCursor(Cursor)} to generate a list of {@link MinyanSchedule} objects.
 	 * <p>
 	 * @param cursor a new cursor over the {@link MinyanSchedulesTable#TABLE_MINYAN_SCHEDULES} table.
 	 * @return prayerList, a list of new {@link MinyanSchedule} objects
@@ -132,7 +132,7 @@ public class MinyanSchedule {
 		
 		List<MinyanSchedule> prayerList = new ArrayList<MinyanSchedule>();
 		while(cursor.moveToNext()) {
-			prayerList.add(prayerFromCursor(cursor));
+			prayerList.add(schedFromCursor(cursor));
 		}
 		
 		return prayerList;

@@ -40,16 +40,13 @@ public class MinyanScheduleListFragment extends Fragment implements
 		View rootView = inflater.inflate(
 				R.layout.fragment_minyan_list, container, false);
 		
-		// TODO why is this null?
-		//Context context = container.getContext();
+
 		Context context = getActivity();
 		getLoaderManager().initLoader(0, null, this);
 		
 		
-//		adapter = new ExpandablePrayerTimesListAdapter(null, getActivity());
 		expListView = (ExpandableListView) rootView.findViewById(R.id.minyanList);
 		
-		// TODO define and obtain the cursor for these data
 		listDataHeader = new ArrayList<String>();
 		listDataChild = new HashMap<String, List<MinyanSchedule>>();
 		listAdapter = new PrayerExpandableListAdapter(context, listDataHeader, listDataChild);

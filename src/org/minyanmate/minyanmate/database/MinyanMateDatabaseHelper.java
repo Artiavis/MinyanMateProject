@@ -24,13 +24,12 @@ public class MinyanMateDatabaseHelper extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase database) {
 		
-
-		
 		MinyanSchedulesTable.onCreate(database);
 		MinyanDaysTable.onCreate(database);
 		MinyanContactsTable.onCreate(database);
 		MinyanEventsTable.onCreate(database);
 		MinyanGoersTable.onCreate(database);
+		MinyanSubscriptionsTable.onCreate(database);
 	}
 	
 	@Override
@@ -41,5 +40,6 @@ public class MinyanMateDatabaseHelper extends SQLiteOpenHelper {
 		MinyanContactsTable.onUpgrade(database, oldVersion, newVersion);
 		MinyanEventsTable.onUpgrade(database, oldVersion, newVersion);
 		MinyanGoersTable.onUpgrade(database, oldVersion, newVersion);
+		MinyanSubscriptionsTable.onUpgrade(database, oldVersion, newVersion);
 	}
 }
