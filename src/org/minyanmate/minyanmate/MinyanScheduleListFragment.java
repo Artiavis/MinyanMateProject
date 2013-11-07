@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.minyanmate.minyanmate.adapters.PrayerExpandableListAdapter;
+import org.minyanmate.minyanmate.adapters.ScheduleExpandableListAdapter;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
 import org.minyanmate.minyanmate.models.MinyanSchedule;
@@ -28,7 +28,7 @@ public class MinyanScheduleListFragment extends Fragment implements
 	public MinyanScheduleListFragment() {
 	}
 	
-	PrayerExpandableListAdapter listAdapter;
+	ScheduleExpandableListAdapter listAdapter;
 	ExpandableListView expListView;
 	
 	List<String> listDataHeader;
@@ -49,7 +49,7 @@ public class MinyanScheduleListFragment extends Fragment implements
 		
 		listDataHeader = new ArrayList<String>();
 		listDataChild = new HashMap<String, List<MinyanSchedule>>();
-		listAdapter = new PrayerExpandableListAdapter(context, listDataHeader, listDataChild);
+		listAdapter = new ScheduleExpandableListAdapter(context, listDataHeader, listDataChild);
 		
 		expListView.setAdapter(listAdapter);
 		

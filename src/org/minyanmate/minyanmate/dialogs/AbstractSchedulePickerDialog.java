@@ -46,8 +46,8 @@ implements TimePickerDialog.OnTimeSetListener {
 		
 			Cursor adjacentSchedules = context.getContentResolver().query(
 					MinyanMateContentProvider.CONTENT_URI_TIMES, 
-					null, "ABS(" + id + "- " + MinyanSchedulesTable.COLUMN_ID + "=1" , null, 
-					MinyanSchedulesTable.COLUMN_ID + "ASC");
+					null, "ABS(" + id + "- " + MinyanSchedulesTable.COLUMN_ID + ")=1" , null, 
+					MinyanSchedulesTable.COLUMN_ID + " ASC");
 			
 			long thisWindowLength = thisScheduleWindow; // assume constant
 			long thisScheduleStartTime = 3600*thisScheduleHour + 60*thisScheduleMinute;

@@ -31,13 +31,13 @@ import android.widget.TextView;
  * @author Jeff
  *
  */
-public class PrayerExpandableListAdapter extends BaseExpandableListAdapter {
+public class ScheduleExpandableListAdapter extends BaseExpandableListAdapter {
 
 	private Context context;
 	private List<String> _listDataHeader;
 	private HashMap<String, List<MinyanSchedule>> _listDataChild;
 	
-	public PrayerExpandableListAdapter(Context context, List<String> listDataHeader,
+	public ScheduleExpandableListAdapter(Context context, List<String> listDataHeader,
 			HashMap<String, List<MinyanSchedule>> listChildData) {
 		
 		this.context = context;

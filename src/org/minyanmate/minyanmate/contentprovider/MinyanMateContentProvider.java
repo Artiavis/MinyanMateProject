@@ -183,11 +183,12 @@ public class MinyanMateContentProvider extends ContentProvider {
 						phoneContacts2, new String[] { Contacts.LOOKUP_KEY });
 				
 				for (CursorJoiner.Result joinerResult : goersJoiner) {
+					// TODO fix the issue where the eventId isn't being saved
 					switch (joinerResult) {
 					case LEFT: // Left join is result of a random attendee and should be recorded as such
 						
 						goers.addRow(new Object[] {
-							((cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_IS_RANDOM)) == 1) ? true : false),
+							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_IS_INVITED)),
 							null,
 							null,
 							cursor.getString(cursor.getColumnIndex(MinyanGoersTable.COLUMN_RANDOM_NAME)),
@@ -201,7 +202,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 					case BOTH: // Only do things on inner joins
 						
 						goers.addRow(new Object[] {
-							((cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_IS_RANDOM)) == 1) ? true : false),
+							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_IS_INVITED)),
 							phoneContacts2.getLong(phoneContacts2.getColumnIndex(Contacts._ID)),
 							phoneContacts2.getString(phoneContacts2.getColumnIndex(Contacts.PHOTO_THUMBNAIL_URI)),
 							phoneContacts2.getString(phoneContacts2.getColumnIndex(Contacts.DISPLAY_NAME)),
@@ -400,11 +401,11 @@ public class MinyanMateContentProvider extends ContentProvider {
 		
 		/**
 		 * Similar to {@link ContactMatrix#queryProj}, however because
-		 * this result set is polymorphic on {@link #IS_RANDOM}, need a separate
+		 * this result set is polymorphic on {@link #IS_INVITED}, need a separate
 		 * string array with that additional property.
 		 */
 		public static final String[] matrixAttrs = new String[] {
-			MinyanGoersTable.COLUMN_IS_RANDOM,
+			MinyanGoersTable.COLUMN_IS_INVITED,
 			Contacts._ID,
 			Contacts.PHOTO_THUMBNAIL_URI,
 			Contacts.DISPLAY_NAME,
@@ -412,7 +413,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 			Contacts.LOOKUP_KEY
 		};
 		
-		public static final int IS_RANDOM = 0;
+		public static final int IS_INVITED = 0;
 		public static final int ID = 1;
 		public static final int THUMBNAIL_PHOTO_URI = 2;
 		public static final int NAME = 3;

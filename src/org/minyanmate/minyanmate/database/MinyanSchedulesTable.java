@@ -108,7 +108,8 @@ public class MinyanSchedulesTable {
 				time.put(COLUMN_PRAYER_MIN, 0);
 				time.put(COLUMN_SCHEDULE_WINDOW, 3600);
 				time.put(COLUMN_IS_ACTIVE, 0);
-				time.put(COLUMN_SCHEDULE_MESSAGE, "test!");
+				time.put(COLUMN_SCHEDULE_MESSAGE, "Can you come to " + prayers.get(j) + "? Please " +
+						"respond either \"!yes!\" or \"!no!\". Thank you.");
 				database.insert(TABLE_MINYAN_SCHEDULES, null, time);
 			}
 		}
