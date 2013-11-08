@@ -50,10 +50,10 @@ public class RemovableContactListAdapter extends CursorAdapter {
 		
 		long contactId = cur.getLong(ContactMatrix.ID);
 		final String lookUpKey = cur.getString(ContactMatrix.KEY);
-		Uri thumbnailPhotoUri = Contacts.getLookupUri(contactId, lookUpKey);
+		Uri contactUri = Contacts.getLookupUri(contactId, lookUpKey);
 		
 		nameText.setText(cur.getString(ContactMatrix.NAME));						
-		badge.assignContactUri(thumbnailPhotoUri);
+		badge.assignContactUri(contactUri);
 		
 		if (null == (cur.getString(ContactMatrix.THUMBNAIL_PHOTO_URI)))
 			badge.setImageResource(R.drawable.add_contact);
