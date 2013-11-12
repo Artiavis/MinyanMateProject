@@ -89,8 +89,18 @@ public class MinyanSchedulesTable {
 			+ COLUMN_IS_ACTIVE + " int not null, " 
 			+ COLUMN_SCHEDULE_MESSAGE + " text not null" + ");";
 	
+	private static final String DATABASE_INDEX = "create index "
+			+ TABLE_MINYAN_SCHEDULES + "_index ON " + TABLE_MINYAN_SCHEDULES
+			+ "(" 
+			+ COLUMN_ID + ", "
+			+ COLUMN_DAY_NUM + ", "
+			+ COLUMN_PRAYER_NUM + ", " 
+			+ COLUMN_IS_ACTIVE
+			+ ");";
+	
 	public static void onCreate(SQLiteDatabase database) {
 		database.execSQL(DATABASE_CREATE);
+		database.execSQL(DATABASE_INDEX);
 		
 		ContentValues time;
 		

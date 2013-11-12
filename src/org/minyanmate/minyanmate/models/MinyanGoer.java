@@ -12,13 +12,16 @@ public abstract class MinyanGoer {
 	int goerId;
 	String name;
 	int eventId;
+	InviteStatus status;
 	boolean isInvited;
 	
-	MinyanGoer(int id, String name, int eventId, boolean isInvited) {
+	
+	MinyanGoer(int id, String name, int eventId, boolean isInvited, InviteStatus status) {
 		this.goerId = id;
 		this.name = name;
 		this.eventId = eventId;
 		this.isInvited = isInvited;
+		this.status = status;
 	}
 	
 	public int getMinyanGoerId() {
@@ -35,6 +38,10 @@ public abstract class MinyanGoer {
 	
 	public boolean isInvited() {
 		return isInvited;
+	}
+	
+	public InviteStatus getInviteStatus() {
+		return status;
 	}
 	
 	/* Technically the following two methods follow the ActiveRecord pattern, but it
@@ -71,15 +78,17 @@ public abstract class MinyanGoer {
 		boolean isInvited = cursor.getInt(GoerMatrix.IS_INVITED) == 1 ? true : false;
 		int eventId = cursor.getInt(GoerMatrix.EVENT_ID);
 		int contactId = cursor.getInt(GoerMatrix.CONTACT_ID);
+		InviteStatus status = InviteStatus.fromInteger(cursor.getInt(GoerMatrix.INVITE_STATUS));
 		String photoUri = cursor.getString(GoerMatrix.THUMBNAIL_PHOTO_URI);
 		String name = cursor.getString(GoerMatrix.NAME);
 		String phoneNum = cursor.getString(GoerMatrix.NUM);
 		String lookUpKey = cursor.getString(GoerMatrix.KEY);
 		
 		if (isInvited) 
-			return new InvitedMinyanGoer(goerId, contactId, name, eventId, isInvited, photoUri, phoneNum, lookUpKey);
+			return new InvitedMinyanGoer(goerId, contactId, name, eventId, status, 
+					isInvited, photoUri, phoneNum, lookUpKey);
 		else
-			return new UninvitedMinyanGoer(goerId, name, eventId, isInvited);
+			return new UninvitedMinyanGoer(goerId, name, eventId, status, isInvited);
 	}
 	
 	public static List<MinyanGoer> cursorToMinyanGoerList(MatrixCursor cursor) {

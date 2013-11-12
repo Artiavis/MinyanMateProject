@@ -13,17 +13,13 @@ public class InvitedMinyanGoer extends MinyanGoer {
 	private String phoneNumber;
 	private String lookUpKey;
 	
-	InvitedMinyanGoer(int goerId, int contactId, String name, int eventId, boolean isInvited, 
+	InvitedMinyanGoer(int goerId, int contactId, String name, int eventId, InviteStatus status, boolean isInvited, 
 			String photoUri, String phoneNum, String key) {
-		super(goerId, name, eventId, isInvited);
+		super(goerId, name, eventId, isInvited, status);
 		this.photoUri = photoUri;
 		this.phoneNumber = phoneNum;
 		this.lookUpKey = key;
 		this.contactId = contactId;
-	}
-	
-	InvitedMinyanGoer(int goerid, String name, int eventId, boolean isInvited) {
-		super(goerid, name, eventId, isInvited);
 	}
 	
 	public int getContactId() {

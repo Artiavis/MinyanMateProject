@@ -142,6 +142,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 						break;
 					}
 				}
+				
 				minyanContactsMatrix.setNotificationUri(getContext().getContentResolver(), uri);
 				
 				return minyanContactsMatrix;
@@ -159,7 +160,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 				
 			case GOER_ID:
 				queryBuilder.appendWhere("(" + MinyanGoersTable.COLUMN_LOOKUP_KEY + "=" + uri.getLastPathSegment()
-						+ " OR " + MinyanGoersTable.COLUMN_RANDOM_NAME + "=" + uri.getLastPathSegment() + ")");
+						+ " OR " + MinyanGoersTable.COLUMN_GENERAL_NAME + "=" + uri.getLastPathSegment() + ")");
 				// fall through
 			case GOERS:
 				
@@ -191,9 +192,10 @@ public class MinyanMateContentProvider extends ContentProvider {
 							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_ID)),
 							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_IS_INVITED)),
 							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_MINYAN_EVENT_ID)),
+							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_INVITE_STATUS)),
 							null,
 							null,
-							cursor.getString(cursor.getColumnIndex(MinyanGoersTable.COLUMN_RANDOM_NAME)),
+							cursor.getString(cursor.getColumnIndex(MinyanGoersTable.COLUMN_GENERAL_NAME)),
 							null,
 							null
 						});
@@ -207,6 +209,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_ID)),
 							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_IS_INVITED)),
 							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_MINYAN_EVENT_ID)),
+							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_INVITE_STATUS)),
 							phoneContacts2.getLong(phoneContacts2.getColumnIndex(Contacts._ID)),
 							phoneContacts2.getString(phoneContacts2.getColumnIndex(Contacts.PHOTO_THUMBNAIL_URI)),
 							phoneContacts2.getString(phoneContacts2.getColumnIndex(Contacts.DISPLAY_NAME)),
@@ -250,7 +253,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 				
 			case EVENT_ID:
 				rowsDeleted = db.delete(MinyanEventsTable.TABLE_MINYAN_EVENTS,
-						selection, selectionArgs);
+						MinyanEventsTable.COLUMN_ID + "=?", new String[] { uri.getLastPathSegment()});
 				break;
 				
 			case GOERS:
@@ -259,7 +262,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 				break;
 			case GOER_ID:
 				rowsDeleted = db.delete(MinyanGoersTable.TABLE_MINYAN_INVITEES,
-						selection, selectionArgs);
+						MinyanGoersTable.COLUMN_ID + "=?", new String[] { uri.getLastPathSegment()});
 				break;
 				
 			default:
@@ -358,7 +361,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 				
 			case GOER_ID: // TODO define a better mapping MatrixCursor so that the id of attendees is freely available
 				rowsUpdated = db.update(MinyanGoersTable.TABLE_MINYAN_INVITEES, values, 
-						selection, selectionArgs);
+						MinyanGoersTable.COLUMN_ID + "=?", new String[] { uri.getLastPathSegment()});
 				break;
 				
 			default:
@@ -409,8 +412,10 @@ public class MinyanMateContentProvider extends ContentProvider {
 		 * string array with that additional property.
 		 */
 		public static final String[] matrixAttrs = new String[] {
+			MinyanGoersTable.COLUMN_ID,
 			MinyanGoersTable.COLUMN_IS_INVITED,
 			MinyanGoersTable.COLUMN_MINYAN_EVENT_ID,
+			MinyanGoersTable.COLUMN_INVITE_STATUS,
 			Contacts._ID,
 			Contacts.PHOTO_THUMBNAIL_URI,
 			Contacts.DISPLAY_NAME,
@@ -421,10 +426,11 @@ public class MinyanMateContentProvider extends ContentProvider {
 		public static final int GOER_ID = 0;
 		public static final int IS_INVITED = 1;
 		public static final int EVENT_ID = 2;
-		public static final int CONTACT_ID = 3;
-		public static final int THUMBNAIL_PHOTO_URI = 4;
-		public static final int NAME = 5;
-		public static final int NUM = 6;
-		public static final int KEY = 7;
+		public static final int INVITE_STATUS = 3;
+		public static final int CONTACT_ID = 4;
+		public static final int THUMBNAIL_PHOTO_URI =5;
+		public static final int NAME = 6;
+		public static final int NUM = 7;
+		public static final int KEY = 8;
 	}
 }

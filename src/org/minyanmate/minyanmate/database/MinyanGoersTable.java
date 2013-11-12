@@ -29,7 +29,7 @@ public class MinyanGoersTable {
 	 * Functions as the Type for this table's Single-Table Inheritance. 
 	 * <p>
 	 * If false,
-	 * refer to the party's {@link #COLUMN_RANDOM_NAME} column
+	 * refer to the party's {@link #COLUMN_GENERAL_NAME} column
 	 * for their name. Otherwise, refer to their {@link #COLUMN_LOOKUP_KEY}
 	 * to dereference their associated information. 
 	 */
@@ -44,10 +44,11 @@ public class MinyanGoersTable {
 	
 	/**
 	 * Returns a string with the party's name as entered by the user if the party
-	 * was manually entered as attending the event, and null otherwise. See
+	 * was manually entered as attending the event, or a copy of the contact's name
+	 * as entered in the phone at the time this record was created. See
 	 * {@link #COLUMN_IS_INVITED}.
 	 */
-	public static final String COLUMN_RANDOM_NAME = "random_name";
+	public static final String COLUMN_GENERAL_NAME = "general_name";
 	
 	/**
 	 * Returns an integer to indentify the status of the invited party. Is guaranteed
@@ -57,6 +58,8 @@ public class MinyanGoersTable {
 	 * 2: Party was invited and responded affirmatively. <p>
 	 * 3: Party was invited and responded negatively.
 	 */
+	public static final String COLUMN_INVITE_STATUS = "invite_status";
+	
 	
 	private static final String DATABASE_CREATE = "create table " 
 			+ TABLE_MINYAN_INVITEES 
@@ -65,15 +68,23 @@ public class MinyanGoersTable {
 			+ COLUMN_MINYAN_EVENT_ID + " integer not null, " 
 			+ COLUMN_IS_INVITED + " integer not null, " 
 			+ COLUMN_LOOKUP_KEY + " text, " 
-			+ COLUMN_RANDOM_NAME + " text, "
+			+ COLUMN_GENERAL_NAME + " text, "
 			+ "foreign key(" + COLUMN_MINYAN_EVENT_ID + ") references " 
 				+ MinyanEventsTable.TABLE_MINYAN_EVENTS + "(" + MinyanEventsTable.COLUMN_ID 
 				+ ") "
 			+ ");";
-	public static final String COLUMN_INVITE_STATUS = "invite_status";
+	
+	private static final String DATABASE_INDEX = "create index "
+			+ TABLE_MINYAN_INVITEES + "_index ON " + TABLE_MINYAN_INVITEES
+			+ "(" 
+			+ COLUMN_ID
+			+ ");";
+	
+
 	
 	public static void onCreate(SQLiteDatabase database) {
 		database.execSQL(DATABASE_CREATE);
+		database.execSQL(DATABASE_INDEX);
 	}
 	
 	public static void onUpgrade(SQLiteDatabase database, int oldVersion,

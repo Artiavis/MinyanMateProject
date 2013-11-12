@@ -47,10 +47,18 @@ public class MinyanEventsTable {
 			+ COLUMN_MINYAN_END_TIME + " int not null, " 
 			+ COLUMN_IS_MINYAN_COMPLETE
 			+ ");";
+	
+	private static final String DATABASE_INDEX = "create index "
+			+ TABLE_MINYAN_EVENTS + "_index ON " + TABLE_MINYAN_EVENTS
+			+ "(" 
+			+ COLUMN_ID + ", "
+			+ COLUMN_IS_MINYAN_COMPLETE
+			+ ");";
 			
 	
 	public static void onCreate(SQLiteDatabase database) {
 		database.execSQL(DATABASE_CREATE);
+		database.execSQL(DATABASE_INDEX);
 	}
 	
 	public static void onUpgrade(SQLiteDatabase database, int oldVersion,

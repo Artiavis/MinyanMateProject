@@ -27,8 +27,16 @@ public class MinyanSubscriptionsTable {
 			+ COLUMN_IS_SUBSCRIBED + " int not null"
 			+ ");";
 	
+	private static final String DATABASE_INDEX = "create index "
+			+ TABLE_SUBSCRIPTIONS + "_index ON " + TABLE_SUBSCRIPTIONS
+			+ "(" 
+			+ COLUMN_ID + ", "
+			+ COLUMN_CONTACT_LOOKUP_KEY
+			+ ");";
+	
 	public static void onCreate(SQLiteDatabase database) {
 		database.execSQL(DATABASE_CREATE);
+		database.execSQL(DATABASE_INDEX);
 	}
 	
 	public static void onUpgrade(SQLiteDatabase database, int oldVersion,

@@ -6,6 +6,7 @@ import java.util.List;
 import org.minyanmate.minyanmate.R;
 import org.minyanmate.minyanmate.models.InvitedMinyanGoer;
 import org.minyanmate.minyanmate.models.MinyanGoer;
+import org.minyanmate.minyanmate.models.UninvitedMinyanGoer;
 
 import android.content.Context;
 import android.net.Uri;
@@ -67,6 +68,8 @@ public class ParticipantsExpandableListAdapter extends BaseExpandableListAdapter
 					((InvitedMinyanGoer) goer).getLookupKey());
 			badge.assignContactUri(contactUri);
 			badge.setImageURI(Uri.parse(((InvitedMinyanGoer) goer).getPhotoThumbnailUri()));
+		} else if (goer instanceof UninvitedMinyanGoer) {
+			// do nothing
 		}
 		
 		name.setText(goer.getName());

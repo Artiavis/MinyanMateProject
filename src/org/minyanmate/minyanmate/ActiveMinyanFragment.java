@@ -6,10 +6,13 @@ import java.util.List;
 
 import org.minyanmate.minyanmate.adapters.ParticipantsExpandableListAdapter;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
+import org.minyanmate.minyanmate.database.MinyanEventsTable;
 import org.minyanmate.minyanmate.database.MinyanGoersTable;
+import org.minyanmate.minyanmate.models.InviteStatus;
 import org.minyanmate.minyanmate.models.MinyanGoer;
 
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -19,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+import android.widget.TextView;
 
 public class ActiveMinyanFragment extends Fragment implements
 	LoaderManager.LoaderCallbacks<Cursor>{
@@ -41,7 +45,7 @@ public class ActiveMinyanFragment extends Fragment implements
 		getLoaderManager().initLoader(EVENT, null, this);
 		getLoaderManager().initLoader(PARTICIPANTS, null, this);
 		
-		expListView = (ExpandableListView) rootView.findViewById(R.id.minyanParticipantsList);
+		expListView = (ExpandableListView) rootView.findViewById(R.id.activeMinyanParticipantsList);
 		HashMap<String, List<MinyanGoer>> map = new HashMap<String, List<MinyanGoer>>();
 		List<String> list = new ArrayList<String>();
 		listAdapter = new ParticipantsExpandableListAdapter(getActivity(), list, map);
@@ -86,6 +90,42 @@ public class ActiveMinyanFragment extends Fragment implements
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 		// TODO Auto-generated method stub
+		
+		switch (loader.getId()) {
+		case EVENT:		
+			cursor.moveToFirst();
+			long startTime = cursor.getLong(cursor.getColumnIndex(MinyanEventsTable.COLUMN_MINYAN_START_TIME));
+			int hour = (int) (startTime % (24*60*60));
+			int minute = (int) (startTime % (60*60));
+			
+			String formattedTime = MinyanScheduleSettingsActivity.formatTimeTextView(getActivity(), hour, minute);
+			
+			TextView timeTextView = (TextView) getActivity().findViewById(R.id.activeMinyanTime);
+			timeTextView.setText(formattedTime);
+			
+			break;
+			
+		case PARTICIPANTS:
+			
+			List<String> categories = new ArrayList<String>();
+			categories.add(InviteStatus.ATTENDING.toString());
+			categories.add(InviteStatus.AWAITING_RESPONSE.toString());			
+			categories.add(InviteStatus.NOT_ATTENDING.toString());
+
+			
+			HashMap<String, List<MinyanGoer>> goers = new HashMap<String, List<MinyanGoer>>();
+			for (String cat : categories) goers.put(cat, new ArrayList<MinyanGoer>());
+			
+			while (cursor.moveToNext()) {
+				MinyanGoer goer = MinyanGoer.cursorToMinyanGoer((MatrixCursor) cursor);
+				goers.get(goer.getInviteStatus().toString()).add(goer);
+			}
+			
+			listAdapter.setListDataHeader(categories);
+			listAdapter.setDataChildren(goers);
+			
+			break;
+		}
 		
 	}
 

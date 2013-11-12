@@ -8,12 +8,14 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Hello world" />
+        android:id="@+id/activeMinyanTime"
+        android:text="This will be populated with the latest 
+        	minyan time." />
     
     <ExpandableListView 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/minyanParticipantsList">
+        android:id="@+id/activeMinyanParticipantsList">
               
     </ExpandableListView>
     
