@@ -265,7 +265,7 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 			break;
 			
 		case CONTACT_LOADER:
-			
+			// TODO why does this freak out when turning the phone?
 			CursorAdapter adapter = new RemovableContactListAdapter(this, cursor, scheduleId, false);
 			contactList.setAdapter(adapter);
 			

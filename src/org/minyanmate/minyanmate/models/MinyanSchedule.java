@@ -3,7 +3,6 @@ package org.minyanmate.minyanmate.models;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.minyanmate.minyanmate.database.MinyanDaysTable;
 import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
 
 import android.database.Cursor;
@@ -11,7 +10,7 @@ import android.database.Cursor;
 /**
  * A model class containing the attributes of objects from the 
  * {@link MinyanSchedulesTable#TABLE_MINYAN_SCHEDULES} table. Contains 
- * {@link MinyanSchedule#schedFromCursor(Cursor)} and {@link MinyanSchedule#cursorToPrayerList(Cursor)}
+ * {@link MinyanSchedule#schedFromCursor(Cursor)} and {@link MinyanSchedule#cursorToScheduleList(Cursor)}
  * static helper methods to pull Prayer objects from the cursors.
  */
 public class MinyanSchedule {
@@ -128,7 +127,7 @@ public class MinyanSchedule {
 	 * @param cursor a new cursor over the {@link MinyanSchedulesTable#TABLE_MINYAN_SCHEDULES} table.
 	 * @return prayerList, a list of new {@link MinyanSchedule} objects
 	 */
-	public static List<MinyanSchedule> cursorToPrayerList(Cursor cursor) {
+	public static List<MinyanSchedule> cursorToScheduleList(Cursor cursor) {
 		
 		List<MinyanSchedule> prayerList = new ArrayList<MinyanSchedule>();
 		while(cursor.moveToNext()) {

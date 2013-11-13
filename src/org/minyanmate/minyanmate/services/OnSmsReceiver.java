@@ -15,7 +15,7 @@ import android.content.Intent;
  * {@link MinyanGoersTable#COLUMN_INVITE_STATUS} is 1), log their
  * attendance. 
  */
-public class LogMinyanGoerOnSmsReceiver extends BroadcastReceiver{
+public class OnSmsReceiver extends BroadcastReceiver{
 
 	@Override
 	public void onReceive(Context context, Intent intent) {

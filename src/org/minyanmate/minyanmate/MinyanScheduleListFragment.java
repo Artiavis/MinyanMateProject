@@ -69,7 +69,7 @@ public class MinyanScheduleListFragment extends Fragment implements
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		
-		List<MinyanSchedule> prayerTimes = MinyanSchedule.cursorToPrayerList(data);
+		List<MinyanSchedule> prayerTimes = MinyanSchedule.cursorToScheduleList(data);
 		listDataChild = new HashMap<String, List<MinyanSchedule>>();
 		listDataHeader = new ArrayList<String>();
 		for(MinyanSchedule prayer : prayerTimes) {

@@ -25,7 +25,6 @@ public class MinyanMateDatabaseHelper extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase database) {
 		
 		MinyanSchedulesTable.onCreate(database);
-		MinyanDaysTable.onCreate(database);
 		MinyanContactsTable.onCreate(database);
 		MinyanEventsTable.onCreate(database);
 		MinyanGoersTable.onCreate(database);
@@ -35,7 +34,6 @@ public class MinyanMateDatabaseHelper extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase database, int oldVersion,
 			int newVersion) {
-		MinyanDaysTable.onUpgrade(database, oldVersion, newVersion);
 		MinyanSchedulesTable.onUpgrade(database, oldVersion, newVersion);
 		MinyanContactsTable.onUpgrade(database, oldVersion, newVersion);
 		MinyanEventsTable.onUpgrade(database, oldVersion, newVersion);
