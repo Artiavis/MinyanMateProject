@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider.GoerMatrix;
 
+import android.database.Cursor;
 import android.database.MatrixCursor;
 
 public abstract class MinyanGoer {
@@ -72,7 +73,7 @@ public abstract class MinyanGoer {
 	 * @param cursor contains columns necessary to instantiate either class
 	 * @return 
 	 */
-	public static MinyanGoer cursorToMinyanGoer(MatrixCursor cursor) {
+	public static MinyanGoer cursorToMinyanGoer(Cursor cursor) {
 		
 		int goerId = cursor.getInt(GoerMatrix.GOER_ID);
 		boolean isInvited = cursor.getInt(GoerMatrix.IS_INVITED) == 1 ? true : false;

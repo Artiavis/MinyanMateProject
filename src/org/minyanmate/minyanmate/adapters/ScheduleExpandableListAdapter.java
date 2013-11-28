@@ -8,10 +8,12 @@ import org.minyanmate.minyanmate.R;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
 import org.minyanmate.minyanmate.models.MinyanSchedule;
+import org.minyanmate.minyanmate.services.MinyanRegistrar;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,8 +21,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 
 // http://www.androidhive.info/2013/07/android-expandable-list-view-tutorial/
@@ -99,10 +99,13 @@ public class ScheduleExpandableListAdapter extends BaseExpandableListAdapter {
 			
 			@Override
 			public void onClick(View v) {
+				
+				// Try and cancel/initiate alarm
+				
 				ContentValues values = new ContentValues();
 				values.put(MinyanSchedulesTable.COLUMN_IS_ACTIVE, ((CheckBox) v).isChecked() ? 1 : 0);
 				
-				context.getContentResolver().update(
+				int updateCount = context.getContentResolver().update(
 						Uri.parse(MinyanMateContentProvider.CONTENT_URI_TIMES + "/" + childPrayer.getId()),
 						values,
 //						MinyanTimesTable.COLUMN_ID + "=?", new String[] { String.valueOf(childPrayer.getId()) }

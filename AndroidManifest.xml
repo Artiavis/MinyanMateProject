@@ -52,18 +52,18 @@
 	        android:exported="false" >
 	    </provider>
 	    
-	    <receiver android:name="org.minyanmate.minyanmate.OnBootReceiver" >
+	    <receiver android:name="org.minyanmate.minyanmate.services.OnBootReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
         
-	    <receiver android:name="OnMinyanAlarmReceiver">
+	    <receiver android:name="org.minyanmate.minyanmate.services.OnMinyanAlarmReceiver">
 	    </receiver>
 	    
-	    <service android:name="SendInvitesService" />
+	    <service android:name="org.minyanmate.minyanmate.services.SendInvitesService" />
         
-	    <receiver android:name="org.minyanmate.minyanmate.OnSmsReceiver" >
+	    <receiver android:name="org.minyanmate.minyanmate.services.OnSmsReceiver" >
             <intent-filter>
                 <action android:name="android.provider.telephony.SMS_RECIEVED" />
             </intent-filter>

@@ -69,6 +69,7 @@ public class MinyanGoersTable {
 			+ COLUMN_IS_INVITED + " integer not null, " 
 			+ COLUMN_LOOKUP_KEY + " text, " 
 			+ COLUMN_GENERAL_NAME + " text, "
+			+ COLUMN_INVITE_STATUS + " integer not null, "
 			+ "foreign key(" + COLUMN_MINYAN_EVENT_ID + ") references " 
 				+ MinyanEventsTable.TABLE_MINYAN_EVENTS + "(" + MinyanEventsTable.COLUMN_ID 
 				+ ") "
@@ -77,7 +78,7 @@ public class MinyanGoersTable {
 	private static final String DATABASE_INDEX = "create index "
 			+ TABLE_MINYAN_INVITEES + "_index ON " + TABLE_MINYAN_INVITEES
 			+ "(" 
-			+ COLUMN_ID
+			+ COLUMN_ID + "," + COLUMN_INVITE_STATUS
 			+ ");";
 	
 

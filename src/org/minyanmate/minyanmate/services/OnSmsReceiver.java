@@ -6,6 +6,7 @@ import org.minyanmate.minyanmate.database.MinyanGoersTable;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 /**
  * Checks whether a Minyan is active against the time stamps in 
@@ -20,6 +21,8 @@ public class OnSmsReceiver extends BroadcastReceiver{
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		// TODO Auto-generated method stub
+		
+		Log.d("SMS Received", "In OnSmsReceiver");
 	}
 
 }

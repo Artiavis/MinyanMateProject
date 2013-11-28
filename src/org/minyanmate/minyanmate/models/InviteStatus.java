@@ -33,4 +33,14 @@ import org.minyanmate.minyanmate.database.MinyanGoersTable;
 			
 			return null;
 		}
+		
+		public static int toInteger(InviteStatus stat) {
+			if (stat == AWAITING_RESPONSE)
+				return 1;
+			if (stat == ATTENDING) 
+				return 2;
+			if (stat == NOT_ATTENDING) 
+				return 3;
+			return 0;
+		}
 	}

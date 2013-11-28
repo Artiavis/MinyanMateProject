@@ -9,8 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/activeMinyanTime"
-        android:text="This will be populated with the latest 
-        	minyan time." />
+        android:text="This will be populated with the latest minyan time." />
     
     <ExpandableListView 
         android:layout_width="match_parent"

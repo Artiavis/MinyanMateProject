@@ -89,20 +89,21 @@ public class ActiveMinyanFragment extends Fragment implements
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-		// TODO Auto-generated method stub
 		
 		switch (loader.getId()) {
 		case EVENT:		
-			cursor.moveToFirst();
-			long startTime = cursor.getLong(cursor.getColumnIndex(MinyanEventsTable.COLUMN_MINYAN_START_TIME));
-			int hour = (int) (startTime % (24*60*60));
-			int minute = (int) (startTime % (60*60));
-			
-			String formattedTime = MinyanScheduleSettingsActivity.formatTimeTextView(getActivity(), hour, minute);
-			
-			TextView timeTextView = (TextView) getActivity().findViewById(R.id.activeMinyanTime);
-			timeTextView.setText(formattedTime);
-			
+			// TODO fix? on first app load, this table is empty so the cursor result will be empty
+			if (cursor.moveToFirst()) {
+				long startTime = cursor.getLong(cursor.getColumnIndex(MinyanEventsTable.COLUMN_MINYAN_START_TIME));
+				int hour = (int) (startTime % (24*60*60));
+				int minute = (int) (startTime % (60*60));
+				
+				String formattedTime = MinyanScheduleSettingsActivity.formatTimeTextView(getActivity(), hour, minute);
+				
+				TextView timeTextView = (TextView) getActivity().findViewById(R.id.activeMinyanTime);
+				timeTextView.setText(formattedTime);
+			}
+
 			break;
 			
 		case PARTICIPANTS:
@@ -117,7 +118,8 @@ public class ActiveMinyanFragment extends Fragment implements
 			for (String cat : categories) goers.put(cat, new ArrayList<MinyanGoer>());
 			
 			while (cursor.moveToNext()) {
-				MinyanGoer goer = MinyanGoer.cursorToMinyanGoer((MatrixCursor) cursor);
+				// TODO make these views bind
+				MinyanGoer goer = MinyanGoer.cursorToMinyanGoer(cursor);
 				goers.get(goer.getInviteStatus().toString()).add(goer);
 			}
 			

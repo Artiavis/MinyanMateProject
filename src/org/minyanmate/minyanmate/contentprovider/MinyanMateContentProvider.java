@@ -6,10 +6,12 @@ import org.minyanmate.minyanmate.database.MinyanGoersTable;
 import org.minyanmate.minyanmate.database.MinyanMateDatabaseHelper;
 import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
 import org.minyanmate.minyanmate.database.MinyanSubscriptionsTable;
+import org.minyanmate.minyanmate.services.MinyanRegistrar;
 
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.CursorJoiner;
@@ -22,6 +24,7 @@ import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Contacts;
 import android.provider.ContactsContract.PhoneLookup;
 import android.provider.ContactsContract.Contacts.Data;
+import android.util.Log;
 
 public class MinyanMateContentProvider extends ContentProvider {
 
@@ -339,11 +342,19 @@ public class MinyanMateContentProvider extends ContentProvider {
 			case SCHEDULES:
 				rowsUpdated = db.update(MinyanSchedulesTable.TABLE_MINYAN_SCHEDULES,
 						values, selection, selectionArgs);
+				
+				// Update the MinyanRegistrar
+				Log.d("DB Update Schedule", "Update many schedules");
+				updateMinyanRegistrar();
 				break;
 			case SCHEDULE_ID:
 				// TODO implement this
 				rowsUpdated = db.update(MinyanSchedulesTable.TABLE_MINYAN_SCHEDULES, values,
 						MinyanSchedulesTable.COLUMN_ID + "=?", new String[] { uri.getLastPathSegment() });
+				
+				// Update the MinyanRegistrar
+				Log.d("DB Update Schedule", "Update a single schedule");
+				updateMinyanRegistrar();
 				break;
 		
 			case EVENTS:
@@ -370,6 +381,22 @@ public class MinyanMateContentProvider extends ContentProvider {
 		
 		getContext().getContentResolver().notifyChange(uri, null);
 		return rowsUpdated;
+	}
+	
+	/**
+	 * Used with {@link MinyanRegistrar#registerMinyanEvents(android.content.Context, Cursor)}
+	 * to brute-force re-register and/or cancel existing minyans on any update of the {@link #SCHEDULES}
+	 * family of data. 
+	 * @param context
+	 * @param cursor
+	 */
+	private void updateMinyanRegistrar() {
+		 Cursor cursor = database.getReadableDatabase().query(
+				 MinyanSchedulesTable.TABLE_MINYAN_SCHEDULES, 
+				 null, null, null, null, null, null);
+		 
+		 MinyanRegistrar.registerMinyanEvents(getContext(), cursor);
+		 cursor.close();
 	}
 	
 	
