@@ -3,6 +3,7 @@ package org.minyanmate.minyanmate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.minyanmate.minyanmate.adapters.ParticipantsExpandableListAdapter;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
@@ -12,12 +13,12 @@ import org.minyanmate.minyanmate.models.InviteStatus;
 import org.minyanmate.minyanmate.models.MinyanGoer;
 
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +47,9 @@ public class ActiveMinyanFragment extends Fragment implements
 		getLoaderManager().initLoader(PARTICIPANTS, null, this);
 		
 		expListView = (ExpandableListView) rootView.findViewById(R.id.activeMinyanParticipantsList);
+		
+		Log.d("Active Minyan", "" + expListView);
+		
 		HashMap<String, List<MinyanGoer>> map = new HashMap<String, List<MinyanGoer>>();
 		List<String> list = new ArrayList<String>();
 		listAdapter = new ParticipantsExpandableListAdapter(getActivity(), list, map);
@@ -64,8 +68,10 @@ public class ActiveMinyanFragment extends Fragment implements
 		
 		case EVENT:
 			query = MinyanGoersTable.COLUMN_ID + "= (SELECT MAX(" 
-							+ MinyanGoersTable.COLUMN_ID + ") FROM " 
+							+ MinyanGoersTable.COLUMN_MINYAN_EVENT_ID + ") FROM " 
 							+ MinyanGoersTable.TABLE_MINYAN_INVITEES + ")";
+			
+			Log.d("Active minyan", query);
 			
 			cursorLoader = new CursorLoader(getActivity(),
 					MinyanMateContentProvider.CONTENT_URI_EVENTS, null, 
@@ -76,6 +82,8 @@ public class ActiveMinyanFragment extends Fragment implements
 			query = MinyanGoersTable.COLUMN_MINYAN_EVENT_ID + "= (SELECT MAX(" 
 					+ MinyanGoersTable.COLUMN_MINYAN_EVENT_ID + ") FROM " 
 					+ MinyanGoersTable.TABLE_MINYAN_INVITEES + ")";
+			
+			Log.d("Active Minyan", query);
 			
 			cursorLoader = new CursorLoader(getActivity(),
 					MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS,
@@ -95,11 +103,17 @@ public class ActiveMinyanFragment extends Fragment implements
 			// TODO fix? on first app load, this table is empty so the cursor result will be empty
 			if (cursor.moveToFirst()) {
 				long startTime = cursor.getLong(cursor.getColumnIndex(MinyanEventsTable.COLUMN_MINYAN_START_TIME));
-				int hour = (int) (startTime % (24*60*60));
-				int minute = (int) (startTime % (60*60));
+				
+				Log.d("Active Minyan", "" + startTime);
+				
+				int hour = (int) TimeUnit.MILLISECONDS.toHours(startTime);
+				int minute = (int) TimeUnit.MILLISECONDS.toMinutes(startTime);
+				
+//				int hour = (int) (startTime % (24*60*60));
+//				int minute = (int) (startTime % (60*60));
 				
 				String formattedTime = MinyanScheduleSettingsActivity.formatTimeTextView(getActivity(), hour, minute);
-				
+				Log.d("Active Minyan", formattedTime);
 				TextView timeTextView = (TextView) getActivity().findViewById(R.id.activeMinyanTime);
 				timeTextView.setText(formattedTime);
 			}
@@ -122,6 +136,9 @@ public class ActiveMinyanFragment extends Fragment implements
 				MinyanGoer goer = MinyanGoer.cursorToMinyanGoer(cursor);
 				goers.get(goer.getInviteStatus().toString()).add(goer);
 			}
+			
+			Log.d("Headers", categories.toString());
+			Log.d("Goers", goers.toString());
 			
 			listAdapter.setListDataHeader(categories);
 			listAdapter.setDataChildren(goers);

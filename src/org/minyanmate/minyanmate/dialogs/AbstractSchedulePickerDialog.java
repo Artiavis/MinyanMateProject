@@ -78,7 +78,7 @@ implements TimePickerDialog.OnTimeSetListener {
 				
 				long prevSchedEndTime = previousSched.getHour() * 3600 + previousSched.getMinute() * 60;
 				
-				if ( prevSchedEndTime + thisWindowLength >thisScheduleStartTime ) { // no need to check day-wrap-around
+				if ( prevSchedEndTime + thisWindowLength < thisScheduleStartTime ) { // no need to check day-wrap-around
 					context.getContentResolver().update(
 							Uri.parse(MinyanMateContentProvider.CONTENT_URI_TIMES + "/" + id),
 							contentValues,
