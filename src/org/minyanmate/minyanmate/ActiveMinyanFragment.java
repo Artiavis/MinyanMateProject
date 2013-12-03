@@ -12,6 +12,9 @@ import org.minyanmate.minyanmate.database.MinyanGoersTable;
 import org.minyanmate.minyanmate.models.InviteStatus;
 import org.minyanmate.minyanmate.models.MinyanGoer;
 
+import android.app.AlertDialog;
+import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -21,7 +24,10 @@ import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
@@ -34,6 +40,8 @@ public class ActiveMinyanFragment extends Fragment implements
 	ParticipantsExpandableListAdapter listAdapter;
 	ExpandableListView expListView;
 	
+	private int mEventId;
+	
 	
 	public ActiveMinyanFragment() {	}
 
@@ -42,6 +50,14 @@ public class ActiveMinyanFragment extends Fragment implements
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(
 				R.layout.fragment_active_minyan, container, false);
+		
+		Button btn = (Button) rootView.findViewById(R.id.addUninvitedPersonButton);
+		btn.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				addUninvited();
+			}
+		});
 
 		getLoaderManager().initLoader(EVENT, null, this);
 		getLoaderManager().initLoader(PARTICIPANTS, null, this);
@@ -57,6 +73,45 @@ public class ActiveMinyanFragment extends Fragment implements
 		expListView.setAdapter(listAdapter);
 		
 		return rootView;
+	}
+	
+	public void addUninvited() {
+		// add an uninvited minyangoer to the table
+		
+		if (listAdapter.getGroupCount() > 0) {
+			
+			final int eventId = mEventId;
+		
+			AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
+			alert.setTitle("Add a Congregant");
+			alert.setMessage("Quickly jot down a name for whoever you want to count");
+	
+			// Set an EditText view to get user input 
+			final EditText input = new EditText(getActivity());
+			alert.setView(input);
+	
+			alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int whichButton) {
+			  String name = input.getText().toString();
+			  
+			  ContentValues values = new ContentValues();
+			  values.put(MinyanGoersTable.COLUMN_GENERAL_NAME, name);
+			  values.put(MinyanGoersTable.COLUMN_IS_INVITED, 0);
+			  values.put(MinyanGoersTable.COLUMN_MINYAN_EVENT_ID, eventId);
+			  values.put(MinyanGoersTable.COLUMN_INVITE_STATUS, InviteStatus.toInteger(InviteStatus.ATTENDING));
+			  
+			  getActivity().getContentResolver().insert(MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS, values);
+			  }
+			});
+	
+			alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+			  public void onClick(DialogInterface dialog, int whichButton) {
+			    // Canceled.
+			  }
+			});
+	
+			alert.show();
+		}
 	}
 
 	@Override
@@ -109,9 +164,6 @@ public class ActiveMinyanFragment extends Fragment implements
 				int hour = (int) TimeUnit.MILLISECONDS.toHours(startTime);
 				int minute = (int) TimeUnit.MILLISECONDS.toMinutes(startTime);
 				
-//				int hour = (int) (startTime % (24*60*60));
-//				int minute = (int) (startTime % (60*60));
-				
 				String formattedTime = MinyanScheduleSettingsActivity.formatTimeTextView(getActivity(), hour, minute);
 				Log.d("Active Minyan", formattedTime);
 				TextView timeTextView = (TextView) getActivity().findViewById(R.id.activeMinyanTime);
@@ -129,19 +181,22 @@ public class ActiveMinyanFragment extends Fragment implements
 
 			
 			HashMap<String, List<MinyanGoer>> goers = new HashMap<String, List<MinyanGoer>>();
-			for (String cat : categories) goers.put(cat, new ArrayList<MinyanGoer>());
+			for (String cat : categories) 
+				goers.put(cat, new ArrayList<MinyanGoer>());
 			
 			while (cursor.moveToNext()) {
-				// TODO make these views bind
 				MinyanGoer goer = MinyanGoer.cursorToMinyanGoer(cursor);
+				mEventId = mEventId > 0 ? mEventId : goer.getEventId();
 				goers.get(goer.getInviteStatus().toString()).add(goer);
 			}
 			
+			
 			Log.d("Headers", categories.toString());
 			Log.d("Goers", goers.toString());
-			
+
 			listAdapter.setListDataHeader(categories);
 			listAdapter.setDataChildren(goers);
+			listAdapter.notifyDataSetChanged();
 			
 			break;
 		}
@@ -149,8 +204,7 @@ public class ActiveMinyanFragment extends Fragment implements
 	}
 
 	@Override
-	public void onLoaderReset(Loader<Cursor> cursor) {
-		// TODO Auto-generated method stub
-		
+	public void onLoaderReset(Loader<Cursor> loader) {
+		loader = null; 
 	}
 }

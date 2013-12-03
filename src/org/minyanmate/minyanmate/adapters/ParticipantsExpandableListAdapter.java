@@ -49,6 +49,8 @@ public class ParticipantsExpandableListAdapter extends BaseExpandableListAdapter
 		return childPosition;
 	}
 
+	
+	// TODO why isn't this getting called?
 	@Override
 	public View getChildView(int groupPosition, int childPosition,
 			boolean isLastChild, View convertView, ViewGroup parent) {

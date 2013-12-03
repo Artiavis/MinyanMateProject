@@ -8,7 +8,7 @@ import android.content.Context;
 
 public class UninvitedMinyanGoer extends MinyanGoer {
 
-	UninvitedMinyanGoer(int goerId, String name, int eventId, InviteStatus status, boolean isInvited) {
+	public UninvitedMinyanGoer(int goerId, String name, int eventId, InviteStatus status, boolean isInvited) {
 		super(goerId, name, eventId, isInvited, status);
 	}
 

@@ -6,10 +6,39 @@
 	android:id="@+id/activeMinyanFragment" >
 
     <TextView
+        android:layout_margin="10dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:id="@+id/activeMinyanTime"
+        android:gravity="center_horizontal"
         android:text="This will be populated with the latest minyan time." />
+    
+    <!-- Control buttons for Adding an Uninvited Participant, Contacting all Participants, and Cancelling the Minyan, etc -->
+    
+    <LinearLayout 
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        
+        <Button 
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="2dp"
+            android:text="Add Person to Count"
+            android:id="@+id/addUninvitedPersonButton" />
+        <!-- 
+         <Button 
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="2dp"
+            android:text="Cancel Minyan"
+            android:onClick="cancelMinyan" />
+        -->
+    </LinearLayout>
     
     <ExpandableListView 
         android:layout_width="match_parent"

@@ -43,4 +43,9 @@ import org.minyanmate.minyanmate.database.MinyanGoersTable;
 				return 3;
 			return 0;
 		}
+		
+		@Override
+		public String toString() {
+			return text;
+		}
 	}

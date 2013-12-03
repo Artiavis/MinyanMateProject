@@ -11,11 +11,12 @@
     
      <TextView 
         android:id="@+id/participantContactName"
-        android:gravity="center_vertical"
         android:layout_width="fill_parent"
-        android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
         android:layout_height="match_parent"
-
+    	android:gravity="center_vertical"
+        android:paddingTop="3dp"
+        android:paddingBottom="3dp"
+        android:paddingLeft="?android:attr/expandableListPreferredChildPaddingLeft"
         />
     
     
