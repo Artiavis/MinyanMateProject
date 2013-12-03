@@ -1,2 +1,20 @@
+# Exclude build tree
 /gen
 /bin
+
+# Exclude Eclipse 
+.classpath
+.project
+.settings/
+
+# Exclude IDEA
+.idea/
+*.iml
+*.iws
+
+# Mac Cache
+.DS_Store
+
+# Maven
+log/
+target/

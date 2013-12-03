@@ -1,6 +1,8 @@
 package org.minyanmate.minyanmate;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -40,7 +42,7 @@ public class ActiveMinyanFragment extends Fragment implements
 	ParticipantsExpandableListAdapter listAdapter;
 	ExpandableListView expListView;
 	
-	private int mEventId;
+	private int mEventId = 0;
 	
 	
 	public ActiveMinyanFragment() {	}
@@ -78,7 +80,7 @@ public class ActiveMinyanFragment extends Fragment implements
 	public void addUninvited() {
 		// add an uninvited minyangoer to the table
 		
-		if (listAdapter.getGroupCount() > 0) {
+		if (mEventId > 0) {
 			
 			final int eventId = mEventId;
 		
@@ -161,8 +163,10 @@ public class ActiveMinyanFragment extends Fragment implements
 				
 				Log.d("Active Minyan", "" + startTime);
 				
-				int hour = (int) TimeUnit.MILLISECONDS.toHours(startTime);
-				int minute = (int) TimeUnit.MILLISECONDS.toMinutes(startTime);
+				Calendar cal = new GregorianCalendar();
+				cal.setTimeInMillis(startTime);
+				int minute = cal.get(Calendar.MINUTE);
+				int hour = cal.get(Calendar.HOUR);
 				
 				String formattedTime = MinyanScheduleSettingsActivity.formatTimeTextView(getActivity(), hour, minute);
 				Log.d("Active Minyan", formattedTime);
