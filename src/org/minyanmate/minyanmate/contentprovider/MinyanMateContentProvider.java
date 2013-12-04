@@ -11,7 +11,6 @@ import org.minyanmate.minyanmate.services.MinyanRegistrar;
 import android.content.ContentProvider;
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.CursorJoiner;
@@ -22,9 +21,7 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Contacts;
-import android.provider.ContactsContract.PhoneLookup;
 import android.provider.ContactsContract.Contacts.Data;
-import android.util.Log;
 
 public class MinyanMateContentProvider extends ContentProvider {
 
@@ -344,7 +341,6 @@ public class MinyanMateContentProvider extends ContentProvider {
 						values, selection, selectionArgs);
 				
 				// Update the MinyanRegistrar
-				Log.d("DB Update Schedule", "Update many schedules");
 				updateMinyanRegistrar();
 				break;
 			case SCHEDULE_ID:
@@ -353,7 +349,6 @@ public class MinyanMateContentProvider extends ContentProvider {
 						MinyanSchedulesTable.COLUMN_ID + "=?", new String[] { uri.getLastPathSegment() });
 				
 				// Update the MinyanRegistrar
-				Log.d("DB Update Schedule", "Update a single schedule");
 				updateMinyanRegistrar();
 				break;
 		

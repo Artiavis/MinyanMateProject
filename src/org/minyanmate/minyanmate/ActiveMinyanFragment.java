@@ -5,7 +5,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.minyanmate.minyanmate.adapters.ParticipantsExpandableListAdapter;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
@@ -23,7 +22,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -65,8 +63,6 @@ public class ActiveMinyanFragment extends Fragment implements
 		getLoaderManager().initLoader(PARTICIPANTS, null, this);
 		
 		expListView = (ExpandableListView) rootView.findViewById(R.id.activeMinyanParticipantsList);
-		
-		Log.d("Active Minyan", "" + expListView);
 		
 		HashMap<String, List<MinyanGoer>> map = new HashMap<String, List<MinyanGoer>>();
 		List<String> list = new ArrayList<String>();
@@ -128,8 +124,6 @@ public class ActiveMinyanFragment extends Fragment implements
 							+ MinyanGoersTable.COLUMN_MINYAN_EVENT_ID + ") FROM " 
 							+ MinyanGoersTable.TABLE_MINYAN_INVITEES + ")";
 			
-			Log.d("Active minyan", query);
-			
 			cursorLoader = new CursorLoader(getActivity(),
 					MinyanMateContentProvider.CONTENT_URI_EVENTS, null, 
 					query, null, null);
@@ -139,8 +133,6 @@ public class ActiveMinyanFragment extends Fragment implements
 			query = MinyanGoersTable.COLUMN_MINYAN_EVENT_ID + "= (SELECT MAX(" 
 					+ MinyanGoersTable.COLUMN_MINYAN_EVENT_ID + ") FROM " 
 					+ MinyanGoersTable.TABLE_MINYAN_INVITEES + ")";
-			
-			Log.d("Active Minyan", query);
 			
 			cursorLoader = new CursorLoader(getActivity(),
 					MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS,
@@ -161,15 +153,12 @@ public class ActiveMinyanFragment extends Fragment implements
 			if (cursor.moveToFirst()) {
 				long startTime = cursor.getLong(cursor.getColumnIndex(MinyanEventsTable.COLUMN_MINYAN_START_TIME));
 				
-				Log.d("Active Minyan", "" + startTime);
-				
 				Calendar cal = new GregorianCalendar();
 				cal.setTimeInMillis(startTime);
 				int minute = cal.get(Calendar.MINUTE);
 				int hour = cal.get(Calendar.HOUR);
 				
 				String formattedTime = MinyanScheduleSettingsActivity.formatTimeTextView(getActivity(), hour, minute);
-				Log.d("Active Minyan", formattedTime);
 				TextView timeTextView = (TextView) getActivity().findViewById(R.id.activeMinyanTime);
 				timeTextView.setText(formattedTime);
 			}
@@ -193,10 +182,7 @@ public class ActiveMinyanFragment extends Fragment implements
 				mEventId = mEventId > 0 ? mEventId : goer.getEventId();
 				goers.get(goer.getInviteStatus().toString()).add(goer);
 			}
-			
-			
-			Log.d("Headers", categories.toString());
-			Log.d("Goers", goers.toString());
+
 
 			listAdapter.setListDataHeader(categories);
 			listAdapter.setDataChildren(goers);

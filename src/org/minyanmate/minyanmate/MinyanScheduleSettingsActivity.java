@@ -9,6 +9,7 @@ import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.database.MinyanContactsTable;
 import org.minyanmate.minyanmate.dialogs.ScheduleTimePickerFragment;
 import org.minyanmate.minyanmate.dialogs.ScheduleWindowPickerFragent;
+import org.minyanmate.minyanmate.dialogs.TermsOfService;
 import org.minyanmate.minyanmate.models.MinyanSchedule;
 
 import android.app.Activity;
@@ -86,10 +87,16 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			MinyanScheduleSettingsActivity.this.finish();
 			return true;
+			
+        case R.id.action_terms_of_service:
+        	TermsOfService.showTerms(this);
+            return true;
 		}
 		
 		return super.onOptionsItemSelected(item);
 	}
+
+	
 	
 	/**
 	 * Formats hour in 0-23 format and minute into the current locale, specifically

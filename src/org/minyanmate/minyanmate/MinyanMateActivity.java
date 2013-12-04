@@ -2,6 +2,8 @@ package org.minyanmate.minyanmate;
 
 import java.util.Locale;
 
+import org.minyanmate.minyanmate.dialogs.TermsOfService;
+
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
+import android.view.MenuItem;
 
 public class MinyanMateActivity extends FragmentActivity implements
 		ActionBar.TabListener {
@@ -76,6 +79,18 @@ public class MinyanMateActivity extends FragmentActivity implements
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.minyan_mate, menu);
 		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	        case R.id.action_terms_of_service:
+	            TermsOfService.showTerms(this);
+	            return true;
+	        default:
+	        	return true;
+	    }
 	}
 
 	@Override

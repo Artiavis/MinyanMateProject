@@ -6,5 +6,65 @@
     
     <string name="title_active_minyan">Active</string>
     <string name="title_edit_minyans">Edit Minyans</string>
+    
+    
+    <string name="tos">Terms of Service</string>
+    <string name="terms_of_service">
+        <![CDATA[
+        <h2>Minyan Mate Terms of Service</h2>
+        
+        <p>Last Updated: December 3 2013</p>
+        
+        <p>These terms of service ("Terms") apply to your access and use of 
+        Minyan Mate (the "Service"). Please read them carefully.</p>
+        
+        <h3>Accepting these Terms</h3>
+        
+        <p>If you access or use the Service, it means you agree to be bound by
+         all of the terms below. So, before you use the Service, please read 
+         all of the terms. If you don\'t agree to all of the terms below, please 
+         do not use the Service.</p>
+         
+        <h3>Privacy</h3>
+        
+        <p>We do not transmit or store your data outside of your device. Data
+        from your device may be used in providing the Service and stored locally, but 
+        is not otherwise transmitted or copied.</p>
+        
+        <h3>Conduct</h3>
+        
+        <p>The Service facilitates messaging individuals in order to arrange "minyans"
+        and to ascertain a headcount. You may not use the Service to send
+        unsolicited, political, or commercial messages to other parties.</p> 
+        
+        <h3>Miscellaneous</h3>
+        
+        <p>Standard carrier messaging charges may apply.</p>
+        
+        <h3>Unavoidable Legal Stuff</h3>
+        
+        <p>THE SERVICE AND ANY OTHER SERVICE AND CONTENT INCLUDED ON OR OTHERWISE MADE AVAILABLE 
+        TO YOU THROUGH THE SERVICE ARE PROVIDED TO YOU ON AN AS IS OR AS AVAILABLE BASIS WITHOUT
+		ANY REPRESENTATIONS OR WARRANTIES OF ANY KIND. WE DISCLAIM ANY AND ALL WARRANTIES AND 
+		REPRESENTATIONS (EXPRESS OR IMPLIED, ORAL OR WRITTEN) WITH RESPECT TO THE SERVICE AND 
+		CONTENT INCLUDED ON OR OTHERWISE MADE AVAILABLE TO YOU THROUGH THE SERVICE WHETHER ALLEGED 
+		TO ARISE BY OPERATION OF LAW, BY REASON OF CUSTOM OR USAGE IN THE TRADE, BY COURSE OF DEALING OR OTHERWISE.</p>
+
+		<p>IN NO EVENT WILL ITS DEVELOPERS BE LIABLE TO YOU OR ANY THIRD PARTY FOR ANY SPECIAL, INDIRECT, INCIDENTAL,
+		 EXEMPLARY OR CONSEQUENTIAL DAMAGES OF ANY KIND ARISING OUT OF OR IN CONNECTION WITH THE SERVICE OR ANY OTHER 
+		 SERVICE AND/OR CONTENT INCLUDED ON OR OTHERWISE MADE AVAILABLE TO YOU THROUGH THE SERVICE, 
+		 REGARDLESS OF THE FORM OF ACTION, WHETHER IN CONTRACT, TORT, STRICT LIABILITY OR OTHERWISE, 
+		 EVEN IF WE HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR ARE AWARE OF THE POSSIBILITY OF 
+		 SUCH DAMAGES. OUR TOTAL LIABILITY FOR ALL CAUSES OF ACTION AND UNDER ALL THEORIES OF LIABILITY WILL BE 
+		 LIMITED TO THE AMOUNT YOU PAID TO ITS DEVELOPERS. THIS SECTION WILL BE GIVEN FULL EFFECT EVEN IF ANY 
+		 REMEDY SPECIFIED IN THIS AGREEMENT IS DEEMED TO HAVE FAILED OF ITS ESSENTIAL PURPOSE.<p>
+
+		 <p>You agree to defend, indemnify and hold us harmless from and against any and all costs, damages,
+		 liabilities, and expenses (including attorneys\' fees, costs, penalties, interest and disbursements) we 
+		 incur in relation to, arising from, or for the purpose of avoiding, any claim or demand from a third party 
+		 relating to your use of the Service or the use of the Service by any person using your account, 
+		 including any claim that your use of the Service violates any applicable law or regulation, or the rights 
+		 of any third party, and/or your violation of these Terms.</p>]]>
+    </string>
 
 </resources>
