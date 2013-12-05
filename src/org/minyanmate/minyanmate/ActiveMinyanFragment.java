@@ -26,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
@@ -79,35 +80,47 @@ public class ActiveMinyanFragment extends Fragment implements
 		if (mEventId > 0) {
 			
 			final int eventId = mEventId;
-		
-			AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
-			alert.setTitle("Add a Congregant");
-			alert.setMessage("Quickly jot down a name for whoever you want to count");
-	
 			// Set an EditText view to get user input 
 			final EditText input = new EditText(getActivity());
-			alert.setView(input);
-	
-			alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int whichButton) {
-			  String name = input.getText().toString();
-			  
-			  ContentValues values = new ContentValues();
-			  values.put(MinyanGoersTable.COLUMN_GENERAL_NAME, name);
-			  values.put(MinyanGoersTable.COLUMN_IS_INVITED, 0);
-			  values.put(MinyanGoersTable.COLUMN_MINYAN_EVENT_ID, eventId);
-			  values.put(MinyanGoersTable.COLUMN_INVITE_STATUS, InviteStatus.toInteger(InviteStatus.ATTENDING));
-			  
-			  getActivity().getContentResolver().insert(MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS, values);
-			  }
+		
+			final AlertDialog alert = new AlertDialog.Builder(getActivity())
+				.setView(input)
+				.setTitle("Add a Congregant")
+				.setMessage("Quickly jot down a name for whoever you want to count")
+				
+				.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+					
+					public void onClick(DialogInterface dialog, int whichButton) {
+					  String name = input.getText().toString();
+					  
+					  ContentValues values = new ContentValues();
+					  values.put(MinyanGoersTable.COLUMN_GENERAL_NAME, name);
+					  values.put(MinyanGoersTable.COLUMN_IS_INVITED, 0);
+					  values.put(MinyanGoersTable.COLUMN_MINYAN_EVENT_ID, eventId);
+					  values.put(MinyanGoersTable.COLUMN_INVITE_STATUS, InviteStatus.toInteger(InviteStatus.ATTENDING));
+					  
+					  getActivity().getContentResolver().insert(MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS, values);
+					  }
+					})
+					
+				.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+					
+					  public void onClick(DialogInterface dialog, int whichButton) {
+					    // Canceled.
+					  }
+					})
+					
+				.create();
+			
+			input.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+				
+				@Override
+				public void onFocusChange(View v, boolean hasFocus) {
+					if (hasFocus)
+						alert.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+				}
 			});
-	
-			alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-			  public void onClick(DialogInterface dialog, int whichButton) {
-			    // Canceled.
-			  }
-			});
-	
+			
 			alert.show();
 		}
 	}
