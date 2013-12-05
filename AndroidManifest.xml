@@ -12,7 +12,7 @@
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     
     <compatible-screens>
         <screen android:screenSize="small" android:screenDensity="ldpi" />
@@ -55,6 +55,7 @@
 	    <receiver android:name="org.minyanmate.minyanmate.services.OnBootReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.ACTION_MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
         
