@@ -18,8 +18,8 @@ import org.minyanmate.minyanmate.database.MinyanGoersTable;
 		
 		/**
 		 * Refer to {@link MinyanGoersTable#COLUMN_INVITE_STATUS}
-		 * @param stat
-		 * @return
+		 * @param stat status of {@link org.minyanmate.minyanmate.models.MinyanGoer}
+		 * @return the {@link org.minyanmate.minyanmate.models.InviteStatus}
 		 */
 		static InviteStatus fromInteger(int stat) {
 			switch (stat) {

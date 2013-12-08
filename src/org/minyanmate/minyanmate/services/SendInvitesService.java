@@ -1,15 +1,5 @@
 package org.minyanmate.minyanmate.services;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
-import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-import org.minyanmate.minyanmate.database.MinyanContactsTable;
-import org.minyanmate.minyanmate.database.MinyanEventsTable;
-import org.minyanmate.minyanmate.database.MinyanGoersTable;
-import org.minyanmate.minyanmate.models.InviteStatus;
-import org.minyanmate.minyanmate.models.MinyanSchedule;
-
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -19,9 +9,18 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.telephony.SmsManager;
 import android.util.Log;
-import android.webkit.MimeTypeMap;
 
 import com.commonsware.cwac.wakeful.WakefulIntentService;
+
+import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
+import org.minyanmate.minyanmate.database.MinyanContactsTable;
+import org.minyanmate.minyanmate.database.MinyanEventsTable;
+import org.minyanmate.minyanmate.database.MinyanGoersTable;
+import org.minyanmate.minyanmate.models.InviteStatus;
+import org.minyanmate.minyanmate.models.MinyanSchedule;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class SendInvitesService extends WakefulIntentService {
 
@@ -31,8 +30,7 @@ public class SendInvitesService extends WakefulIntentService {
 
 	@Override
 	protected void doWakefulWork(Intent intent) {
-		
-		// TODO this is null, why?
+
 		Bundle b = intent.getExtras();
 		
 		Log.d("SendInvitesService", "Inside SendInvitesService");
@@ -73,18 +71,18 @@ public class SendInvitesService extends WakefulIntentService {
 			
 			while (contactsToBeInvited.moveToNext()) {
 				
-				Log.d("SendInvitesService", "Inviting " + contactsToBeInvited.getString(MinyanMateContentProvider.ContactMatrix.NAME));
+				Log.d("SendInvitesService", "Inviting " + contactsToBeInvited.getString(MinyanMateContentProvider.ContactMatrix.DISPLAY_NAME));
 				
-				String number = contactsToBeInvited.getString(MinyanMateContentProvider.ContactMatrix.NUM);
-				String name = contactsToBeInvited.getString(MinyanMateContentProvider.ContactMatrix.NAME);
+				String number = contactsToBeInvited.getString(MinyanMateContentProvider.ContactMatrix.PHONE_NUMBER);
+				String name = contactsToBeInvited.getString(MinyanMateContentProvider.ContactMatrix.DISPLAY_NAME);
 				// TODO fire intent to log the invited recipient in the Goers table if the message was received
 				smsm.sendTextMessage(number, null, sched.getInviteMessage(), null, null);
 				
 				inviteValues = new ContentValues();
-				inviteValues.put(MinyanGoersTable.COLUMN_GENERAL_NAME, name);
+				inviteValues.put(MinyanGoersTable.COLUMN_DISPLAY_NAME, name);
 				inviteValues.put(MinyanGoersTable.COLUMN_INVITE_STATUS, InviteStatus.toInteger(InviteStatus.AWAITING_RESPONSE));
 				inviteValues.put(MinyanGoersTable.COLUMN_IS_INVITED, 1);
-				inviteValues.put(MinyanGoersTable.COLUMN_LOOKUP_KEY, contactsToBeInvited.getString(MinyanMateContentProvider.ContactMatrix.KEY));
+				inviteValues.put(MinyanGoersTable.COLUMN_PHONE_NUMBER_ID, contactsToBeInvited.getString(MinyanMateContentProvider.ContactMatrix.PHONE_NUMBER_ID));
 				inviteValues.put(MinyanGoersTable.COLUMN_MINYAN_EVENT_ID, eventId);
 				getContentResolver().insert(MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS, inviteValues);
 				

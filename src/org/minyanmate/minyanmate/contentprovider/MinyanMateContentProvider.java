@@ -1,5 +1,18 @@
 package org.minyanmate.minyanmate.contentprovider;
 
+import android.content.ContentProvider;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.UriMatcher;
+import android.database.Cursor;
+import android.database.MatrixCursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteQueryBuilder;
+import android.net.Uri;
+import android.provider.ContactsContract;
+import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.util.Log;
+
 import org.minyanmate.minyanmate.database.MinyanContactsTable;
 import org.minyanmate.minyanmate.database.MinyanEventsTable;
 import org.minyanmate.minyanmate.database.MinyanGoersTable;
@@ -7,21 +20,6 @@ import org.minyanmate.minyanmate.database.MinyanMateDatabaseHelper;
 import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
 import org.minyanmate.minyanmate.database.MinyanSubscriptionsTable;
 import org.minyanmate.minyanmate.services.MinyanRegistrar;
-
-import android.content.ContentProvider;
-import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.content.UriMatcher;
-import android.database.Cursor;
-import android.database.CursorJoiner;
-import android.database.MatrixCursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
-import android.net.Uri;
-import android.provider.ContactsContract;
-import android.provider.ContactsContract.CommonDataKinds.Phone;
-import android.provider.ContactsContract.Contacts;
-import android.provider.ContactsContract.Contacts.Data;
 
 public class MinyanMateContentProvider extends ContentProvider {
 
@@ -110,38 +108,50 @@ public class MinyanMateContentProvider extends ContentProvider {
 				 */
 				
 				queryBuilder.setTables(MinyanContactsTable.TABLE_MINYAN_CONTACTS);
-				cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, 
-						MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY + " asc");
-				cursor.setNotificationUri(getContext().getContentResolver(), uri);		
+				cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null,
+						MinyanContactsTable.COLUMN_PHONE_NUMBER_ID + " asc");
+				cursor.setNotificationUri(getContext().getContentResolver(), uri);
+
+                Log.d("List Contact from List", "Start Listing");
+                while(cursor.moveToNext())
+                    Log.d("App Contact", cursor.getString(cursor.getColumnIndex(MinyanContactsTable.COLUMN_PHONE_NUMBER_ID)));
+				cursor.moveToFirst();
+                Log.d("List Contact from List", "Done Listing");
+
+				Cursor phoneContacts = getContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+						ContactMatrix.queryProj, null, null, Phone._ID + " asc");
 				
-				Cursor phoneContacts = getContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, 
-						ContactMatrix.queryProj, null, null, Contacts.LOOKUP_KEY + " asc");
+				MatrixCursor minyanContactsMatrix = new MatrixCursor(ContactMatrix.matrixAttrs);
+
+				IntCursorJoiner joiner = new IntCursorJoiner(cursor,
+						new String[] { MinyanContactsTable.COLUMN_PHONE_NUMBER_ID},
+						phoneContacts, new String[] { Phone._ID });
 				
-				MatrixCursor minyanContactsMatrix = new MatrixCursor(ContactMatrix.queryProj);
-				
-				CursorJoiner joiner = new CursorJoiner(cursor, 
-						new String[] { MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY }, 
-						phoneContacts, new String[] { Contacts.LOOKUP_KEY });
-				
-				for (CursorJoiner.Result joinerResult : joiner) {
+				for (IntCursorJoiner.Result joinerResult : joiner) {
 					switch (joinerResult) {
 					case LEFT: // Ignore LEFT JOIN
-						break;
+                        Log.d("App Contact", cursor.getString(cursor.getColumnIndex(MinyanContactsTable.COLUMN_PHONE_NUMBER_ID)));
+                        break;
 					case RIGHT: // Ignore RIGHT JOIN
+                        Log.d("Phone contact", phoneContacts.getString(phoneContacts.getColumnIndex(Phone._ID)));
 						break;
 					case BOTH: // Only do things on inner joins
-						
+                        Log.d("Both contact", phoneContacts.getString(phoneContacts.getColumnIndex(Phone._ID)));
 						minyanContactsMatrix.addRow(new Object[] {
-							phoneContacts.getLong(phoneContacts.getColumnIndex(Contacts._ID)),
-							phoneContacts.getString(phoneContacts.getColumnIndex(Contacts.PHOTO_THUMBNAIL_URI)),
-							phoneContacts.getString(phoneContacts.getColumnIndex(Contacts.DISPLAY_NAME)),
-							phoneContacts.getString(phoneContacts.getColumnIndex(Data.DATA1)),
-							phoneContacts.getString(phoneContacts.getColumnIndex(Contacts.LOOKUP_KEY))
+							phoneContacts.getLong(phoneContacts.getColumnIndex(Phone._ID)),
+							phoneContacts.getString(phoneContacts.getColumnIndex(Phone.PHOTO_THUMBNAIL_URI)),
+							phoneContacts.getString(phoneContacts.getColumnIndex(Phone.DISPLAY_NAME)),
+							phoneContacts.getString(phoneContacts.getColumnIndex(Phone.NUMBER)),
+							phoneContacts.getString(phoneContacts.getColumnIndex(Phone.LOOKUP_KEY)),
+                            phoneContacts.getString(phoneContacts.getColumnIndex(Phone.CONTACT_ID)),
+                            cursor.getLong(cursor.getColumnIndex(MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID))
 						});
 						
 						break;
 					}
 				}
+                cursor.close();
+                phoneContacts.close();
 				
 				minyanContactsMatrix.setNotificationUri(getContext().getContentResolver(), uri);
 				
@@ -159,8 +169,8 @@ public class MinyanMateContentProvider extends ContentProvider {
 				return cursor;
 				
 			case GOER_ID:
-				queryBuilder.appendWhere("(" + MinyanGoersTable.COLUMN_LOOKUP_KEY + "=" + uri.getLastPathSegment()
-						+ " OR " + MinyanGoersTable.COLUMN_GENERAL_NAME + "=" + uri.getLastPathSegment() + ")");
+				queryBuilder.appendWhere("(" + MinyanGoersTable.COLUMN_PHONE_NUMBER_ID + "=" + uri.getLastPathSegment()
+						+ " OR " + MinyanGoersTable.COLUMN_DISPLAY_NAME + "=" + uri.getLastPathSegment() + ")");
 				// fall through
 			case GOERS:
 				
@@ -171,19 +181,19 @@ public class MinyanMateContentProvider extends ContentProvider {
 				
 				queryBuilder.setTables(MinyanGoersTable.TABLE_MINYAN_INVITEES);
 				cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, 
-						MinyanGoersTable.COLUMN_LOOKUP_KEY + " asc");
+						MinyanGoersTable.COLUMN_PHONE_NUMBER_ID + " asc");
 				cursor.setNotificationUri(getContext().getContentResolver(), uri);		
 				
-				Cursor phoneContacts2 = getContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, 
-						GoerMatrix.queryProj, null, null, Contacts.LOOKUP_KEY + " asc");
+				Cursor phoneContacts2 = getContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+						GoerMatrix.queryProj, null, null, Phone._ID + " asc");
 				
 				MatrixCursor goers = new MatrixCursor(GoerMatrix.matrixAttrs);
 				
-				CursorJoiner goersJoiner = new CursorJoiner(cursor, 
-						new String[] { MinyanGoersTable.COLUMN_LOOKUP_KEY}, 
-						phoneContacts2, new String[] { Contacts.LOOKUP_KEY });
+				IntCursorJoiner goersJoiner = new IntCursorJoiner(cursor,
+						new String[] { MinyanGoersTable.COLUMN_PHONE_NUMBER_ID},
+						phoneContacts2, new String[] { Phone._ID });
 				
-				for (CursorJoiner.Result joinerResult : goersJoiner) {
+				for (IntCursorJoiner.Result joinerResult : goersJoiner) {
 					// TODO fix the issue where the eventId isn't being saved
 					switch (joinerResult) {
 					case LEFT: // Left join is result of a random attendee and should be recorded as such
@@ -195,9 +205,10 @@ public class MinyanMateContentProvider extends ContentProvider {
 							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_INVITE_STATUS)),
 							null,
 							null,
-							cursor.getString(cursor.getColumnIndex(MinyanGoersTable.COLUMN_GENERAL_NAME)),
+							cursor.getString(cursor.getColumnIndex(MinyanGoersTable.COLUMN_DISPLAY_NAME)),
 							null,
-							null
+							null,
+                            null
 						});
 						
 						break;
@@ -210,11 +221,12 @@ public class MinyanMateContentProvider extends ContentProvider {
 							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_IS_INVITED)),
 							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_MINYAN_EVENT_ID)),
 							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_INVITE_STATUS)),
-							phoneContacts2.getLong(phoneContacts2.getColumnIndex(Contacts._ID)),
-							phoneContacts2.getString(phoneContacts2.getColumnIndex(Contacts.PHOTO_THUMBNAIL_URI)),
-							phoneContacts2.getString(phoneContacts2.getColumnIndex(Contacts.DISPLAY_NAME)),
-							phoneContacts2.getString(phoneContacts2.getColumnIndex(Data.DATA1)),
-							phoneContacts2.getString(phoneContacts2.getColumnIndex(Contacts.LOOKUP_KEY))
+							phoneContacts2.getLong(phoneContacts2.getColumnIndex(Phone._ID)),
+							phoneContacts2.getString(phoneContacts2.getColumnIndex(Phone.PHOTO_THUMBNAIL_URI)),
+							phoneContacts2.getString(phoneContacts2.getColumnIndex(Phone.DISPLAY_NAME)),
+							phoneContacts2.getString(phoneContacts2.getColumnIndex(Phone.NUMBER)),
+							phoneContacts2.getString(phoneContacts2.getColumnIndex(Phone.LOOKUP_KEY)),
+                            phoneContacts2.getString(phoneContacts2.getColumnIndex(Phone.CONTACT_ID))
 						});
 						
 						break;
@@ -295,7 +307,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 			// If desubscribed, do not allow adding
 			Cursor subscrier = sqlDb.query(MinyanSubscriptionsTable.TABLE_SUBSCRIPTIONS, 
 					null, MinyanSubscriptionsTable.COLUMN_CONTACT_LOOKUP_KEY + "=?", 
-					new String[] { (String) values.get(MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY) }, 
+					new String[] { (String) values.get(MinyanContactsTable.COLUMN_PHONE_NUMBER_ID) },
 					null, null, null);
 			
 			boolean isSubscribed = true;
@@ -365,7 +377,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 				rowsUpdated = db.update(MinyanGoersTable.TABLE_MINYAN_INVITEES, values, selection, selectionArgs);
 				break;
 				
-			case GOER_ID: // TODO define a better mapping MatrixCursor so that the id of attendees is freely available
+			case GOER_ID:
 				rowsUpdated = db.update(MinyanGoersTable.TABLE_MINYAN_INVITEES, values, 
 						MinyanGoersTable.COLUMN_ID + "=?", new String[] { uri.getLastPathSegment()});
 				break;
@@ -381,9 +393,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 	/**
 	 * Used with {@link MinyanRegistrar#registerMinyanEvents(android.content.Context, Cursor)}
 	 * to brute-force re-register and/or cancel existing minyans on any update of the {@link #SCHEDULES}
-	 * family of data. 
-	 * @param context
-	 * @param cursor
+	 * family of data.
 	 */
 	private void updateMinyanRegistrar() {
 		 Cursor cursor = database.getReadableDatabase().query(
@@ -401,18 +411,31 @@ public class MinyanMateContentProvider extends ContentProvider {
 	 */
 	public static class ContactMatrix {
 		public static final String[] queryProj = new String[] {
-					Contacts._ID,
-					Contacts.PHOTO_THUMBNAIL_URI,
-					Contacts.DISPLAY_NAME,
+					Phone._ID,
+					Phone.PHOTO_THUMBNAIL_URI,
+					Phone.DISPLAY_NAME,
 					Phone.NUMBER,
-					Contacts.LOOKUP_KEY
+					Phone.LOOKUP_KEY,
+                    Phone.CONTACT_ID
 		};
+
+        public static final String[] matrixAttrs = new String[] {
+                Phone._ID,
+                Phone.PHOTO_THUMBNAIL_URI,
+                Phone.DISPLAY_NAME,
+                Phone.NUMBER,
+                Phone.LOOKUP_KEY,
+                Phone.CONTACT_ID,
+                MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID
+        };
 		
-		public static final int ID = 0;
+		public static final int PHONE_NUMBER_ID = 0;
 		public static final int THUMBNAIL_PHOTO_URI = 1;
-		public static final int NAME = 2;
-		public static final int NUM = 3;
-		public static final int KEY = 4;
+		public static final int DISPLAY_NAME = 2;
+		public static final int PHONE_NUMBER = 3;
+		public static final int LOOKUP_KEY = 4;
+        public static final int CONTACT_ID = 5;
+        public static final int SCHEDULE_ID = 6;
 	}
 	
 	/**
@@ -421,11 +444,12 @@ public class MinyanMateContentProvider extends ContentProvider {
 	 */
 	public static class GoerMatrix {
 		public static final String[] queryProj = new String[] {
-			Contacts._ID,
-			Contacts.PHOTO_THUMBNAIL_URI,
-			Contacts.DISPLAY_NAME,
+			Phone._ID,
+			Phone.PHOTO_THUMBNAIL_URI,
+			Phone.DISPLAY_NAME,
 			Phone.NUMBER,
-			Contacts.LOOKUP_KEY
+			Phone.LOOKUP_KEY,
+            Phone.CONTACT_ID
 		};
 		
 		/**
@@ -438,21 +462,23 @@ public class MinyanMateContentProvider extends ContentProvider {
 			MinyanGoersTable.COLUMN_IS_INVITED,
 			MinyanGoersTable.COLUMN_MINYAN_EVENT_ID,
 			MinyanGoersTable.COLUMN_INVITE_STATUS,
-			Contacts._ID,
-			Contacts.PHOTO_THUMBNAIL_URI,
-			Contacts.DISPLAY_NAME,
+			Phone._ID,
+			Phone.PHOTO_THUMBNAIL_URI,
+			Phone.DISPLAY_NAME,
 			Phone.NUMBER,
-			Contacts.LOOKUP_KEY
+			Phone.LOOKUP_KEY,
+            Phone.CONTACT_ID
 		};
 		
 		public static final int GOER_ID = 0;
 		public static final int IS_INVITED = 1;
 		public static final int EVENT_ID = 2;
 		public static final int INVITE_STATUS = 3;
-		public static final int CONTACT_ID = 4;
+		public static final int PHONE_NUMBER_ID = 4;
 		public static final int THUMBNAIL_PHOTO_URI =5;
-		public static final int NAME = 6;
-		public static final int NUM = 7;
-		public static final int KEY = 8;
+		public static final int DISPLAY_NAME = 6;
+		public static final int PHONE_NUMBER = 7;
+		public static final int LOOKUP_KEY = 8;
+        public static final int CONTACT_ID = 9;
 	}
 }

@@ -1,12 +1,12 @@
 package org.minyanmate.minyanmate.models;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.database.Cursor;
+import android.database.MatrixCursor;
 
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider.GoerMatrix;
 
-import android.database.Cursor;
-import android.database.MatrixCursor;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class MinyanGoer {
 	
@@ -71,7 +71,7 @@ public abstract class MinyanGoer {
 	 * This method visits the cursor to decide whether to instantiate an instance
 	 * of the {@link UninvitedMinyanGoer} class or {@link InvitedMinyanGoer} class.
 	 * @param cursor contains columns necessary to instantiate either class
-	 * @return 
+	 * @return a {@link org.minyanmate.minyanmate.models.MinyanGoer} object
 	 */
 	public static MinyanGoer cursorToMinyanGoer(Cursor cursor) {
 		
@@ -81,9 +81,9 @@ public abstract class MinyanGoer {
 		int contactId = cursor.getInt(GoerMatrix.CONTACT_ID);
 		InviteStatus status = InviteStatus.fromInteger(cursor.getInt(GoerMatrix.INVITE_STATUS));
 		String photoUri = cursor.getString(GoerMatrix.THUMBNAIL_PHOTO_URI);
-		String name = cursor.getString(GoerMatrix.NAME);
-		String phoneNum = cursor.getString(GoerMatrix.NUM);
-		String lookUpKey = cursor.getString(GoerMatrix.KEY);
+		String name = cursor.getString(GoerMatrix.DISPLAY_NAME);
+		String phoneNum = cursor.getString(GoerMatrix.PHONE_NUMBER);
+		String lookUpKey = cursor.getString(GoerMatrix.LOOKUP_KEY);
 		
 		if (isInvited) 
 			return new InvitedMinyanGoer(goerId, contactId, name, eventId, status, 

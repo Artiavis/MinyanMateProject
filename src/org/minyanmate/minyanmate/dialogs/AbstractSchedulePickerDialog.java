@@ -1,9 +1,5 @@
 package org.minyanmate.minyanmate.dialogs;
 
-import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
-import org.minyanmate.minyanmate.models.MinyanSchedule;
-
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
@@ -12,12 +8,13 @@ import android.net.Uri;
 import android.support.v4.app.DialogFragment;
 import android.widget.Toast;
 
+import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
+import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
+import org.minyanmate.minyanmate.models.MinyanSchedule;
+
 public abstract class AbstractSchedulePickerDialog extends DialogFragment 
 implements TimePickerDialog.OnTimeSetListener {
 
-	/* TODO move the business logic from the TimePickerFragment and the WindowSchedulePickerFragment
-	*  classes into this interface and make them both inherit from it
-	*/
 	int id;
 	int minute;
 	int hour;

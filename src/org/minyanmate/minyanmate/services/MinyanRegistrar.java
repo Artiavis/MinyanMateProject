@@ -1,17 +1,17 @@
 package org.minyanmate.minyanmate.services;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
-import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-import org.minyanmate.minyanmate.models.MinyanSchedule;
-
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.util.Log;
+
+import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
+import org.minyanmate.minyanmate.models.MinyanSchedule;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * A class which exposes static functionality to register, reschedule,
@@ -34,6 +34,7 @@ public class MinyanRegistrar {
 		date.set(Calendar.HOUR_OF_DAY, sched.getHour());
 		date.set(Calendar.MINUTE, sched.getMinute());
 		date.set(Calendar.DAY_OF_WEEK, sched.getDayNum());
+        date.set(Calendar.SECOND, 0);
 		if (date.getTimeInMillis() < System.currentTimeMillis()) 
 			date.add(Calendar.WEEK_OF_YEAR, 1);
 		date.add(Calendar.SECOND, (int) (-1*sched.getSchedulingWindowLength()));
@@ -51,8 +52,9 @@ public class MinyanRegistrar {
 	 * whenever updating any schedule to guarantee that all schedules are updated and synchronized
 	 * to go off. Most likely incurs a large performance penalty for performing every calculation
 	 * every time. 
-	 * @param context
-	 * @param cursor
+	 * @param context the {@link android.content.Context}
+	 * @param cursor the {@link android.database.Cursor} to the {@link org.minyanmate.minyanmate.models.MinyanSchedule}s
+     *               to schedule
 	 */
 	public static void registerMinyanEvents(Context context, Cursor cursor) {
 		
@@ -92,6 +94,5 @@ public class MinyanRegistrar {
 		PendingIntent pi = PendingIntent.getBroadcast(context, sched.getId(), i, 0);
 		
 		mgr.cancel(pi);
-		// TODO test that this actually cancels the alarms
 	}
 }

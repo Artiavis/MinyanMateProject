@@ -1,11 +1,5 @@
 package org.minyanmate.minyanmate.models;
 
-import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-import org.minyanmate.minyanmate.database.MinyanGoersTable;
-
-import android.content.ContentValues;
-import android.content.Context;
-
 public class InvitedMinyanGoer extends MinyanGoer {
 
 	private int contactId;
@@ -43,7 +37,7 @@ public class InvitedMinyanGoer extends MinyanGoer {
 //		
 //		int rowsAffected = context.getContentResolver().update(
 //				MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS, 
-//				values, MinyanGoersTable.COLUMN_LOOKUP_KEY + "=? AND " 
+//				values, MinyanGoersTable.COLUMN_PHONE_NUMBER_ID + "=? AND "
 //				+ MinyanGoersTable.COLUMN_MINYAN_EVENT_ID + "=?", 
 //				new String[] { lookUpKey, String.valueOf(eventId) });
 //		
@@ -55,7 +49,7 @@ public class InvitedMinyanGoer extends MinyanGoer {
 //
 //		int rowsAffected = context.getContentResolver().delete(
 //				MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS, 
-//				MinyanGoersTable.COLUMN_LOOKUP_KEY + "=? AND " 
+//				MinyanGoersTable.COLUMN_PHONE_NUMBER_ID + "=? AND "
 //						+ MinyanGoersTable.COLUMN_MINYAN_EVENT_ID + "=?", 
 //						new String[] { lookUpKey, String.valueOf(eventId) });
 //		

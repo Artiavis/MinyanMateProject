@@ -1,10 +1,5 @@
 package org.minyanmate.minyanmate.adapters;
 
-import org.minyanmate.minyanmate.R;
-import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider.ContactMatrix;
-import org.minyanmate.minyanmate.database.MinyanContactsTable;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,6 +15,11 @@ import android.widget.ImageButton;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
 
+import org.minyanmate.minyanmate.R;
+import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
+import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider.ContactMatrix;
+import org.minyanmate.minyanmate.database.MinyanContactsTable;
+
 
 /**
  * An adapter for a {@link android.widget.ListView} for a list of contacts
@@ -30,13 +30,10 @@ import android.widget.TextView;
  */
 public class RemovableContactListAdapter extends CursorAdapter {
 
-	private int prayerId;
-	
-	public RemovableContactListAdapter(Context context, Cursor c,
+    public RemovableContactListAdapter(Context context, Cursor c,
 			int prayerId, boolean autoRequery) {
 		super(context, c, autoRequery);
-		this.prayerId = prayerId;
-	}
+    }
 
 	@Override
 	public void bindView(View view, Context context,
@@ -48,11 +45,13 @@ public class RemovableContactListAdapter extends CursorAdapter {
 		TextView nameText = (TextView) view.findViewById(R.id.removableContactName);
 		ImageButton imgButton = (ImageButton) view.findViewById(R.id.removableRemoveButton);
 		
-		long contactId = cur.getLong(ContactMatrix.ID);
-		final String lookUpKey = cur.getString(ContactMatrix.KEY);
+		long contactId = cur.getLong(ContactMatrix.CONTACT_ID);
+		final String lookUpKey = cur.getString(ContactMatrix.LOOKUP_KEY);
+        final String phoneNumberId = cur.getString(ContactMatrix.PHONE_NUMBER_ID);
+        final int scheduleId = cur.getInt(ContactMatrix.SCHEDULE_ID);
 		Uri contactUri = Contacts.getLookupUri(contactId, lookUpKey);
-		
-		nameText.setText(cur.getString(ContactMatrix.NAME));						
+
+		nameText.setText(cur.getString(ContactMatrix.DISPLAY_NAME));
 		badge.assignContactUri(contactUri);
 		
 		if (null == (cur.getString(ContactMatrix.THUMBNAIL_PHOTO_URI)))
@@ -75,9 +74,9 @@ public class RemovableContactListAdapter extends CursorAdapter {
 				            //Yes button clicked
 				        	
 							c.getContentResolver().delete(MinyanMateContentProvider.CONTENT_URI_CONTACTS, 
-									MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY + "=?"
+									MinyanContactsTable.COLUMN_PHONE_NUMBER_ID + "=?"
 									+ " and " + MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID + "=?", 
-									new String[] { lookUpKey, String.valueOf(prayerId) });
+									new String[] { phoneNumberId, String.valueOf(scheduleId) });
 				            break;
 
 				        case DialogInterface.BUTTON_NEGATIVE:

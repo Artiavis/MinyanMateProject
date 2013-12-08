@@ -1,11 +1,6 @@
 package org.minyanmate.minyanmate.models;
 
 import java.io.InputStream;
-import java.util.List;
-
-import android.database.Cursor;
-import android.provider.ContactsContract;
-import android.provider.ContactsContract.Contacts;
 
 /**
  * This will be useful for the scheduling assistant services, but until
@@ -47,20 +42,6 @@ public class Contact {
 	
 	public InputStream getContactPhotoStream() {
 		return photoStream;
-	}
-	
-	public static Contact contactFromCursor(Cursor cursor) {
-		// TODO may not be necessary
-		return null;
-	}
-	
-	public static List<Contact> cursorToContactList(Cursor cursor) {
-		// TODO strategy:
-		/* Given a 
-		 * 
-		 * 
-		 */
-		return null;
 	}
 	
 }

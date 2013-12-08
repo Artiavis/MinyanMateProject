@@ -16,10 +16,10 @@ public class MinyanContactsTable {
 	public static final String COLUMN_ID = "_id";
 	
 	/**
-	 * Returns a string with the {@link android.provider.ContactsContract.ContactsColumns.LOOKUP_KEY}
-	 * for querying against the {@link android.provider.ContactsContract.Contacts#CONTENT_URI}.
+	 * Returns a string with the {@link android.provider.ContactsContract.CommonDataKinds.Phone._ID}
+	 * for querying against the {@link android.provider.ContactsContract.CommonDataKinds.Phone#CONTENT_URI}.
 	 */
-	public static final String COLUMN_CONTACT_LOOKUP_KEY = "contact_lookup_key";
+	public static final String COLUMN_PHONE_NUMBER_ID = "contact_phone_id";
 	
 	/**
 	 * Returns an integer with a primary key to the {@link MinyanSchedulesTable#TABLE_MINYAN_SCHEDULES} table.
@@ -30,9 +30,9 @@ public class MinyanContactsTable {
 			+ TABLE_MINYAN_CONTACTS
 			+ "(" 
 			+ COLUMN_ID + " integer primary key autoincrement, "
-			+ COLUMN_CONTACT_LOOKUP_KEY + " text, " 
-			+ COLUMN_MINYAN_SCHEDULE_ID + " int not null, " 
-				+ "unique(" + COLUMN_CONTACT_LOOKUP_KEY + ", "
+			+ COLUMN_PHONE_NUMBER_ID + " integer not null, "
+			+ COLUMN_MINYAN_SCHEDULE_ID + " integer not null, "
+				+ "unique(" + COLUMN_PHONE_NUMBER_ID + ", "
 				+ COLUMN_MINYAN_SCHEDULE_ID 
 				+ ") on conflict replace, "
 				+ "foreign key(" + COLUMN_MINYAN_SCHEDULE_ID + ") references "

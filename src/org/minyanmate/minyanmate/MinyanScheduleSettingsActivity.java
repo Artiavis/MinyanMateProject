@@ -1,17 +1,5 @@
 package org.minyanmate.minyanmate;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
-
-import org.minyanmate.minyanmate.adapters.RemovableContactListAdapter;
-import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-import org.minyanmate.minyanmate.database.MinyanContactsTable;
-import org.minyanmate.minyanmate.dialogs.ScheduleTimePickerFragment;
-import org.minyanmate.minyanmate.dialogs.ScheduleWindowPickerFragent;
-import org.minyanmate.minyanmate.dialogs.TermsOfService;
-import org.minyanmate.minyanmate.models.MinyanSchedule;
-
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
@@ -32,6 +20,18 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.minyanmate.minyanmate.adapters.RemovableContactListAdapter;
+import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
+import org.minyanmate.minyanmate.database.MinyanContactsTable;
+import org.minyanmate.minyanmate.dialogs.ScheduleTimePickerFragment;
+import org.minyanmate.minyanmate.dialogs.ScheduleWindowPickerFragent;
+import org.minyanmate.minyanmate.dialogs.TermsOfService;
+import org.minyanmate.minyanmate.models.MinyanSchedule;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * Provides access to general details about a weekly minyan event, and permits
@@ -142,6 +142,7 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 	 */
 	public void pickNewContact(View view) {
 		Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        intent.setType(Phone.CONTENT_TYPE);
 		startActivityForResult(intent, PICK_CONTACT);
 	}
 	
@@ -200,11 +201,9 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 	 * @param data
 	 */
 	private void saveContactData(Uri data) {
-		String lookUpKey = null;
-		
-		lookUpKey = data.getPathSegments().get(2);
-		Cursor temp = getContentResolver().query(Phone.CONTENT_URI, null, Phone.LOOKUP_KEY + "=?", 
-				new String[] { lookUpKey }, null);
+		String phoneNumberId = data.getLastPathSegment();
+        Cursor temp = getContentResolver().query(Phone.CONTENT_URI, null, Phone._ID + "=?",
+				new String[] { phoneNumberId }, null);
 		
 		if (temp.moveToFirst()) {
 			if ( temp.getString(temp.getColumnIndex(Phone.NUMBER)) != null)
@@ -212,7 +211,7 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 				// Save result
 				ContentValues values = new ContentValues();
 				values.put(MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID, scheduleId);
-				values.put(MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY, lookUpKey);
+				values.put(MinyanContactsTable.COLUMN_PHONE_NUMBER_ID, phoneNumberId);
 				
 				if ( getContentResolver().insert(MinyanMateContentProvider.CONTENT_URI_CONTACTS, values) != null)
 					Toast.makeText(this, "Added successfully!", Toast.LENGTH_SHORT).show();
@@ -240,9 +239,9 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 			return new CursorLoader(this,
 					MinyanMateContentProvider.CONTENT_URI_CONTACTS,
 					new String[] { MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID, 
-						MinyanContactsTable.COLUMN_CONTACT_LOOKUP_KEY },
-					MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID + "=?", 
-					new String[] { String.valueOf(this.scheduleId) }, null);
+						MinyanContactsTable.COLUMN_PHONE_NUMBER_ID},
+					MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID + " = " + this.scheduleId,
+					null, null);
 		}
 
 		return null;
@@ -272,7 +271,6 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 			break;
 			
 		case CONTACT_LOADER:
-			// TODO why does this freak out when turning the phone?
 			CursorAdapter adapter = new RemovableContactListAdapter(this, cursor, scheduleId, false);
 			contactList.setAdapter(adapter);
 			

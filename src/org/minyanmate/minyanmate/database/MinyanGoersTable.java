@@ -29,8 +29,8 @@ public class MinyanGoersTable {
 	 * Functions as the Type for this table's Single-Table Inheritance. 
 	 * <p>
 	 * If false,
-	 * refer to the party's {@link #COLUMN_GENERAL_NAME} column
-	 * for their name. Otherwise, refer to their {@link #COLUMN_LOOKUP_KEY}
+	 * refer to the party's {@link #COLUMN_DISPLAY_NAME} column
+	 * for their name. Otherwise, refer to their {@link #COLUMN_PHONE_NUMBER_ID}
 	 * to dereference their associated information. 
 	 */
 	public static final String COLUMN_IS_INVITED = "is_invited";
@@ -40,7 +40,7 @@ public class MinyanGoersTable {
 	 * and were invited to the minyan via text message, and null otherwise. 
 	 * See {@link #COLUMN_IS_INVITED}.
 	 */
-	public static final String COLUMN_LOOKUP_KEY = "lookup_key";
+	public static final String COLUMN_PHONE_NUMBER_ID = "lookup_key";
 	
 	/**
 	 * Returns a string with the party's name as entered by the user if the party
@@ -48,7 +48,7 @@ public class MinyanGoersTable {
 	 * as entered in the phone at the time this record was created. See
 	 * {@link #COLUMN_IS_INVITED}.
 	 */
-	public static final String COLUMN_GENERAL_NAME = "general_name";
+	public static final String COLUMN_DISPLAY_NAME = "display_name";
 	
 	/**
 	 * Returns an integer to indentify the status of the invited party. Is guaranteed
@@ -67,8 +67,8 @@ public class MinyanGoersTable {
 			+ COLUMN_ID + " integer primary key autoincrement, " 
 			+ COLUMN_MINYAN_EVENT_ID + " integer not null, " 
 			+ COLUMN_IS_INVITED + " integer not null, " 
-			+ COLUMN_LOOKUP_KEY + " text, " 
-			+ COLUMN_GENERAL_NAME + " text, "
+			+ COLUMN_PHONE_NUMBER_ID + " text, "
+			+ COLUMN_DISPLAY_NAME + " text, "
 			+ COLUMN_INVITE_STATUS + " integer not null, "
 			+ "foreign key(" + COLUMN_MINYAN_EVENT_ID + ") references " 
 				+ MinyanEventsTable.TABLE_MINYAN_EVENTS + "(" + MinyanEventsTable.COLUMN_ID 

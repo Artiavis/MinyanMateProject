@@ -1,22 +1,23 @@
 package org.minyanmate.minyanmate.adapters;
 
-import java.util.HashMap;
-import java.util.List;
-
-import org.minyanmate.minyanmate.R;
-import org.minyanmate.minyanmate.models.InvitedMinyanGoer;
-import org.minyanmate.minyanmate.models.MinyanGoer;
-import org.minyanmate.minyanmate.models.UninvitedMinyanGoer;
-
 import android.content.Context;
 import android.net.Uri;
 import android.provider.ContactsContract.Contacts;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
+
+import org.minyanmate.minyanmate.R;
+import org.minyanmate.minyanmate.models.InvitedMinyanGoer;
+import org.minyanmate.minyanmate.models.MinyanGoer;
+import org.minyanmate.minyanmate.models.UninvitedMinyanGoer;
+
+import java.util.HashMap;
+import java.util.List;
 
 public class ParticipantsExpandableListAdapter extends BaseExpandableListAdapter {
 
@@ -49,8 +50,7 @@ public class ParticipantsExpandableListAdapter extends BaseExpandableListAdapter
 		return childPosition;
 	}
 
-	
-	// TODO why isn't this getting called?
+
 	@Override
 	public View getChildView(int groupPosition, int childPosition,
 			boolean isLastChild, View convertView, ViewGroup parent) {
@@ -68,12 +68,15 @@ public class ParticipantsExpandableListAdapter extends BaseExpandableListAdapter
 		if (goer instanceof InvitedMinyanGoer) {
 			Uri contactUri = Contacts.getLookupUri(((InvitedMinyanGoer) goer).getContactId(), 
 					((InvitedMinyanGoer) goer).getLookupKey());
-			badge.assignContactUri(contactUri);
-			badge.setImageURI(Uri.parse(((InvitedMinyanGoer) goer).getPhotoThumbnailUri()));
+            try {
+                badge.assignContactUri(contactUri);
+                badge.setImageURI(Uri.parse(((InvitedMinyanGoer) goer).getPhotoThumbnailUri()));
+            } catch (Exception e) { Log.d("Exception", e.getLocalizedMessage()); }
+
 		} else if (goer instanceof UninvitedMinyanGoer) {
 			// clear the uri's in case view is being recycled
 			badge.assignContactUri(null);
-			badge.setImageURI(null);
+			badge.setImageResource(R.drawable.add_contact);
 		}
 		
 		name.setText(goer.getName());

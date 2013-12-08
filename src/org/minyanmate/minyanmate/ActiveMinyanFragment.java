@@ -1,18 +1,5 @@
 package org.minyanmate.minyanmate;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-
-import org.minyanmate.minyanmate.adapters.ParticipantsExpandableListAdapter;
-import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-import org.minyanmate.minyanmate.database.MinyanEventsTable;
-import org.minyanmate.minyanmate.database.MinyanGoersTable;
-import org.minyanmate.minyanmate.models.InviteStatus;
-import org.minyanmate.minyanmate.models.MinyanGoer;
-
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -31,6 +18,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
+
+import org.minyanmate.minyanmate.adapters.ParticipantsExpandableListAdapter;
+import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
+import org.minyanmate.minyanmate.database.MinyanEventsTable;
+import org.minyanmate.minyanmate.database.MinyanGoersTable;
+import org.minyanmate.minyanmate.models.InviteStatus;
+import org.minyanmate.minyanmate.models.MinyanGoer;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
 
 public class ActiveMinyanFragment extends Fragment implements
 	LoaderManager.LoaderCallbacks<Cursor>{
@@ -94,7 +94,7 @@ public class ActiveMinyanFragment extends Fragment implements
 					  String name = input.getText().toString();
 					  
 					  ContentValues values = new ContentValues();
-					  values.put(MinyanGoersTable.COLUMN_GENERAL_NAME, name);
+					  values.put(MinyanGoersTable.COLUMN_DISPLAY_NAME, name);
 					  values.put(MinyanGoersTable.COLUMN_IS_INVITED, 0);
 					  values.put(MinyanGoersTable.COLUMN_MINYAN_EVENT_ID, eventId);
 					  values.put(MinyanGoersTable.COLUMN_INVITE_STATUS, InviteStatus.toInteger(InviteStatus.ATTENDING));
