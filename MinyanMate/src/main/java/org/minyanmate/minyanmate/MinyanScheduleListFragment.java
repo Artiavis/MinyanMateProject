@@ -27,11 +27,11 @@ public class MinyanScheduleListFragment extends Fragment implements
 	public MinyanScheduleListFragment() {
 	}
 	
-	ScheduleExpandableListAdapter listAdapter;
-	ExpandableListView expListView;
+	private ScheduleExpandableListAdapter listAdapter;
+	private ExpandableListView expListView;
 	
-	List<String> listDataHeader;
-	HashMap<String, List<MinyanSchedule>> listDataChild;
+	private List<String> listDataHeader;
+	private HashMap<String, List<MinyanSchedule>> listDataChild;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,

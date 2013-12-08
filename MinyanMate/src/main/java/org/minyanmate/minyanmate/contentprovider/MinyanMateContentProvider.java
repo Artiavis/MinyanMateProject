@@ -305,8 +305,8 @@ public class MinyanMateContentProvider extends ContentProvider {
 			
 			if (subscrier.moveToFirst()) {
 				
-				isSubscribed = (subscrier.getInt(subscrier.getColumnIndex(MinyanSubscriptionsTable.COLUMN_IS_SUBSCRIBED)) 
-						== 1) ? true : false;
+				isSubscribed = (subscrier.getInt(subscrier.getColumnIndex(MinyanSubscriptionsTable.COLUMN_IS_SUBSCRIBED))
+                        == 1);
 			}
 			
 			

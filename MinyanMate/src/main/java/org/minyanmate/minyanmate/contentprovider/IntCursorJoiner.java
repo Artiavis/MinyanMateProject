@@ -20,7 +20,7 @@ import java.util.Iterator;
         private long[] mValues;
 
         public enum Result {
-            RIGHT, LEFT, BOTH;
+            RIGHT, LEFT, BOTH
         }
 
         public IntCursorJoiner(

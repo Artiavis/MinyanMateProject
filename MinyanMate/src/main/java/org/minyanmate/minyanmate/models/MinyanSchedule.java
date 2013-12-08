@@ -111,7 +111,7 @@ public class MinyanSchedule {
 		int hour = cursor.getInt(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_PRAYER_HOUR));
 		int min = cursor.getInt(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_PRAYER_MIN));
 		int prayerNum = cursor.getInt(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_PRAYER_NUM));
-		boolean isActive = (cursor.getInt(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_IS_ACTIVE)) == 1 ? true : false);
+		boolean isActive = (cursor.getInt(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_IS_ACTIVE)) == 1);
 		String dayName = cursor.getString(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_DAY_NAME));
 		String prayerName = cursor.getString(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_PRAYER_NAME));
 		String invMsg = cursor.getString(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_SCHEDULE_MESSAGE));

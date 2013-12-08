@@ -32,14 +32,14 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 
-public class ActiveMinyanFragment extends Fragment implements
+class ActiveMinyanFragment extends Fragment implements
 	LoaderManager.LoaderCallbacks<Cursor>{
 	
 	private static final int EVENT = 1;
 	private static final int PARTICIPANTS = 2;
 	
-	ParticipantsExpandableListAdapter listAdapter;
-	ExpandableListView expListView;
+	private ParticipantsExpandableListAdapter listAdapter;
+	private ExpandableListView expListView;
 	
 	private int mEventId = 0;
 	
@@ -174,6 +174,8 @@ public class ActiveMinyanFragment extends Fragment implements
 				String formattedTime = MinyanScheduleSettingsActivity.formatTimeTextView(getActivity(), hour, minute);
 				TextView timeTextView = (TextView) getActivity().findViewById(R.id.activeMinyanTime);
 				timeTextView.setText(formattedTime);
+
+                getActivity().findViewById(R.id.addUninvitedPersonButton).setEnabled(true);
 			}
 
 			break;

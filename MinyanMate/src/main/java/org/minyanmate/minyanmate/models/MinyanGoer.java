@@ -10,11 +10,11 @@ import java.util.List;
 
 public abstract class MinyanGoer {
 	
-	int goerId;
-	String name;
-	int eventId;
-	InviteStatus status;
-	boolean isInvited;
+	private int goerId;
+	private String name;
+	private int eventId;
+	private InviteStatus status;
+	private boolean isInvited;
 	
 	
 	MinyanGoer(int id, String name, int eventId, boolean isInvited, InviteStatus status) {
@@ -76,7 +76,7 @@ public abstract class MinyanGoer {
 	public static MinyanGoer cursorToMinyanGoer(Cursor cursor) {
 		
 		int goerId = cursor.getInt(GoerMatrix.GOER_ID);
-		boolean isInvited = cursor.getInt(GoerMatrix.IS_INVITED) == 1 ? true : false;
+		boolean isInvited = cursor.getInt(GoerMatrix.IS_INVITED) == 1;
 		int eventId = cursor.getInt(GoerMatrix.EVENT_ID);
 		int contactId = cursor.getInt(GoerMatrix.CONTACT_ID);
 		InviteStatus status = InviteStatus.fromInteger(cursor.getInt(GoerMatrix.INVITE_STATUS));

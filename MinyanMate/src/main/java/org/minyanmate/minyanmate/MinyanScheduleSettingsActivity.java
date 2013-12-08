@@ -50,9 +50,9 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 	private int scheduleId;
 	private MinyanSchedule schedule;
 	
-	TextView timeTextView;
-	TextView windowTextView;
-	ListView contactList;
+	private TextView timeTextView;
+	private TextView windowTextView;
+	private ListView contactList;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -271,7 +271,7 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 			break;
 			
 		case CONTACT_LOADER:
-			CursorAdapter adapter = new RemovableContactListAdapter(this, cursor, scheduleId, false);
+			CursorAdapter adapter = new RemovableContactListAdapter(this, cursor, scheduleId);
 			contactList.setAdapter(adapter);
 			
 			break;

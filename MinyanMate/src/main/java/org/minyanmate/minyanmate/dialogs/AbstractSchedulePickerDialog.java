@@ -15,7 +15,7 @@ import org.minyanmate.minyanmate.models.MinyanSchedule;
 public abstract class AbstractSchedulePickerDialog extends DialogFragment 
 implements TimePickerDialog.OnTimeSetListener {
 
-	int id;
+	private int id;
 	int minute;
 	int hour;
 	MinyanSchedule schedule;
