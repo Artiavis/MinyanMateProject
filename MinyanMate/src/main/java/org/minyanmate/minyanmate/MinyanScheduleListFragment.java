@@ -1,15 +1,5 @@
 package org.minyanmate.minyanmate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import org.minyanmate.minyanmate.adapters.ScheduleExpandableListAdapter;
-import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
-import org.minyanmate.minyanmate.models.MinyanSchedule;
-
-import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -21,6 +11,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+
+import org.minyanmate.minyanmate.adapters.ScheduleExpandableListAdapter;
+import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
+import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
+import org.minyanmate.minyanmate.models.MinyanSchedule;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class MinyanScheduleListFragment extends Fragment implements
 	LoaderManager.LoaderCallbacks<Cursor> {

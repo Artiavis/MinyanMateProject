@@ -1,19 +1,14 @@
 package org.minyanmate.minyanmate.dialogs;
 
-import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
-import org.minyanmate.minyanmate.models.MinyanSchedule;
-
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.text.format.DateFormat;
 import android.widget.TimePicker;
-import android.widget.Toast;
+
+import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
+import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
 
 /**
  * A DialogFragment with a Time Picker, used to update the time of a schedule

@@ -1,20 +1,13 @@
 package org.minyanmate.minyanmate.services;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
-import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
-import org.minyanmate.minyanmate.models.MinyanSchedule;
-
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.SystemClock;
 import android.util.Log;
+
+import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
+import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
 
 /**
  * A class which is automatically queries the {@link MinyanMateContentProvider}

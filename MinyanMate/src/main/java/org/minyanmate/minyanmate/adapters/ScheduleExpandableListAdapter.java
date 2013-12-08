@@ -1,19 +1,8 @@
 package org.minyanmate.minyanmate.adapters;
 
-import java.util.HashMap;
-import java.util.List;
-
-import org.minyanmate.minyanmate.MinyanScheduleSettingsActivity;
-import org.minyanmate.minyanmate.R;
-import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
-import org.minyanmate.minyanmate.models.MinyanSchedule;
-import org.minyanmate.minyanmate.services.MinyanRegistrar;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +11,15 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
+
+import org.minyanmate.minyanmate.MinyanScheduleSettingsActivity;
+import org.minyanmate.minyanmate.R;
+import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
+import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
+import org.minyanmate.minyanmate.models.MinyanSchedule;
+
+import java.util.HashMap;
+import java.util.List;
 
 // http://www.androidhive.info/2013/07/android-expandable-list-view-tutorial/
 

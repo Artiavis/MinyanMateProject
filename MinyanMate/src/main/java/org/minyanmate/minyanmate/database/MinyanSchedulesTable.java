@@ -1,10 +1,10 @@
 package org.minyanmate.minyanmate.database;
 
-import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.SparseArray;
+
+import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 
 
 /**

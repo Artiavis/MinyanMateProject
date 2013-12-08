@@ -1,11 +1,11 @@
 package org.minyanmate.minyanmate.models;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.database.Cursor;
 
 import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
 
-import android.database.Cursor;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A model class containing the attributes of objects from the 

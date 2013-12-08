@@ -1,12 +1,12 @@
 package org.minyanmate.minyanmate.services;
 
-import org.minyanmate.minyanmate.database.MinyanEventsTable;
-import org.minyanmate.minyanmate.database.MinyanGoersTable;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+
+import org.minyanmate.minyanmate.database.MinyanEventsTable;
+import org.minyanmate.minyanmate.database.MinyanGoersTable;
 
 /**
  * Checks whether a Minyan is active against the time stamps in 

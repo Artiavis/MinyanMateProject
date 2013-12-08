@@ -1,11 +1,11 @@
 package org.minyanmate.minyanmate.dialogs;
 
-import org.minyanmate.minyanmate.R;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.Html;
+
+import org.minyanmate.minyanmate.R;
 
 public class TermsOfService {
 	

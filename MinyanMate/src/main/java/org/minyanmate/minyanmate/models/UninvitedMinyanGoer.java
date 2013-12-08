@@ -1,11 +1,5 @@
 package org.minyanmate.minyanmate.models;
 
-import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-import org.minyanmate.minyanmate.database.MinyanGoersTable;
-
-import android.content.ContentValues;
-import android.content.Context;
-
 public class UninvitedMinyanGoer extends MinyanGoer {
 
 	public UninvitedMinyanGoer(int goerId, String name, int eventId, InviteStatus status, boolean isInvited) {

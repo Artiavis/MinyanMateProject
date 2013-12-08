@@ -11,7 +11,6 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
-import android.util.Log;
 
 import org.minyanmate.minyanmate.database.MinyanContactsTable;
 import org.minyanmate.minyanmate.database.MinyanEventsTable;
@@ -112,11 +111,6 @@ public class MinyanMateContentProvider extends ContentProvider {
 						MinyanContactsTable.COLUMN_PHONE_NUMBER_ID + " asc");
 				cursor.setNotificationUri(getContext().getContentResolver(), uri);
 
-                Log.d("List Contact from List", "Start Listing");
-                while(cursor.moveToNext())
-                    Log.d("App Contact", cursor.getString(cursor.getColumnIndex(MinyanContactsTable.COLUMN_PHONE_NUMBER_ID)));
-				cursor.moveToFirst();
-                Log.d("List Contact from List", "Done Listing");
 
 				Cursor phoneContacts = getContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
 						ContactMatrix.queryProj, null, null, Phone._ID + " asc");
@@ -130,13 +124,10 @@ public class MinyanMateContentProvider extends ContentProvider {
 				for (IntCursorJoiner.Result joinerResult : joiner) {
 					switch (joinerResult) {
 					case LEFT: // Ignore LEFT JOIN
-                        Log.d("App Contact", cursor.getString(cursor.getColumnIndex(MinyanContactsTable.COLUMN_PHONE_NUMBER_ID)));
                         break;
 					case RIGHT: // Ignore RIGHT JOIN
-                        Log.d("Phone contact", phoneContacts.getString(phoneContacts.getColumnIndex(Phone._ID)));
 						break;
 					case BOTH: // Only do things on inner joins
-                        Log.d("Both contact", phoneContacts.getString(phoneContacts.getColumnIndex(Phone._ID)));
 						minyanContactsMatrix.addRow(new Object[] {
 							phoneContacts.getLong(phoneContacts.getColumnIndex(Phone._ID)),
 							phoneContacts.getString(phoneContacts.getColumnIndex(Phone.PHOTO_THUMBNAIL_URI)),

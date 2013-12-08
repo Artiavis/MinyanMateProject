@@ -1,14 +1,13 @@
 package org.minyanmate.minyanmate.dialogs;
 
-import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
-import org.minyanmate.minyanmate.models.MinyanSchedule;
-
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.os.Bundle;
 import android.widget.TimePicker;
+
+import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
+import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
 
 public class ScheduleWindowPickerFragent extends AbstractSchedulePickerDialog {
 
