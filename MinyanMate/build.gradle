@@ -23,13 +23,13 @@ android {
 
     //sourceSets {
     //    main {
-    //        manifest.srcFile 'AndroidManifest.xml'
-    //        java.srcDirs = ['src']
-    //        resources.srcDirs = ['src']
-    //        aidl.srcDirs = ['src']
-    //        renderscript.srcDirs = ['src']
-    //        res.srcDirs = ['res']
-    //        assets.srcDirs = ['assets']
+    //        manifest.srcFile 'src/main/AndroidManifest.xml'
+    //        java.srcDirs = ['src/main/java']
+    //        resources.srcDirs = ['src/main/res']
+    //        aidl.srcDirs = ['src/main/aidl']
+    //        renderscript.srcDirs = ['src/main/']
+    //        res.srcDirs = ['src/main/res']
+    //        assets.srcDirs = ['src/main/assets']
     //    }
 
         // Move the tests to tests/java, tests/res, etc...

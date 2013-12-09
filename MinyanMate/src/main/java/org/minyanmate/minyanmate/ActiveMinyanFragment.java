@@ -9,7 +9,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -37,7 +40,11 @@ class ActiveMinyanFragment extends Fragment implements
 	
 	private static final int EVENT = 1;
 	private static final int PARTICIPANTS = 2;
-	
+
+    private static final int MENUITEM_MARK_ATTENDING = 1;
+    private static final int MENUITEM_MARK_AWAITING = 2;
+    private static final int MENUITEM_MARK_NOT_ATTENDING = 3;
+
 	private ParticipantsExpandableListAdapter listAdapter;
 	private ExpandableListView expListView;
 	
@@ -51,7 +58,9 @@ class ActiveMinyanFragment extends Fragment implements
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(
 				R.layout.fragment_active_minyan, container, false);
-		
+
+
+
 		Button btn = (Button) rootView.findViewById(R.id.addUninvitedPersonButton);
 		btn.setOnClickListener(new OnClickListener() {
 			@Override
@@ -70,60 +79,131 @@ class ActiveMinyanFragment extends Fragment implements
 		listAdapter = new ParticipantsExpandableListAdapter(getActivity(), list, map);
 		
 		expListView.setAdapter(listAdapter);
-		
+        expListView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+
+            @Override
+            public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
+                ExpandableListView.ExpandableListContextMenuInfo info=
+                        (ExpandableListView.ExpandableListContextMenuInfo)menuInfo;
+
+                if (ExpandableListView.getPackedPositionType(info.packedPosition) == ExpandableListView.PACKED_POSITION_TYPE_CHILD)
+                {
+                    int groupNum = ExpandableListView.getPackedPositionGroup(info.packedPosition);
+                    Log.d("Group Number in onCreateContextMenu", String.valueOf(groupNum));
+
+                    menu.setHeaderTitle("Move participant");
+
+                    switch (groupNum) {
+                        case 0: // group 0 => marked as attending
+                            menu.add(0, MENUITEM_MARK_AWAITING, 1, "Mark as awaiting response");
+                            menu.add(0, MENUITEM_MARK_NOT_ATTENDING, 2, "Mark as not attending");
+                            break;
+                        case 1: // group 1 => marked as awaiting response
+                            menu.add(0, MENUITEM_MARK_ATTENDING, 1, "Mark as attending");
+                            menu.add(0, MENUITEM_MARK_NOT_ATTENDING, 2, "Mark as not attending");
+                            break;
+
+                        case 2: // group 2 => marked as not attending
+                            menu.add(0, MENUITEM_MARK_ATTENDING, 1, "Mark as attending");
+                            menu.add(0, MENUITEM_MARK_AWAITING, 2, "Mark as awaiting response");
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+            }
+        });
+
 		return rootView;
 	}
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        ExpandableListView.ExpandableListContextMenuInfo info =
+                (ExpandableListView.ExpandableListContextMenuInfo)item.getMenuInfo();
+
+        int groupNum = ExpandableListView.getPackedPositionGroup(info.packedPosition);
+        int childNum = ExpandableListView.getPackedPositionChild(info.packedPosition);
+        Log.d("Group Number in onContextItemSelected", String.valueOf(groupNum));
+        Log.d("Child Number in onContextItemSelected", String.valueOf(childNum));
+
+        MinyanGoer goer = (MinyanGoer) listAdapter.getChild(groupNum, childNum);
+        Log.d("Goer", String.valueOf(goer));
+
+        ContentValues values = new ContentValues();
+        values.put(MinyanGoersTable.COLUMN_ID, goer.getMinyanGoerId());
+
+        switch (item.getItemId()) {
+            case MENUITEM_MARK_ATTENDING:
+                values.put(MinyanGoersTable.COLUMN_INVITE_STATUS, InviteStatus.toInteger(InviteStatus.ATTENDING));
+                break;
+
+            case MENUITEM_MARK_NOT_ATTENDING:
+                values.put(MinyanGoersTable.COLUMN_INVITE_STATUS, InviteStatus.toInteger(InviteStatus.NOT_ATTENDING));
+                break;
+
+            case MENUITEM_MARK_AWAITING:
+                values.put(MinyanGoersTable.COLUMN_INVITE_STATUS, InviteStatus.toInteger(InviteStatus.AWAITING_RESPONSE));
+                break;
+
+            default:
+                break;
+        }
+
+        getActivity().getContentResolver().update(MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS,
+                values, MinyanGoersTable.COLUMN_ID + "=?", new String[]{String.valueOf(goer.getMinyanGoerId())});
+
+        return super.onContextItemSelected(item);
+    }
 	
 	public void addUninvited() {
 		// add an uninvited minyangoer to the table
-		
-		if (mEventId > 0) {
-			
-			final int eventId = mEventId;
-			// Set an EditText view to get user input 
-			final EditText input = new EditText(getActivity());
-		
-			final AlertDialog alert = new AlertDialog.Builder(getActivity())
-				.setView(input)
-				.setTitle("Add a Congregant")
-				.setMessage("Quickly jot down a name for whoever you want to count")
-				
-				.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-					
-					public void onClick(DialogInterface dialog, int whichButton) {
-					  String name = input.getText().toString();
-					  
-					  ContentValues values = new ContentValues();
-					  values.put(MinyanGoersTable.COLUMN_DISPLAY_NAME, name);
-					  values.put(MinyanGoersTable.COLUMN_IS_INVITED, 0);
-					  values.put(MinyanGoersTable.COLUMN_MINYAN_EVENT_ID, eventId);
-					  values.put(MinyanGoersTable.COLUMN_INVITE_STATUS, InviteStatus.toInteger(InviteStatus.ATTENDING));
-					  
-					  getActivity().getContentResolver().insert(MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS, values);
-					  }
-					})
-					
-				.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-					
-					  public void onClick(DialogInterface dialog, int whichButton) {
-					    // Canceled.
-					  }
-					})
-					
-				.create();
-			
-			input.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-				
-				@Override
-				public void onFocusChange(View v, boolean hasFocus) {
-					if (hasFocus)
-						alert.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-				}
-			});
-			
-			alert.show();
-		}
-	}
+
+        final int eventId = mEventId;
+        // Set an EditText view to get user input
+        final EditText input = new EditText(getActivity());
+
+        final AlertDialog alert = new AlertDialog.Builder(getActivity())
+            .setView(input)
+            .setTitle("Add a Congregant")
+            .setMessage("Quickly jot down a name for whoever you want to count")
+
+            .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    String name = input.getText().toString();
+
+                    ContentValues values = new ContentValues();
+                    values.put(MinyanGoersTable.COLUMN_DISPLAY_NAME, name);
+                    values.put(MinyanGoersTable.COLUMN_IS_INVITED, 0);
+                    values.put(MinyanGoersTable.COLUMN_MINYAN_EVENT_ID, eventId);
+                    values.put(MinyanGoersTable.COLUMN_INVITE_STATUS, InviteStatus.toInteger(InviteStatus.ATTENDING));
+
+                    getActivity().getContentResolver().insert(MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS, values);
+                }
+            })
+
+            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    // Canceled.
+                }
+            })
+
+            .create();
+
+        input.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus)
+                    alert.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            }
+        });
+
+        alert.show();
+    }
 
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
@@ -131,11 +211,11 @@ class ActiveMinyanFragment extends Fragment implements
 		CursorLoader cursorLoader = null;
 		String query;
 		switch (id) {
-		
+
 		case EVENT:
-			query = MinyanGoersTable.COLUMN_ID + "= (SELECT MAX(" 
-							+ MinyanGoersTable.COLUMN_MINYAN_EVENT_ID + ") FROM " 
-							+ MinyanGoersTable.TABLE_MINYAN_INVITEES + ")";
+			query = MinyanEventsTable.COLUMN_ID + "= (SELECT MAX("
+							+ MinyanEventsTable.COLUMN_ID + ") FROM "
+							+ MinyanEventsTable.TABLE_MINYAN_EVENTS + ")";
 			
 			cursorLoader = new CursorLoader(getActivity(),
 					MinyanMateContentProvider.CONTENT_URI_EVENTS, null, 
@@ -169,7 +249,7 @@ class ActiveMinyanFragment extends Fragment implements
 				Calendar cal = new GregorianCalendar();
 				cal.setTimeInMillis(startTime);
 				int minute = cal.get(Calendar.MINUTE);
-				int hour = cal.get(Calendar.HOUR);
+				int hour = cal.get(Calendar.HOUR_OF_DAY);
 				
 				String formattedTime = MinyanScheduleSettingsActivity.formatTimeTextView(getActivity(), hour, minute);
 				TextView timeTextView = (TextView) getActivity().findViewById(R.id.activeMinyanTime);

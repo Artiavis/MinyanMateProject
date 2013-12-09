@@ -56,7 +56,7 @@ public class ParticipantsExpandableListAdapter extends BaseExpandableListAdapter
 			boolean isLastChild, View convertView, ViewGroup parent) {
 		
 		final MinyanGoer goer = (MinyanGoer) getChild(groupPosition, childPosition);
-		
+
 		if (convertView == null) {
 			LayoutInflater infl = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = infl.inflate(R.layout.fragment_particpant_child, null);

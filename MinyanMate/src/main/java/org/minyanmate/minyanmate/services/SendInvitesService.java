@@ -12,6 +12,7 @@ import android.util.Log;
 
 import com.commonsware.cwac.wakeful.WakefulIntentService;
 
+import org.minyanmate.minyanmate.UserParticipationPopupActivity;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.database.MinyanContactsTable;
 import org.minyanmate.minyanmate.database.MinyanEventsTable;
@@ -89,6 +90,8 @@ public class SendInvitesService extends WakefulIntentService {
 				
 				SystemClock.sleep(1000);
 			}
+            UserParticipationPopupActivity.createUserParticipationPopup((int) eventId, getApplicationContext());
+
 		}
 	}
 

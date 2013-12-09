@@ -86,6 +86,8 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:src="@drawable/add_group"
+            android:visibility="invisible"
+            android:clickable="false"
             android:onClick="pickNewGroup" />
         
     </LinearLayout>
