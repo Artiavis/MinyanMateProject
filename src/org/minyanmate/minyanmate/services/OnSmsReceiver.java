@@ -2,6 +2,7 @@ package org.minyanmate.minyanmate.services;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.database.MinyanEventsTable;
@@ -17,6 +18,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.provider.ContactsContract.PhoneLookup;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
@@ -68,25 +70,9 @@ public class OnSmsReceiver extends BroadcastReceiver{
 		            ContentResolver cr = context.getContentResolver();
 		            
 		            //Get contact ID associated with phone number which sent SMS
-		            Uri contentURI = Phone.CONTENT_URI;
-		            String[] projection = new String[] { Phone.CONTACT_ID, Phone.NUMBER };
-		            String selection = Phone.NUMBER + " = ?";
-		            String[] selectionArgs = new String[] { phoneNumber };
-		            String sortOrder = null;
-		            
-		            Cursor c = cr.query(contentURI, projection, selection, selectionArgs, sortOrder);
-		            c.moveToFirst();
-		            int senderContactId = c.getInt(c.getColumnIndex(Phone.CONTACT_ID));
-		            c.close();
-		            
-		            //Get Display Name associated with contact ID
-		            contentURI = ContactsContract.Contacts.CONTENT_URI;
-		            projection = new String[] { ContactsContract.Contacts._ID, ContactsContract.Contacts.DISPLAY_NAME };
-		            selection = ContactsContract.Contacts._ID + " = ?";
-		            selectionArgs = new String[] { Integer.toString(senderContactId) };
-		            sortOrder = ContactsContract.Contacts._ID + "DESC";
-		            
-		            c = cr.query(contentURI, projection, selection, selectionArgs, null);
+		            Uri contentURI = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
+
+	                Cursor c = cr.query(contentURI, new String[] { PhoneLookup.DISPLAY_NAME, PhoneLookup.LOOKUP_KEY }, null, null, null);
 		            
 		            if(c.getCount() < 1) {
 		            	Log.e("SmsReceiver", "Unidentifiable Phone Number");
@@ -94,18 +80,19 @@ public class OnSmsReceiver extends BroadcastReceiver{
 		            }
 		            
 		            c.moveToFirst();
-		            
-		            String senderDisplayName = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+		            String senderDisplayName = c.getString(c.getColumnIndex(PhoneLookup.DISPLAY_NAME));
+		            String senderLookupKey = c.getString(c.getColumnIndex(PhoneLookup.LOOKUP_KEY));
 		            c.close();
 		            
 		            //Retrieve & update Goer row associated with this Display Name
 		            contentURI = MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS;
-		            projection = new String[] { MinyanGoersTable.COLUMN_MINYAN_EVENT_ID, MinyanGoersTable.COLUMN_INVITE_STATUS };
-		            selection = MinyanGoersTable.COLUMN_GENERAL_NAME + " = ?";
-		            selectionArgs = new String[] { senderDisplayName };
-		            sortOrder = ContactsContract.Contacts._ID + "DESC";
+		            //String[] projection = new String[] { MinyanGoersTable.COLUMN_MINYAN_EVENT_ID, MinyanGoersTable.COLUMN_INVITE_STATUS, MinyanGoersTable.COLUMN_LOOKUP_KEY };
+		            String[] projection = null;
+		            String selection = MinyanGoersTable.COLUMN_LOOKUP_KEY + " = ?";
+		            String[] selectionArgs = new String[] { senderLookupKey };
+		            String sortOrder = null;
 		            
-		            c = cr.query(contentURI, projection, selection, selectionArgs, null);
+		            c = cr.query(contentURI, projection, selection, selectionArgs, sortOrder);
 		            
 		            if(c.getCount() < 1) {
 		            	Log.e("SmsReceiver", "Phone Number isn't associated with a MinyanMate Goer");
@@ -124,16 +111,16 @@ public class OnSmsReceiver extends BroadcastReceiver{
 		            	Log.i("SmsReceiver", "Already received RSVP from "+senderDisplayName+", updating to "+response+".");
 		            }
 		            
-		            if(response.toLowerCase().equals("!yes!"))
+		            if(response.toLowerCase(Locale.ENGLISH).equals("!yes!"))
 		            	responseCode = 2;
-		            else if(response.toLowerCase().equals("!no!"))
+		            else if(response.toLowerCase(Locale.ENGLISH).equals("!no!"))
 		            	responseCode = 3;
 		            
 		            ContentValues goerUpdates = new ContentValues();
 					goerUpdates.put(MinyanGoersTable.COLUMN_INVITE_STATUS, responseCode);
 					
-					selection = MinyanGoersTable.COLUMN_GENERAL_NAME + " = ? AND " + MinyanGoersTable.COLUMN_MINYAN_EVENT_ID + " = ?";
-		            selectionArgs = new String[] { senderDisplayName, Integer.toString(eventId) };
+					selection = MinyanGoersTable.COLUMN_LOOKUP_KEY + " = ? AND " + MinyanGoersTable.COLUMN_MINYAN_EVENT_ID + " = ?";
+		            selectionArgs = new String[] { senderLookupKey, Integer.toString(eventId) };
 		            
 		            int rowsUpdated = cr.update(MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS, goerUpdates, selection, selectionArgs);
 		            
@@ -146,7 +133,8 @@ public class OnSmsReceiver extends BroadcastReceiver{
 		            
 		            //Check how many Goers are going to the event, update event completion status if attendance count > 9
 		            contentURI = MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS;
-		            projection = new String[] { MinyanGoersTable.COLUMN_GENERAL_NAME };
+		            //projection = new String[] { MinyanGoersTable.COLUMN_GENERAL_NAME };
+		            projection = null;
 		            selection = MinyanGoersTable.COLUMN_MINYAN_EVENT_ID + " = ? AND " + MinyanGoersTable.COLUMN_INVITE_STATUS + " = 2";
 		            selectionArgs = new String[] { Integer.toString(eventId) };
 		            sortOrder = null;
