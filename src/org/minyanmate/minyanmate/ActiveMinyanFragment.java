@@ -169,8 +169,8 @@ public class ActiveMinyanFragment extends Fragment implements
 				Calendar cal = new GregorianCalendar();
 				cal.setTimeInMillis(startTime);
 				int minute = cal.get(Calendar.MINUTE);
-				int hour = cal.get(Calendar.HOUR);
-				
+				int hour = cal.get(Calendar.HOUR_OF_DAY);
+							
 				String formattedTime = MinyanScheduleSettingsActivity.formatTimeTextView(getActivity(), hour, minute);
 				TextView timeTextView = (TextView) getActivity().findViewById(R.id.activeMinyanTime);
 				timeTextView.setText(formattedTime);

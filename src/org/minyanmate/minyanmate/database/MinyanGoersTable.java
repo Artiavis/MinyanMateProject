@@ -51,7 +51,7 @@ public class MinyanGoersTable {
 	public static final String COLUMN_GENERAL_NAME = "general_name";
 	
 	/**
-	 * Returns an integer to indentify the status of the invited party. Is guaranteed
+	 * Returns an integer to identify the status of the invited party. Is guaranteed
 	 * to be 2 for manually entered parties, see {@link #COLUMN_IS_INVITED}.
 	 * <p>
 	 * 1: Party was invited but has not yet responded. <p>
