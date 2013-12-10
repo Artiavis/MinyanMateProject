@@ -69,7 +69,11 @@ public class ParticipantsExpandableListAdapter extends BaseExpandableListAdapter
 			Uri contactUri = Contacts.getLookupUri(((InvitedMinyanGoer) goer).getContactId(), 
 					((InvitedMinyanGoer) goer).getLookupKey());
 			badge.assignContactUri(contactUri);
-			badge.setImageURI(Uri.parse(((InvitedMinyanGoer) goer).getPhotoThumbnailUri()));
+			
+			if(((InvitedMinyanGoer) goer).getPhotoThumbnailUri() != null)
+				badge.setImageURI(Uri.parse(((InvitedMinyanGoer) goer).getPhotoThumbnailUri()));
+			else
+				badge.setImageURI(null);
 		} else if (goer instanceof UninvitedMinyanGoer) {
 			// clear the uri's in case view is being recycled
 			badge.assignContactUri(null);

@@ -60,12 +60,9 @@ public class OnSmsReceiver extends BroadcastReceiver{
 		 
 		            Log.i("SmsReceiver", "senderNum: "+ phoneNumber + "; response: " + response);
 		            
-		            /*
-		            // Show alert
-		            int duration = Toast.LENGTH_LONG;
-		            Toast toast = Toast.makeText(context, "senderNum: "+ phoneNumber + ", message: " + message, duration);
-		            toast.show();
-		            */
+		            //If SMS doesn't contain one of the two predefined responses, don't attempt to process it
+		            if(!response.toLowerCase(Locale.ENGLISH).equals(POSITIVE_RESPONSE) && !response.toLowerCase(Locale.ENGLISH).equals(NEGATIVE_RESPONSE))
+		            	return;
 		            
 		            ContentResolver cr = context.getContentResolver();
 		            
@@ -88,7 +85,11 @@ public class OnSmsReceiver extends BroadcastReceiver{
 		            contentURI = MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS;
 		            //String[] projection = new String[] { MinyanGoersTable.COLUMN_MINYAN_EVENT_ID, MinyanGoersTable.COLUMN_INVITE_STATUS, MinyanGoersTable.COLUMN_LOOKUP_KEY };
 		            String[] projection = null;
-		            String selection = MinyanGoersTable.COLUMN_LOOKUP_KEY + " = ?";
+		            //String selection = MinyanGoersTable.COLUMN_LOOKUP_KEY + " = ?";
+		            String selection = MinyanGoersTable.COLUMN_LOOKUP_KEY + " = ?"
+                            + " AND " + MinyanGoersTable.COLUMN_MINYAN_EVENT_ID + "= (SELECT MAX("
+                            + MinyanGoersTable.COLUMN_MINYAN_EVENT_ID + ") FROM "
+                            + MinyanGoersTable.TABLE_MINYAN_INVITEES + ")";
 		            String[] selectionArgs = new String[] { senderLookupKey };
 		            String sortOrder = null;
 		            

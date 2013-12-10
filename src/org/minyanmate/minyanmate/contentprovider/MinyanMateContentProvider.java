@@ -173,8 +173,6 @@ public class MinyanMateContentProvider extends ContentProvider {
 				cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, 
 						MinyanGoersTable.COLUMN_LOOKUP_KEY + " asc");
 				
-				int count = cursor.getCount();
-				
 				cursor.setNotificationUri(getContext().getContentResolver(), uri);		
 				
 				Cursor phoneContacts2 = getContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, 
