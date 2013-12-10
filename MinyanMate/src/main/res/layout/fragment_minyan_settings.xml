@@ -80,15 +80,13 @@
             android:src="@drawable/add_contact"
             android:onClick="pickNewContact" />
         
-        <ImageButton 
+        <Button
             android:id="@+id/minyan_setting_add_groupButton"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:src="@drawable/add_group"
-            android:visibility="invisible"
-            android:clickable="false"
-            android:onClick="pickNewGroup" />
+            android:text="Custom Message"
+            android:onClick="editCustomMessage" />
         
     </LinearLayout>
     

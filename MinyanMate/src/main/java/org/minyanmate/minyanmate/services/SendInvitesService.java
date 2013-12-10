@@ -12,11 +12,13 @@ import android.util.Log;
 
 import com.commonsware.cwac.wakeful.WakefulIntentService;
 
+import org.minyanmate.minyanmate.MinyanScheduleSettingsActivity;
 import org.minyanmate.minyanmate.UserParticipationPopupActivity;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.database.MinyanContactsTable;
 import org.minyanmate.minyanmate.database.MinyanEventsTable;
 import org.minyanmate.minyanmate.database.MinyanGoersTable;
+import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
 import org.minyanmate.minyanmate.models.InviteStatus;
 import org.minyanmate.minyanmate.models.MinyanSchedule;
 
@@ -48,10 +50,13 @@ public class SendInvitesService extends WakefulIntentService {
 			MinyanSchedule sched = MinyanSchedule.schedFromCursor(c);
 			
 			Log.d("SendInvitesService", "Scheduling Minyan "+ sched.getId());
-			
+
+            int prayerHour = sched.getHour();
+            int prayerMinute = sched.getMinute();
+
 			Calendar date = new GregorianCalendar();
-			date.set(Calendar.HOUR_OF_DAY, sched.getHour());
-			date.set(Calendar.MINUTE, sched.getMinute());
+			date.set(Calendar.HOUR_OF_DAY, prayerHour);
+			date.set(Calendar.MINUTE, prayerMinute);
 			
 			ContentValues eventValues = new ContentValues();
 			eventValues.put(MinyanEventsTable.COLUMN_MINYAN_SCHEDULE_TIME, System.currentTimeMillis());
@@ -76,8 +81,20 @@ public class SendInvitesService extends WakefulIntentService {
 				
 				String number = contactsToBeInvited.getString(MinyanMateContentProvider.ContactMatrix.PHONE_NUMBER);
 				String name = contactsToBeInvited.getString(MinyanMateContentProvider.ContactMatrix.DISPLAY_NAME);
+
+                String userCustomMsg = sched.getInviteMessage();
+                String truncatedUserCustomMsg = userCustomMsg.substring(0, Math.min(userCustomMsg.length(),
+                        MinyanSchedulesTable.SCHEDULE_MESSAGE_SIZE_LIMIT));
+
+                String fullInviteMessage  = new StringBuilder(truncatedUserCustomMsg)
+                        .append(sched.getPrayerName())
+                        .append(" will be at ")
+                        .append(MinyanScheduleSettingsActivity.formatTimeTextView(this, prayerHour, prayerMinute))
+                        .append(MinyanSchedulesTable.RESPONSE_API_INSTRUCTIONS).toString();
+
+
 				// TODO fire intent to log the invited recipient in the Goers table if the message was received
-				smsm.sendTextMessage(number, null, sched.getInviteMessage(), null, null);
+				smsm.sendTextMessage(number, null, fullInviteMessage, null, null);
 				
 				inviteValues = new ContentValues();
 				inviteValues.put(MinyanGoersTable.COLUMN_DISPLAY_NAME, name);

@@ -1,8 +1,10 @@
 package org.minyanmate.minyanmate;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -14,9 +16,15 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.format.DateFormat;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +32,7 @@ import android.widget.Toast;
 import org.minyanmate.minyanmate.adapters.RemovableContactListAdapter;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.database.MinyanContactsTable;
+import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
 import org.minyanmate.minyanmate.dialogs.ScheduleTimePickerFragment;
 import org.minyanmate.minyanmate.dialogs.ScheduleWindowPickerFragent;
 import org.minyanmate.minyanmate.dialogs.TermsOfService;
@@ -151,8 +160,79 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 	 * activity.
 	 * @param view
 	 */
-	public void pickNewGroup(View view) {
+	public void editCustomMessage(View view) {
 		// TODO stuff
+        final View v = view;
+        final int schedId = scheduleId;
+
+        ViewGroup customMessageViewGroup = (ViewGroup) findViewById(R.layout.fragment_custom_message);
+        View customMessageView = LayoutInflater.from(this).inflate(R.layout.fragment_custom_message, null);
+
+        final EditText input = (EditText) customMessageView.findViewById(R.id.customMessageEditText);
+        final TextView textView = (TextView) customMessageView.findViewById(R.id.customMessageTextLength);
+
+        input.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+                textView.setText(
+                        MinyanSchedulesTable.SCHEDULE_MESSAGE_SIZE_LIMIT - input.getText().length() + " characters left");
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
+        input.setText(schedule.getInviteMessage(), TextView.BufferType.EDITABLE);
+
+
+
+
+        final AlertDialog alert = new AlertDialog.Builder(this)
+                .setView(customMessageView)
+                .setTitle("Modify Custom Message")
+                .setMessage("You can jot down some details which will be placed before the time of the " +
+                        "minyan and the response instructions. It must be shorter than " +
+                        MinyanSchedulesTable.SCHEDULE_MESSAGE_SIZE_LIMIT + " characters.")
+
+                .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        String msg = input.getText().toString();
+
+                        if (msg.length() <= MinyanSchedulesTable.SCHEDULE_MESSAGE_SIZE_LIMIT) {
+                            ContentValues values = new ContentValues();
+                            values.put(MinyanSchedulesTable.COLUMN_SCHEDULE_MESSAGE, msg);
+
+                            getContentResolver().update(MinyanMateContentProvider.CONTENT_URI_TIMES, values,
+                                    MinyanSchedulesTable.COLUMN_ID + "=?", new String[]{Integer.toString(schedId)});
+                        } else {
+                            Toast.makeText(v.getContext(), "Could not save your message! It was too long!", Toast.LENGTH_LONG).show();
+                        }
+
+
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // Canceled.
+                    }
+                })
+
+                .create();
+
+        input.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus)
+                    alert.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+            }
+        });
+
+        alert.show();
 	}
 	
 	/**

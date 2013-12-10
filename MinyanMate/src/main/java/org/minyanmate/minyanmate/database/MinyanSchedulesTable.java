@@ -72,9 +72,17 @@ public class MinyanSchedulesTable {
 	 * the name of the service (Shacharis, Mincha, Maariv).
 	 */
 	public static final String COLUMN_PRAYER_NAME = "prayer_name";
-	
+
+    /**
+     * A string of finite length representing the custom message which can be delivered with every
+     * scheduling.
+     */
 	public static final String COLUMN_SCHEDULE_MESSAGE = "invite_msg";
-	
+
+    public static final int SCHEDULE_MESSAGE_SIZE_LIMIT = 57;
+    public static final String RESPONSE_API_INSTRUCTIONS = "Please " +
+            "respond either \"!yes!\" or \"!no!\". Thank you.";
+
 	private static final String DATABASE_CREATE = "create table "
 			+ TABLE_MINYAN_SCHEDULES
 			+ "(" 
@@ -83,12 +91,13 @@ public class MinyanSchedulesTable {
 			+ COLUMN_DAY_NAME + " text not null, "
 			+ COLUMN_PRAYER_NUM + " int not null, " 
 			+ COLUMN_PRAYER_NAME + " text not null, "
-			+ COLUMN_SCHEDULE_WINDOW + " text nt null, "
+			+ COLUMN_SCHEDULE_WINDOW + " int not null, "
 			+ COLUMN_PRAYER_HOUR + " int not null, " 
 			+ COLUMN_PRAYER_MIN + " int not null, "
 			+ COLUMN_IS_ACTIVE + " int not null, " 
 			+ COLUMN_SCHEDULE_MESSAGE + " text not null" + ");";
-	
+
+
 	private static final String DATABASE_INDEX = "create index "
 			+ TABLE_MINYAN_SCHEDULES + "_index ON " + TABLE_MINYAN_SCHEDULES
 			+ "(" 
@@ -114,12 +123,12 @@ public class MinyanSchedulesTable {
 				time.put(COLUMN_PRAYER_NUM, j);
 				time.put(COLUMN_PRAYER_HOUR, 8 + 6*(j-1));
 				time.put(COLUMN_DAY_NAME, days.get(i));
-				time.put(COLUMN_PRAYER_NAME, prayers.get(j));
+                // If Friday evening, put Kabbalat Shabbat instead
+				time.put(COLUMN_PRAYER_NAME, prayers.get( i == 6 && j == 3 ? 4 : j  ));
 				time.put(COLUMN_PRAYER_MIN, 0);
 				time.put(COLUMN_SCHEDULE_WINDOW, 3600);
 				time.put(COLUMN_IS_ACTIVE, 0);
-				time.put(COLUMN_SCHEDULE_MESSAGE, "Can you come to " + prayers.get(j) + "? Please " +
-						"respond either \"!yes!\" or \"!no!\". Thank you.");
+				time.put(COLUMN_SCHEDULE_MESSAGE, "");
 				database.insert(TABLE_MINYAN_SCHEDULES, null, time);
 			}
 		}
@@ -147,5 +156,6 @@ public class MinyanSchedulesTable {
 		prayers.append(1, "Shacharis");
 		prayers.append(2, "Mincha");
 		prayers.append(3, "Maariv");
+        prayers.append(4, "Kabbalat Shabbat");
 	}
 }

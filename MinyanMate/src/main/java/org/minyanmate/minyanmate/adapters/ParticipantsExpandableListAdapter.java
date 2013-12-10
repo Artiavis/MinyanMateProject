@@ -70,8 +70,11 @@ public class ParticipantsExpandableListAdapter extends BaseExpandableListAdapter
 					((InvitedMinyanGoer) goer).getLookupKey());
             try {
                 badge.assignContactUri(contactUri);
-                badge.setImageURI(Uri.parse(((InvitedMinyanGoer) goer).getPhotoThumbnailUri()));
-            } catch (Exception e) { Log.d("Exception", e.getLocalizedMessage()); }
+                if(((InvitedMinyanGoer) goer).getPhotoThumbnailUri() != null)
+                    badge.setImageURI(Uri.parse(((InvitedMinyanGoer) goer).getPhotoThumbnailUri()));
+                else
+                    badge.setImageURI(null);
+            } catch (Exception e) { Log.e("Exception", e.getLocalizedMessage()); }
 
 		} else if (goer instanceof UninvitedMinyanGoer) {
 			// clear the uri's in case view is being recycled
