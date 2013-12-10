@@ -76,12 +76,12 @@ public final class R {
         public static final int minyan_mate=0x7f070000;
     }
     public static final class string {
-        public static final int action_settings=0x7f050000;
-        public static final int app_name=0x7f050001;
-        public static final int terms_of_service=0x7f050002;
-        public static final int title_active_minyan=0x7f050003;
-        public static final int title_edit_minyans=0x7f050004;
-        public static final int tos=0x7f050005;
+        public static final int about_app=0x7f050000;
+        public static final int action_settings=0x7f050001;
+        public static final int app_name=0x7f050002;
+        public static final int terms_of_service=0x7f050003;
+        public static final int title_active_minyan=0x7f050004;
+        public static final int title_edit_minyans=0x7f050005;
     }
     public static final class style {
         /** 

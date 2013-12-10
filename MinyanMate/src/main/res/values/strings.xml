@@ -8,9 +8,12 @@
     <string name="title_edit_minyans">Edit Minyans</string>
     
     
-    <string name="tos">Terms of Service</string>
+    <string name="about_app">About</string>
     <string name="terms_of_service">
         <![CDATA[
+        <p>Minyan Mate was developed for a class by Dario Rethage and Jeff Rabinowitz on behalf of
+        the Rutgers Jewish community.</p>
+
         <h2>Minyan Mate Terms of Service</h2>
         
         <p>Last Updated: December 3 2013</p>

@@ -30,8 +30,8 @@ import java.util.Locale;
  */
 public class OnSmsReceiver extends BroadcastReceiver{
 
-    public static final String POSITIVE_RESPONSE = "!yes!";
-    public static final String NEGATIVE_RESPONSE = "!no!";
+    public static final String POSITIVE_RESPONSE = "accept";
+    public static final String NEGATIVE_RESPONSE = "decline";
 
     final SmsManager smsManager = SmsManager.getDefault();
 
@@ -52,14 +52,13 @@ public class OnSmsReceiver extends BroadcastReceiver{
                     String phoneNumber = currentMessage.getDisplayOriginatingAddress();
                     String response = currentMessage.getDisplayMessageBody();
 
+
                     Log.i("SmsReceiver", "senderNum: "+ phoneNumber + "; response: " + response);
-                            
-                            /*
-                            // Show alert
-                            int duration = Toast.LENGTH_LONG;
-                            Toast toast = Toast.makeText(context, "senderNum: "+ phoneNumber + ", message: " + message, duration);
-                            toast.show();
-                            */
+
+                    //If SMS doesn't contain one of the two predefined responses, don't attempt to process it
+                    if (!response.toLowerCase(Locale.ENGLISH).trim().equals(POSITIVE_RESPONSE) &&
+                            !response.toLowerCase(Locale.ENGLISH).trim().equals(NEGATIVE_RESPONSE))
+                        return;
 
                     ContentResolver cr = context.getContentResolver();
 
@@ -111,9 +110,9 @@ public class OnSmsReceiver extends BroadcastReceiver{
                             Log.i("SmsReceiver", "Already received RSVP from "+senderDisplayName+", updating to "+response+".");
                     }
 
-                    if(response.toLowerCase(Locale.ENGLISH).equals("!yes!"))
+                    if(response.toLowerCase(Locale.ENGLISH).trim().equals(POSITIVE_RESPONSE))
                         responseCode = InviteStatus.ATTENDING;
-                    else if(response.toLowerCase(Locale.ENGLISH).equals("!no!"))
+                    else if(response.toLowerCase(Locale.ENGLISH).trim().equals(NEGATIVE_RESPONSE))
                         responseCode = InviteStatus.NOT_ATTENDING;
 
                     ContentValues goerUpdates = new ContentValues();

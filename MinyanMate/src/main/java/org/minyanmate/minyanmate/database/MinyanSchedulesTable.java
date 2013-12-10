@@ -79,9 +79,10 @@ public class MinyanSchedulesTable {
      */
 	public static final String COLUMN_SCHEDULE_MESSAGE = "invite_msg";
 
-    public static final int SCHEDULE_MESSAGE_SIZE_LIMIT = 57;
-    public static final String RESPONSE_API_INSTRUCTIONS = "Please " +
-            "respond either \"!yes!\" or \"!no!\". Thank you.";
+
+    public static final String RESPONSE_API_INSTRUCTIONS = ". Can you come? Please " +
+            "respond either \"accept\" or \"decline\". Thank you.";
+    public static final int SCHEDULE_MESSAGE_SIZE_LIMIT = 53;
 
 	private static final String DATABASE_CREATE = "create table "
 			+ TABLE_MINYAN_SCHEDULES
@@ -115,8 +116,6 @@ public class MinyanSchedulesTable {
 		
 		for (int i = 1; i < 7; i++) { // Sun - Fri
 			for (int j = 1; j < 4; j++) { // Morn - Night
-				if (i > 5 && j == 3) 
-					break;
 				
 				time = new ContentValues();
 				time.put(COLUMN_DAY_NUM, i);
