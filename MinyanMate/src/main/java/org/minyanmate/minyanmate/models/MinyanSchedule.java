@@ -1,7 +1,9 @@
 package org.minyanmate.minyanmate.models;
 
+import android.content.Context;
 import android.database.Cursor;
 
+import org.minyanmate.minyanmate.MinyanScheduleSettingsActivity;
 import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
 
 import java.util.ArrayList;
@@ -15,7 +17,11 @@ import java.util.List;
  */
 public class MinyanSchedule {
 
-	private int _id;
+    public static final String RESPONSE_API_INSTRUCTIONS = ". Can you come? Please " +
+            "respond either \"accept\" or \"decline\". Thank you.";
+    public static final int SCHEDULE_MESSAGE_SIZE_LIMIT = 53;
+
+    private int _id;
 	private String day;
 	private String prayerName;
 	private int dayNum;
@@ -45,8 +51,34 @@ public class MinyanSchedule {
 		this.prayerName = prayerName;
 		this.inviteMessage = msg;
 	}
-	
-	public int getPrayerNum() {
+
+    /**
+     * A helper method for formatting the final content of the SMS to be sent to an
+     * {@link org.minyanmate.minyanmate.models.InvitedMinyanGoer}.
+     * @param context a context passed to
+     *      {@link org.minyanmate.minyanmate.MinyanScheduleSettingsActivity#formatTimeTextView(android.content.Context, int, int)}
+     *                to facilitate time localization
+     * @param userCustomMsg a user's personalized custom message to be prepended to the default message
+     * @param prayerName the name of the prayer, see
+     *      {@link org.minyanmate.minyanmate.database.MinyanSchedulesTable#COLUMN_PRAYER_NAME}
+     * @param prayerHour the hour of the prayer, see
+     *                   {@link org.minyanmate.minyanmate.database.MinyanSchedulesTable#COLUMN_PRAYER_HOUR}
+     * @param prayerMinute the minute of the prayer, see
+     *                  {@link org.minyanmate.minyanmate.database.MinyanSchedulesTable#COLUMN_PRAYER_MIN}
+     * @return a String with the formatted final message
+     */
+    public static String formatInviteMessage(Context context, String userCustomMsg, String prayerName, int prayerHour, int prayerMinute) {
+        String truncatedUserCustomMsg = userCustomMsg.substring(0, Math.min(userCustomMsg.length(),
+                SCHEDULE_MESSAGE_SIZE_LIMIT));
+
+        return new StringBuilder(truncatedUserCustomMsg)
+                .append(prayerName)
+                .append(" will be at ")
+                .append(MinyanScheduleSettingsActivity.formatTimeTextView(context, prayerHour, prayerMinute))
+                .append(RESPONSE_API_INSTRUCTIONS).toString();
+    }
+
+    public int getPrayerNum() {
 		return prayerNum;
 	}
 	

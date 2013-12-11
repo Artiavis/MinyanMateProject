@@ -79,12 +79,7 @@ public class MinyanSchedulesTable {
      */
 	public static final String COLUMN_SCHEDULE_MESSAGE = "invite_msg";
 
-
-    public static final String RESPONSE_API_INSTRUCTIONS = ". Can you come? Please " +
-            "respond either \"accept\" or \"decline\". Thank you.";
-    public static final int SCHEDULE_MESSAGE_SIZE_LIMIT = 53;
-
-	private static final String DATABASE_CREATE = "create table "
+    private static final String DATABASE_CREATE = "create table "
 			+ TABLE_MINYAN_SCHEDULES
 			+ "(" 
 			+ COLUMN_ID + " integer primary key autoincrement, "

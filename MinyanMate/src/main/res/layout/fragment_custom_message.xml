@@ -4,6 +4,15 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:id="@+id/customMessagePreview"
+        android:paddingRight="20dp"
+        android:paddingLeft="20dp"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp"/>
+
     <EditText
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
