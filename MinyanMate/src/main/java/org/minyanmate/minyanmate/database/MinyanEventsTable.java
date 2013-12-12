@@ -85,7 +85,8 @@ public class MinyanEventsTable {
             + COLUMN_MINYAN_COMPLETE_ALERTED + " int not null, "
             + COLUMN_MINYAN_SCHEDULE_ID + " int not null, "
             + COLUMN_DAY_NAME + " text, "
-            + COLUMN_PRAYER_NAME + " text "
+            + COLUMN_PRAYER_NAME + " text, "
+            + " CHECK(" + COLUMN_MINYAN_START_TIME + "<" + COLUMN_MINYAN_END_TIME + ")"
 			+ ");";
 	
 	private static final String DATABASE_INDEX = "create index "

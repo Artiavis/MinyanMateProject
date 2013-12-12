@@ -34,7 +34,7 @@ public class MinyanRegistrar {
 		date.set(Calendar.MINUTE, sched.getMinute());
 		date.set(Calendar.DAY_OF_WEEK, sched.getDayNum());
         date.set(Calendar.SECOND, 0);
-        date.add(Calendar.SECOND, (int) (-1*sched.getSchedulingWindowLength()));
+        date.add(Calendar.MILLISECOND, (int) (-1*sched.getSchedulingWindowLength()));
 		if (date.getTimeInMillis() < System.currentTimeMillis()) 
 			date.add(Calendar.WEEK_OF_YEAR, 1);
 		

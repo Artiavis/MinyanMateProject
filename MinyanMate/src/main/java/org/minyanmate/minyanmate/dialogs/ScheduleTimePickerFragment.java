@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.widget.TimePicker;
 
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
@@ -20,9 +19,7 @@ public class ScheduleTimePickerFragment extends AbstractSchedulePickerDialog {
 	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		
-		return new TimePickerDialog(getActivity(), this, hour, minute,
-				DateFormat.is24HourFormat(getActivity()));
+        return super.onCreateDialog(savedInstanceState);
 	}
 	
 	/**
@@ -32,6 +29,8 @@ public class ScheduleTimePickerFragment extends AbstractSchedulePickerDialog {
 	@Override
 	public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
+        if (ignoreTimeSet)
+            return;
 		
 		ContentValues values = new ContentValues();
 		values.put(MinyanSchedulesTable.COLUMN_PRAYER_HOUR, hourOfDay);

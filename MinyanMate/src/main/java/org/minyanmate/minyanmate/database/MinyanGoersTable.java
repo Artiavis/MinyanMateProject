@@ -75,7 +75,7 @@ public class MinyanGoersTable {
 			+ COLUMN_GOER_ID + " integer primary key autoincrement, "
 			+ COLUMN_MINYAN_EVENT_ID + " integer not null, " 
 			+ COLUMN_IS_INVITED + " integer not null, " 
-			+ COLUMN_PHONE_NUMBER_ID + " integer not null, "
+			+ COLUMN_PHONE_NUMBER_ID + " integer, "
 			+ COLUMN_DISPLAY_NAME + " text, "
 			+ COLUMN_INVITE_STATUS + " integer not null, "
 			+ "foreign key(" + COLUMN_MINYAN_EVENT_ID + ") references " 

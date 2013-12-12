@@ -296,7 +296,7 @@ class ActiveMinyanFragment extends Fragment implements
 
 				String formattedTime = MinyanScheduleSettingsActivity.formatTimeTextView(getActivity(), hour, minute);
 				TextView timeTextView = (TextView) getActivity().findViewById(R.id.activeMinyanTime);
-				timeTextView.setText(day + prayerName + " begins at " + formattedTime);
+				timeTextView.setText(day + " " + prayerName + " begins at " + formattedTime);
 
                 // Initialize button state and callbacks
                 Button addToCountBtn = (Button) getActivity().findViewById(R.id.addUninvitedPersonButton);

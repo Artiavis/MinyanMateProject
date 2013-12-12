@@ -1,11 +1,16 @@
 package org.minyanmate.minyanmate.dialogs;
 
+import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.text.format.DateFormat;
 import android.widget.Toast;
 
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
@@ -17,11 +22,42 @@ import java.util.concurrent.TimeUnit;
 public abstract class AbstractSchedulePickerDialog extends DialogFragment 
 implements TimePickerDialog.OnTimeSetListener {
 
+    boolean ignoreTimeSet = true;
+
 	private int id;
 	int minute;
 	int hour;
 	MinyanSchedule schedule;
-	
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        final TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), this, hour, minute,
+                (this instanceof ScheduleWindowPickerFragent ?
+                       true : DateFormat.is24HourFormat(getActivity())));
+
+        timePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Set",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int i) {
+                        ignoreTimeSet = false;
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                            timePickerDialog.onClick(dialog, i);
+                        }
+                    }
+                });
+        timePickerDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        ignoreTimeSet = true;
+                        dialogInterface.cancel();
+                    }
+                });
+
+        return timePickerDialog;
+    }
+
 	public void initialize(int id, int hour, int minute, MinyanSchedule sched) {
 		this.minute = minute;
 		this.hour = hour;

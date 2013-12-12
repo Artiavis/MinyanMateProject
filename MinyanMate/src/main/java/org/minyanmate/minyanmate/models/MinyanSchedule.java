@@ -72,7 +72,8 @@ public class MinyanSchedule {
         String truncatedUserCustomMsg = userCustomMsg.substring(0, Math.min(userCustomMsg.length(),
                 SCHEDULE_MESSAGE_SIZE_LIMIT));
 
-        return " " + truncatedUserCustomMsg + prayerName +  " will be at " +
+        return truncatedUserCustomMsg + (truncatedUserCustomMsg.trim().length() > 0 ? " " : "")
+                + prayerName +  " will be at " +
                 MinyanScheduleSettingsActivity.formatTimeTextView(context, prayerHour, prayerMinute)
                 + RESPONSE_API_INSTRUCTIONS;
     }
@@ -114,7 +115,7 @@ public class MinyanSchedule {
 	}
 	
 	public int getSchedulingWindowMinutes() {
-		return (int) TimeUnit.MILLISECONDS.toMinutes(scheduleWindowLength);
+		return (int) TimeUnit.MILLISECONDS.toMinutes(scheduleWindowLength) % 60;
 	}
 	
 	public String getPrayerName() {

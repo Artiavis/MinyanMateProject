@@ -17,8 +17,7 @@ public class ScheduleWindowPickerFragent extends AbstractSchedulePickerDialog {
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		
-		TimePickerDialog dialog = new TimePickerDialog(getActivity(), this, hour, minute,
-				true);
+		TimePickerDialog dialog = (TimePickerDialog) super.onCreateDialog(savedInstanceState);
 		
 		dialog.setTitle("Set scheduling period length");
 		return dialog;
@@ -30,7 +29,10 @@ public class ScheduleWindowPickerFragent extends AbstractSchedulePickerDialog {
 	 */
 	@Override
 	public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-		
+
+        if (ignoreTimeSet)
+            return;
+
 		/* 
 		 * Need to check both ahead and behind. Can't move this schedule too far forward
 		 * or it would interfere with the next event, and can't move this schedule too far
@@ -38,7 +40,7 @@ public class ScheduleWindowPickerFragent extends AbstractSchedulePickerDialog {
 		 */
 		
 		ContentValues values = new ContentValues();
-		long windowLength = TimeUnit.HOURS.toMillis(hourOfDay + TimeUnit.MINUTES.toMillis(minute));
+		long windowLength = TimeUnit.HOURS.toMillis(hourOfDay) + TimeUnit.MINUTES.toMillis(minute);
 		
 		values.put(MinyanSchedulesTable.COLUMN_SCHEDULE_WINDOW, windowLength);
 		
