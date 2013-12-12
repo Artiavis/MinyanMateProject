@@ -8,6 +8,7 @@ import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A model class containing the attributes of objects from the 
@@ -19,7 +20,7 @@ public class MinyanSchedule {
 
     public static final String RESPONSE_API_INSTRUCTIONS = ". Can you come? Please " +
             "respond either \"accept\" or \"decline\". Thank you.";
-    public static final int SCHEDULE_MESSAGE_SIZE_LIMIT = 53;
+    public static final int SCHEDULE_MESSAGE_SIZE_LIMIT = 52;
 
     private int _id;
 	private String day;
@@ -71,7 +72,7 @@ public class MinyanSchedule {
         String truncatedUserCustomMsg = userCustomMsg.substring(0, Math.min(userCustomMsg.length(),
                 SCHEDULE_MESSAGE_SIZE_LIMIT));
 
-        return truncatedUserCustomMsg + prayerName +  " will be at " +
+        return " " + truncatedUserCustomMsg + prayerName +  " will be at " +
                 MinyanScheduleSettingsActivity.formatTimeTextView(context, prayerHour, prayerMinute)
                 + RESPONSE_API_INSTRUCTIONS;
     }
@@ -109,11 +110,11 @@ public class MinyanSchedule {
 	}
 	
 	public int getSchedulingWindowHours() {
-		return (int) scheduleWindowLength / (3600);
+		return (int) TimeUnit.MILLISECONDS.toHours(scheduleWindowLength);
 	}
 	
 	public int getSchedulingWindowMinutes() {
-		return (int) (scheduleWindowLength % (3600))/60;
+		return (int) TimeUnit.MILLISECONDS.toMinutes(scheduleWindowLength);
 	}
 	
 	public String getPrayerName() {

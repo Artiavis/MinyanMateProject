@@ -23,6 +23,7 @@ import org.minyanmate.minyanmate.models.MinyanSchedule;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.concurrent.TimeUnit;
 
 public class SendInvitesService extends WakefulIntentService {
 
@@ -54,25 +55,28 @@ public class SendInvitesService extends WakefulIntentService {
 		
 		Log.i("SendInvitesService", "Inside SendInvitesService");
 		Log.d("SendInvitesService", "Bundle: " + b);
-		Log.d("SendInvitesService", "Trying to get requestCode from bundle");
 
         int requestCode = b.getInt(REQUEST_CODE);
-		int scheduleId = b.getInt(REQUEST_CODE);
+		int scheduleId = b.getInt(SCHEDULE_ID);
+
+        Log.d("SendInvitesService", " Request Code: " + requestCode);
+        Log.d("SendInvitesService", " Schedule Id: " + scheduleId);
 
         switch (requestCode) {
             case SEND_SCHEDULE_INVITES:
                 beginSendScheduleInvites(scheduleId);
+                break;
 
             case SEND_INVITE_TO_CONTACT:
                 int eventId = b.getInt(EVENT_ID);
                 long phoneNumberId = b.getLong(PHONE_NUMBER_ID);
+                Log.d("SendInvitesService", " Event Id: " + eventId);
+                Log.d("SendInvitesService", " Phone Number Id: " + phoneNumberId);
                 beginSendInviteToContact(scheduleId, eventId, phoneNumberId);
 
             default:
 
         }
-
-
 	}
 
 
@@ -97,14 +101,16 @@ public class SendInvitesService extends WakefulIntentService {
             ContentValues eventValues = new ContentValues();
             eventValues.put(MinyanEventsTable.COLUMN_MINYAN_SCHEDULE_TIME, System.currentTimeMillis());
             eventValues.put(MinyanEventsTable.COLUMN_MINYAN_START_TIME, date.getTimeInMillis());
-            eventValues.put(MinyanEventsTable.COLUMN_MINYAN_END_TIME, date.getTimeInMillis() + 30*60); // give it 30 minutes
+            eventValues.put(MinyanEventsTable.COLUMN_MINYAN_END_TIME, date.getTimeInMillis() + TimeUnit.MINUTES.toMillis(30)); // give it 30 minutes
             eventValues.put(MinyanEventsTable.COLUMN_IS_MINYAN_COMPLETE, 0);
+            eventValues.put(MinyanEventsTable.COLUMN_MINYAN_COMPLETE_ALERTED, 0);
             eventValues.put(MinyanEventsTable.COLUMN_MINYAN_SCHEDULE_ID, scheduleId);
             eventValues.put(MinyanEventsTable.COLUMN_DAY_NAME, sched.getDay());
             eventValues.put(MinyanEventsTable.COLUMN_PRAYER_NAME, sched.getPrayerName());
             Uri eventUri = getContentResolver().insert(MinyanMateContentProvider.CONTENT_URI_EVENTS, eventValues);
 
             long eventId = ContentUris.parseId(eventUri);
+            Log.i("SendInvitesService", "Event id: " + eventId);
 
             Cursor contactsToBeInvited = getContentResolver().query(
                     MinyanMateContentProvider.CONTENT_URI_CONTACTS, null,

@@ -114,7 +114,7 @@ public class MinyanGoersTable {
     private static final String DATABASE_INSERT_TRIGGER = "CREATE TRIGGER " + TRIGGER_ON_INSERT_IS_MINYAN_COMPLETE +
             "AFTER INSERT ON " + TABLE_MINYAN_INVITEES +
             " BEGIN " +
-            "UPDATE " + MinyanEventsTable.COLUMN_IS_MINYAN_COMPLETE + " SET " +
+            "UPDATE " + MinyanEventsTable.TABLE_MINYAN_EVENTS + " SET " +
             MinyanEventsTable.COLUMN_IS_MINYAN_COMPLETE +
             " = (SELECT(" +
             "SELECT COUNT(*) FROM (" +
@@ -135,7 +135,7 @@ public class MinyanGoersTable {
     private static final String DATABASE_UPDATE_TRIGGER = "CREATE TRIGGER " + TRIGGER_ON_UPDATE_IS_MINYAN_COMPLETE +
             "AFTER UPDATE OF " + COLUMN_INVITE_STATUS + " ON " + TABLE_MINYAN_INVITEES +
             " BEGIN " +
-            "UPDATE " + MinyanEventsTable.COLUMN_IS_MINYAN_COMPLETE + " SET " +
+            "UPDATE " + MinyanEventsTable.TABLE_MINYAN_EVENTS + " SET " +
             MinyanEventsTable.COLUMN_IS_MINYAN_COMPLETE +
             " = (SELECT(" +
             "SELECT COUNT(*) FROM (" +

@@ -25,7 +25,8 @@ public class MinyanRegistrar {
 		
 		// Get alarm manager to set recurring alarm for minyan
 		AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-				
+
+        Log.d("Minyan Registrar Registering schedule", " Schedule Id: " + sched.getId());
 		PendingIntent pi = sendScheduledInvitesPendingIntent(context, sched.getId());
 
 		Calendar date = new GregorianCalendar();
@@ -33,9 +34,9 @@ public class MinyanRegistrar {
 		date.set(Calendar.MINUTE, sched.getMinute());
 		date.set(Calendar.DAY_OF_WEEK, sched.getDayNum());
         date.set(Calendar.SECOND, 0);
+        date.add(Calendar.SECOND, (int) (-1*sched.getSchedulingWindowLength()));
 		if (date.getTimeInMillis() < System.currentTimeMillis()) 
 			date.add(Calendar.WEEK_OF_YEAR, 1);
-		date.add(Calendar.SECOND, (int) (-1*sched.getSchedulingWindowLength()));
 		
 		mgr.setRepeating(AlarmManager.RTC_WAKEUP,
                   date.getTimeInMillis(),

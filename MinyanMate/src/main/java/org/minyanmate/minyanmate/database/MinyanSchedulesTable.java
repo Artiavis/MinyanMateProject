@@ -6,6 +6,8 @@ import android.util.SparseArray;
 
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 
+import java.util.concurrent.TimeUnit;
+
 
 /**
  * A class containing the column descriptions and {@link MinyanSchedulesTable#onCreate(SQLiteDatabase)}
@@ -120,7 +122,7 @@ public class MinyanSchedulesTable {
                 // If Friday evening, put Kabbalat Shabbat instead
 				time.put(COLUMN_PRAYER_NAME, prayers.get( i == 6 && j == 3 ? 4 : j  ));
 				time.put(COLUMN_PRAYER_MIN, 0);
-				time.put(COLUMN_SCHEDULE_WINDOW, 3600);
+				time.put(COLUMN_SCHEDULE_WINDOW, TimeUnit.HOURS.toMillis(1));
 				time.put(COLUMN_IS_ACTIVE, 0);
 				time.put(COLUMN_SCHEDULE_MESSAGE, "");
 				database.insert(TABLE_MINYAN_SCHEDULES, null, time);

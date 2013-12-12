@@ -69,8 +69,11 @@ class ActiveMinyanFragment extends Fragment implements
 				R.layout.fragment_active_minyan, container, false);
 
         // LoaderManager not guaranteed to run before onActivityResult, therefore restore state
-        mEventId = savedInstanceState.getInt("mEventId");
-        mScheduleId = savedInstanceState.getInt("mScheduleId");
+        if (savedInstanceState != null)
+        {
+            mEventId = savedInstanceState.getInt("mEventId");
+            mScheduleId = savedInstanceState.getInt("mScheduleId");
+        }
 
 		getLoaderManager().initLoader(EVENT, null, this);
 		getLoaderManager().initLoader(PARTICIPANTS, null, this);
@@ -300,15 +303,24 @@ class ActiveMinyanFragment extends Fragment implements
                 Button invToMinyanBtn = (Button) getActivity().findViewById(R.id.inviteContactToMinyanButton);
 
                 // If minyan info is old, don't even bother enabling or setting callbacks
-                long currentTime = System.currentTimeMillis();
-                if (scheduleTime < currentTime && currentTime < endTime) {
+                long currTime = System.currentTimeMillis();
+
+                Log.d("Event Info", "Event Id: " + mEventId);
+                Log.d("Event Info", "Schedule Time: " + scheduleTime);
+                Log.d("Event Info", "Current Time:  " + currTime);
+                Log.d("Event Info", "End Time:      " + endTime);
+
+                if ((scheduleTime <= currTime) && (currTime <= endTime)) {
 
                     addToCountBtn.setEnabled(true);
                     addToCountBtn.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             long currentTime = System.currentTimeMillis();
-                            if (scheduleTime < currentTime && currentTime < endTime) {
+                            if ((scheduleTime < currentTime) && (currentTime < endTime)) {
+                                Log.d("Event Info", "Schedule Time: " + scheduleTime);
+                                Log.d("Event Info", "Current Time:  " + currentTime);
+                                Log.d("Event Info", "End Time:      " + endTime);
                                 addUninvited();
                             }
                             else
@@ -321,7 +333,7 @@ class ActiveMinyanFragment extends Fragment implements
                         @Override
                         public void onClick(View view) {
                             long currentTime = System.currentTimeMillis();
-                            if (scheduleTime < currentTime && currentTime < endTime) {
+                            if ((scheduleTime < currentTime) && (currentTime < endTime)) {
                                 Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
                                 intent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE);
                                 startActivityForResult(intent, MinyanScheduleSettingsActivity.PICK_CONTACT);

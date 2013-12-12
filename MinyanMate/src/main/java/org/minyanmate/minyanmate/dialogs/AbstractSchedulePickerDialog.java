@@ -12,6 +12,8 @@ import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
 import org.minyanmate.minyanmate.models.MinyanSchedule;
 
+import java.util.concurrent.TimeUnit;
+
 public abstract class AbstractSchedulePickerDialog extends DialogFragment 
 implements TimePickerDialog.OnTimeSetListener {
 
@@ -47,15 +49,15 @@ implements TimePickerDialog.OnTimeSetListener {
 					MinyanSchedulesTable.COLUMN_SCHEDULE_ID + " ASC");
 			
 			long thisWindowLength = thisScheduleWindow; // assume constant
-			long thisScheduleStartTime = 3600*thisScheduleHour + 60*thisScheduleMinute;
-			long thisScheduleEndTime = thisScheduleStartTime + 30*60; // 30 minutes later
+			long thisScheduleStartTime = TimeUnit.HOURS.toMillis(thisScheduleHour) + TimeUnit.MINUTES.toMillis(thisScheduleMinute);
+			long thisScheduleEndTime = thisScheduleStartTime +TimeUnit.MINUTES.toMillis(30); // 30 minutes later
 			
 			if (id == 1 && adjacentSchedules.getCount() == 1 // if first event, only check forwards 
 					&& adjacentSchedules.moveToFirst()) {
 				
 				MinyanSchedule nextSched = MinyanSchedule.schedFromCursor(adjacentSchedules);
 				long nextWindowLength = nextSched.getSchedulingWindowLength();
-				long nextSchedStartTime = nextSched.getHour() * 3600 + nextSched.getMinute() * 60;
+				long nextSchedStartTime = TimeUnit.HOURS.toMillis(nextSched.getHour()) + TimeUnit.MINUTES.toMillis(nextSched.getMinute());
 				
 				if ( thisScheduleEndTime + nextWindowLength < nextSchedStartTime) { // no need to check day-wrap-around
 					context.getContentResolver().update(
@@ -73,7 +75,7 @@ implements TimePickerDialog.OnTimeSetListener {
 				
 				MinyanSchedule previousSched = MinyanSchedule.schedFromCursor(adjacentSchedules);
 				
-				long prevSchedEndTime = previousSched.getHour() * 3600 + previousSched.getMinute() * 60;
+				long prevSchedEndTime = TimeUnit.HOURS.toMillis(previousSched.getHour()) + TimeUnit.MINUTES.toMillis(previousSched.getMinute());
 				
 				if ( prevSchedEndTime + thisWindowLength < thisScheduleStartTime ) { // no need to check day-wrap-around
 					context.getContentResolver().update(
@@ -94,13 +96,13 @@ implements TimePickerDialog.OnTimeSetListener {
 				adjacentSchedules.moveToFirst();			
 				MinyanSchedule previousSched = MinyanSchedule.schedFromCursor(adjacentSchedules);
 				
-				long prevSchedEndTime = previousSched.getHour() * 3600 + previousSched.getMinute() * 60;
+				long prevSchedEndTime = TimeUnit.HOURS.toMillis(previousSched.getHour()) + TimeUnit.MINUTES.toMillis(previousSched.getMinute());
 				
 				adjacentSchedules.moveToNext();
 				MinyanSchedule nextSched = MinyanSchedule.schedFromCursor(adjacentSchedules);
 				
 				long nextWindowLength = nextSched.getSchedulingWindowLength();
-				long nextSchedStartTime = nextSched.getHour() * 3600 + nextSched.getMinute() * 60;
+				long nextSchedStartTime = TimeUnit.HOURS.toMillis(nextSched.getHour()) + TimeUnit.MINUTES.toMillis(nextSched.getMinute());
 				
 				boolean previousMinyanCanWrapDay = (previousSched.getPrayerNum() == 3 && schedule.getPrayerNum() == 1);
 				boolean thisMinyanCanWrapDay = (schedule.getPrayerNum() == 3 && nextSched.getPrayerNum() == 1);
@@ -110,14 +112,14 @@ implements TimePickerDialog.OnTimeSetListener {
 				 * can "wrap around" to today. To make sure that absolute time references are preserved, add 24 hours.
 				 */
 				
-				thisScheduleStartTime += (previousMinyanCanWrapDay ? 24*3600 : 0);
+				thisScheduleStartTime += (previousMinyanCanWrapDay ? TimeUnit.DAYS.toMillis(1) : 0);
 				
 				/*
 				 * If this minyan is at the end of the day, the next minyan is at the beginning of the day, and this
 				 * can "wrap around" to tomorrow. To make sure that absolute time references are preserved, add 24 hours.
 				 */
 				
-				nextSchedStartTime += (thisMinyanCanWrapDay ? 24*3600 : 0);
+				nextSchedStartTime += (thisMinyanCanWrapDay ? TimeUnit.DAYS.toMillis(1) : 0);
 				
 				if ( prevSchedEndTime + thisWindowLength < thisScheduleStartTime) {
 					

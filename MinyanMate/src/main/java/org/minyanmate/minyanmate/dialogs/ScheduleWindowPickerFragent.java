@@ -9,6 +9,8 @@ import android.widget.TimePicker;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
 
+import java.util.concurrent.TimeUnit;
+
 public class ScheduleWindowPickerFragent extends AbstractSchedulePickerDialog {
 
 
@@ -36,7 +38,7 @@ public class ScheduleWindowPickerFragent extends AbstractSchedulePickerDialog {
 		 */
 		
 		ContentValues values = new ContentValues();
-		long windowLength = 3600 * hourOfDay + 60*minute;
+		long windowLength = TimeUnit.HOURS.toMillis(hourOfDay + TimeUnit.MINUTES.toMillis(minute));
 		
 		values.put(MinyanSchedulesTable.COLUMN_SCHEDULE_WINDOW, windowLength);
 		

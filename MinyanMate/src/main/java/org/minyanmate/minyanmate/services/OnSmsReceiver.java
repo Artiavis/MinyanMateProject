@@ -76,7 +76,8 @@ public class OnSmsReceiver extends BroadcastReceiver{
                     c.moveToFirst();
                     String senderDisplayName = c.getString(c.getColumnIndex(Phone.DISPLAY_NAME));
                     long senderPhoneNumberId = c.getLong(c.getColumnIndex(Phone._ID));
-
+                    Log.i("SmsReceiver", "Phone Number: " + phoneNumber);
+                    Log.i("SmsReceiver", "Phone Number Id: " + senderPhoneNumberId);
                     c.close();
 
                     //Retrieve & update Goer row associated with this Display Name

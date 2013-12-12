@@ -82,7 +82,7 @@ public class MinyanEventsTable {
 			+ COLUMN_MINYAN_START_TIME + " int not null, " 
 			+ COLUMN_MINYAN_END_TIME + " int not null, " 
 			+ COLUMN_IS_MINYAN_COMPLETE + " int not null, "
-            + COLUMN_MINYAN_COMPLETE_ALERTED + "int not null, "
+            + COLUMN_MINYAN_COMPLETE_ALERTED + " int not null, "
             + COLUMN_MINYAN_SCHEDULE_ID + " int not null, "
             + COLUMN_DAY_NAME + " text, "
             + COLUMN_PRAYER_NAME + " text "
