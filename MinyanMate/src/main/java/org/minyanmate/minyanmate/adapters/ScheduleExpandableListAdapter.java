@@ -104,9 +104,9 @@ public class ScheduleExpandableListAdapter extends BaseExpandableListAdapter {
 				values.put(MinyanSchedulesTable.COLUMN_IS_ACTIVE, ((CheckBox) v).isChecked() ? 1 : 0);
 				
 				int updateCount = context.getContentResolver().update(
-						Uri.parse(MinyanMateContentProvider.CONTENT_URI_TIMES + "/" + childPrayer.getId()),
+						Uri.parse(MinyanMateContentProvider.CONTENT_URI_SCHEDULES + "/" + childPrayer.getId()),
 						values,
-//						MinyanTimesTable.COLUMN_ID + "=?", new String[] { String.valueOf(childPrayer.getId()) }
+//						MinyanTimesTable.COLUMN_EVENT_ID + "=?", new String[] { String.valueOf(childPrayer.getId()) }
 						null, null
 						);
 			}

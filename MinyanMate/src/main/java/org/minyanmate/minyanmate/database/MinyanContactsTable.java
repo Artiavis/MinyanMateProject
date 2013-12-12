@@ -13,7 +13,8 @@ public class MinyanContactsTable {
 	 * Returns an integer describing the unique contact/prayer combination, ie the
 	 * composite key.
 	 */
-	public static final String COLUMN_ID = "_id";
+    // To avoid collisions with ContactsContract, don't name "contact_id"
+	public static final String COLUMN_MINYAN_CONTACT_ID = "minyan_contact_id";
 	
 	/**
 	 * Returns a string with the {@link android.provider.ContactsContract.CommonDataKinds.Phone._ID}
@@ -29,21 +30,21 @@ public class MinyanContactsTable {
 	private static final String DATABASE_CREATE = "create table "
 			+ TABLE_MINYAN_CONTACTS
 			+ "(" 
-			+ COLUMN_ID + " integer primary key autoincrement, "
+			+ COLUMN_MINYAN_CONTACT_ID + " integer primary key autoincrement, "
 			+ COLUMN_PHONE_NUMBER_ID + " integer not null, "
 			+ COLUMN_MINYAN_SCHEDULE_ID + " integer not null, "
 				+ "unique(" + COLUMN_PHONE_NUMBER_ID + ", "
 				+ COLUMN_MINYAN_SCHEDULE_ID 
 				+ ") on conflict replace, "
 				+ "foreign key(" + COLUMN_MINYAN_SCHEDULE_ID + ") references "
-				+ MinyanSchedulesTable.TABLE_MINYAN_SCHEDULES + "(" + MinyanSchedulesTable.COLUMN_ID
+				+ MinyanSchedulesTable.TABLE_MINYAN_SCHEDULES + "(" + MinyanSchedulesTable.COLUMN_SCHEDULE_ID
 				+ ")" 
 			+ ");";
 	
 	private static final String DATABASE_INDEX = "create index "
 			+ TABLE_MINYAN_CONTACTS + "_index ON " + TABLE_MINYAN_CONTACTS
 			+ "(" 
-			+ COLUMN_ID
+			+ COLUMN_MINYAN_CONTACT_ID
 			+ ");";
 	
 	public static void onCreate(SQLiteDatabase database) {

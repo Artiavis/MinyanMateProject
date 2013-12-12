@@ -36,12 +36,12 @@ public class MinyanMateContentProvider extends ContentProvider {
 	
 	
 	private static final String AUTHORITY = "org.minyanmate.minyanmate.contentprovider";
-	private static final String PATH_TIMES = "times";
+	private static final String PATH_SCHEDULES = "schedules";
 	private static final String PATH_CONTACTS = "contacts";
 	private static final String PATH_EVENTS = "events";
 	private static final String PATH_GOERS = "goers";
 	
-	public static final Uri CONTENT_URI_TIMES = Uri.parse("content://" + AUTHORITY + "/" + PATH_TIMES);
+	public static final Uri CONTENT_URI_SCHEDULES = Uri.parse("content://" + AUTHORITY + "/" + PATH_SCHEDULES);
 	public static final Uri CONTENT_URI_CONTACTS = Uri.parse("content://" + AUTHORITY + "/" + PATH_CONTACTS);
 	public static final Uri CONTENT_URI_EVENTS = Uri.parse("content://" + AUTHORITY + "/" + PATH_EVENTS);
 	public static final Uri CONTENT_URI_EVENT_GOERS = Uri.parse("content://" + AUTHORITY + "/" + PATH_GOERS);
@@ -60,8 +60,8 @@ public class MinyanMateContentProvider extends ContentProvider {
 	static {
 		sURIMatcher.addURI(AUTHORITY, PATH_CONTACTS, CONTACTS);
 		sURIMatcher.addURI(AUTHORITY, PATH_CONTACTS + "/*", CONTACT_ID);
-		sURIMatcher.addURI(AUTHORITY, PATH_TIMES, SCHEDULES);
-		sURIMatcher.addURI(AUTHORITY, PATH_TIMES + "/#", SCHEDULE_ID);
+		sURIMatcher.addURI(AUTHORITY, PATH_SCHEDULES, SCHEDULES);
+		sURIMatcher.addURI(AUTHORITY, PATH_SCHEDULES + "/#", SCHEDULE_ID);
 		sURIMatcher.addURI(AUTHORITY, PATH_EVENTS, EVENTS);
 		sURIMatcher.addURI(AUTHORITY, PATH_EVENTS + "/#", EVENT_ID);
 		sURIMatcher.addURI(AUTHORITY, PATH_GOERS, GOERS);
@@ -87,7 +87,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 		switch (uriType) {
 		
 			case SCHEDULE_ID:
-				queryBuilder.appendWhere(MinyanSchedulesTable.COLUMN_ID + "=" + uri.getLastPathSegment());
+				queryBuilder.appendWhere(MinyanSchedulesTable.COLUMN_SCHEDULE_ID + "=" + uri.getLastPathSegment());
 				// Fall through
 			case SCHEDULES:
 				queryBuilder.setTables(MinyanSchedulesTable.TABLE_MINYAN_SCHEDULES);
@@ -97,7 +97,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 
 
 			case CONTACT_ID:
-				queryBuilder.appendWhere(MinyanContactsTable.COLUMN_ID + "=" + uri.getLastPathSegment());
+				queryBuilder.appendWhere(MinyanContactsTable.COLUMN_MINYAN_CONTACT_ID + "=" + uri.getLastPathSegment());
 				// fall through
 			case CONTACTS:
 				
@@ -149,10 +149,10 @@ public class MinyanMateContentProvider extends ContentProvider {
 				return minyanContactsMatrix;
 			
 			case EVENT_ID:
-				queryBuilder.appendWhere(MinyanEventsTable.COLUMN_ID + "=" + uri.getLastPathSegment());
+				queryBuilder.appendWhere(MinyanEventsTable.COLUMN_EVENT_ID + "=" + uri.getLastPathSegment());
 				// fall through
 			case EVENTS:
-				
+				// Inner join
 				queryBuilder.setTables(MinyanEventsTable.TABLE_MINYAN_EVENTS);
 				cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, 
 						sortOrder);
@@ -190,7 +190,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 					case LEFT: // Left join is result of a random attendee and should be recorded as such
 						
 						goers.addRow(new Object[] {
-							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_ID)),
+							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_GOER_ID)),
 							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_IS_INVITED)),
 							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_MINYAN_EVENT_ID)),
 							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_INVITE_STATUS)),
@@ -208,7 +208,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 					case BOTH: // Only do things on inner joins
 						
 						goers.addRow(new Object[] {
-							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_ID)),
+							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_GOER_ID)),
 							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_IS_INVITED)),
 							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_MINYAN_EVENT_ID)),
 							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_INVITE_STATUS)),
@@ -246,7 +246,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 				
 			case CONTACT_ID: // may not be reachable
 				rowsDeleted = db.delete(MinyanContactsTable.TABLE_MINYAN_CONTACTS, 
-						MinyanContactsTable.COLUMN_ID + "=?", new String[] { uri.getLastPathSegment()});
+						MinyanContactsTable.COLUMN_MINYAN_CONTACT_ID + "=?", new String[] { uri.getLastPathSegment()});
 				break;
 				
 			case EVENTS:
@@ -256,7 +256,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 				
 			case EVENT_ID:
 				rowsDeleted = db.delete(MinyanEventsTable.TABLE_MINYAN_EVENTS,
-						MinyanEventsTable.COLUMN_ID + "=?", new String[] { uri.getLastPathSegment()});
+						MinyanEventsTable.COLUMN_EVENT_ID + "=?", new String[] { uri.getLastPathSegment()});
 				break;
 				
 			case GOERS:
@@ -265,7 +265,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 				break;
 			case GOER_ID:
 				rowsDeleted = db.delete(MinyanGoersTable.TABLE_MINYAN_INVITEES,
-						MinyanGoersTable.COLUMN_ID + "=?", new String[] { uri.getLastPathSegment()});
+						MinyanGoersTable.COLUMN_GOER_ID + "=?", new String[] { uri.getLastPathSegment()});
 				break;
 				
 			default:
@@ -349,7 +349,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 			case SCHEDULE_ID:
 				// TODO implement this
 				rowsUpdated = db.update(MinyanSchedulesTable.TABLE_MINYAN_SCHEDULES, values,
-						MinyanSchedulesTable.COLUMN_ID + "=?", new String[] { uri.getLastPathSegment() });
+						MinyanSchedulesTable.COLUMN_SCHEDULE_ID + "=?", new String[] { uri.getLastPathSegment() });
 				
 				// Update the MinyanRegistrar
 				updateMinyanRegistrar();
@@ -361,7 +361,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 				
 			case EVENT_ID:
 				rowsUpdated = db.update(MinyanEventsTable.TABLE_MINYAN_EVENTS, values, 
-						MinyanEventsTable.COLUMN_ID + "=?", new String[] { uri.getLastPathSegment() });
+						MinyanEventsTable.COLUMN_EVENT_ID + "=?", new String[] { uri.getLastPathSegment() });
 				break;
 				
 			case GOERS:
@@ -370,7 +370,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 				
 			case GOER_ID:
 				rowsUpdated = db.update(MinyanGoersTable.TABLE_MINYAN_INVITEES, values, 
-						MinyanGoersTable.COLUMN_ID + "=?", new String[] { uri.getLastPathSegment()});
+						MinyanGoersTable.COLUMN_GOER_ID + "=?", new String[] { uri.getLastPathSegment()});
 				break;
 				
 			default:
@@ -449,7 +449,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 		 * string array with that additional property.
 		 */
 		public static final String[] matrixAttrs = new String[] {
-			MinyanGoersTable.COLUMN_ID,
+			MinyanGoersTable.COLUMN_GOER_ID,
 			MinyanGoersTable.COLUMN_IS_INVITED,
 			MinyanGoersTable.COLUMN_MINYAN_EVENT_ID,
 			MinyanGoersTable.COLUMN_INVITE_STATUS,

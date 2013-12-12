@@ -19,7 +19,7 @@ public class MinyanSchedulesTable {
 	/**
 	 * Describes the unique integer identifier of a row.
 	 */
-	public static final String COLUMN_ID = "_id";
+	public static final String COLUMN_SCHEDULE_ID = "schedule_id";
 	
 	/**
 	 * An integer describing the day, from 1 - 7, with Sunday always corresponding
@@ -82,7 +82,7 @@ public class MinyanSchedulesTable {
     private static final String DATABASE_CREATE = "create table "
 			+ TABLE_MINYAN_SCHEDULES
 			+ "(" 
-			+ COLUMN_ID + " integer primary key autoincrement, "
+			+ COLUMN_SCHEDULE_ID + " integer primary key autoincrement, "
 			+ COLUMN_DAY_NUM + " int not null, " 
 			+ COLUMN_DAY_NAME + " text not null, "
 			+ COLUMN_PRAYER_NUM + " int not null, " 
@@ -97,7 +97,7 @@ public class MinyanSchedulesTable {
 	private static final String DATABASE_INDEX = "create index "
 			+ TABLE_MINYAN_SCHEDULES + "_index ON " + TABLE_MINYAN_SCHEDULES
 			+ "(" 
-			+ COLUMN_ID + ", "
+			+ COLUMN_SCHEDULE_ID + ", "
 			+ COLUMN_DAY_NUM + ", "
 			+ COLUMN_PRAYER_NUM + ", " 
 			+ COLUMN_IS_ACTIVE

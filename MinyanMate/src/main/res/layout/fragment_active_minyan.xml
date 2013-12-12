@@ -18,7 +18,8 @@
     <LinearLayout 
         android:orientation="horizontal"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        style="?android:attr/buttonBarButtonStyle">
         
         <Button 
             android:layout_width="0dp"
@@ -26,21 +27,29 @@
             android:layout_weight="1"
             android:gravity="center"
             android:padding="2dp"
-            android:text="Add Person to Count"
+            android:text="Add to Count"
             android:enabled="false"
             android:id="@+id/addUninvitedPersonButton" />
-        <!-- 
+
          <Button 
-            android:layout_width="fill_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
             android:padding="2dp"
-            android:text="Cancel Minyan"
-            android:onClick="cancelMinyan" />
-        -->
+            android:text="Invite Contact"
+            android:enabled="false"
+            android:id="@+id/inviteContactToMinyanButton" />
+
     </LinearLayout>
-    
+
+    <TextView
+        android:layout_margin="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Minyan Count" />
+
     <ExpandableListView 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

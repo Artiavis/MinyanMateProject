@@ -58,7 +58,7 @@ public class MinyanScheduleListFragment extends Fragment implements
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
 		CursorLoader cursorLoader = new CursorLoader(getActivity(), 
-				MinyanMateContentProvider.CONTENT_URI_TIMES, null, null, null, 
+				MinyanMateContentProvider.CONTENT_URI_SCHEDULES, null, null, null,
 				MinyanSchedulesTable.COLUMN_DAY_NUM + ", " 
 				+ MinyanSchedulesTable.COLUMN_PRAYER_HOUR + ", "
 				+ MinyanSchedulesTable.COLUMN_PRAYER_MIN);

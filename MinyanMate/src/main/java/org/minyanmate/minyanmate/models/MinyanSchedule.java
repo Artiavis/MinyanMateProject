@@ -71,11 +71,9 @@ public class MinyanSchedule {
         String truncatedUserCustomMsg = userCustomMsg.substring(0, Math.min(userCustomMsg.length(),
                 SCHEDULE_MESSAGE_SIZE_LIMIT));
 
-        return new StringBuilder(truncatedUserCustomMsg)
-                .append(prayerName)
-                .append(" will be at ")
-                .append(MinyanScheduleSettingsActivity.formatTimeTextView(context, prayerHour, prayerMinute))
-                .append(RESPONSE_API_INSTRUCTIONS).toString();
+        return truncatedUserCustomMsg + prayerName +  " will be at " +
+                MinyanScheduleSettingsActivity.formatTimeTextView(context, prayerHour, prayerMinute)
+                + RESPONSE_API_INSTRUCTIONS;
     }
 
     public int getPrayerNum() {
@@ -137,7 +135,7 @@ public class MinyanSchedule {
 	 */
 	public static MinyanSchedule schedFromCursor(Cursor cursor) {
 		
-		int id = cursor.getInt(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_ID));			
+		int id = cursor.getInt(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_SCHEDULE_ID));
 		int dayNum = cursor.getInt(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_DAY_NUM));
 		long winLen = cursor.getLong(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_SCHEDULE_WINDOW));
 		int hour = cursor.getInt(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_PRAYER_HOUR));

@@ -1,10 +1,14 @@
 package org.minyanmate.minyanmate;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -21,6 +25,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.commonsware.cwac.wakeful.WakefulIntentService;
 
 import org.minyanmate.minyanmate.adapters.ParticipantsExpandableListAdapter;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
@@ -28,6 +35,7 @@ import org.minyanmate.minyanmate.database.MinyanEventsTable;
 import org.minyanmate.minyanmate.database.MinyanGoersTable;
 import org.minyanmate.minyanmate.models.InviteStatus;
 import org.minyanmate.minyanmate.models.MinyanGoer;
+import org.minyanmate.minyanmate.services.SendInvitesService;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -49,6 +57,7 @@ class ActiveMinyanFragment extends Fragment implements
 	private ExpandableListView expListView;
 	
 	private int mEventId = 0;
+    private int mScheduleId = 0;
 	
 	
 	public ActiveMinyanFragment() {	}
@@ -59,15 +68,9 @@ class ActiveMinyanFragment extends Fragment implements
 		View rootView = inflater.inflate(
 				R.layout.fragment_active_minyan, container, false);
 
-
-
-		Button btn = (Button) rootView.findViewById(R.id.addUninvitedPersonButton);
-		btn.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				addUninvited();
-			}
-		});
+        // LoaderManager not guaranteed to run before onActivityResult, therefore restore state
+        mEventId = savedInstanceState.getInt("mEventId");
+        mScheduleId = savedInstanceState.getInt("mScheduleId");
 
 		getLoaderManager().initLoader(EVENT, null, this);
 		getLoaderManager().initLoader(PARTICIPANTS, null, this);
@@ -119,6 +122,13 @@ class ActiveMinyanFragment extends Fragment implements
 	}
 
     @Override
+    public void onSaveInstanceState(Bundle screenState) {
+        super.onSaveInstanceState(screenState);
+        screenState.putInt("mEventId", mEventId);
+        screenState.putInt("mScheduleId", mScheduleId);
+    }
+
+    @Override
     public boolean onContextItemSelected(MenuItem item) {
         ExpandableListView.ExpandableListContextMenuInfo info =
                 (ExpandableListView.ExpandableListContextMenuInfo)item.getMenuInfo();
@@ -132,7 +142,7 @@ class ActiveMinyanFragment extends Fragment implements
         Log.d("Goer", String.valueOf(goer));
 
         ContentValues values = new ContentValues();
-        values.put(MinyanGoersTable.COLUMN_ID, goer.getMinyanGoerId());
+        values.put(MinyanGoersTable.COLUMN_GOER_ID, goer.getMinyanGoerId());
 
         switch (item.getItemId()) {
             case MENUITEM_MARK_ATTENDING:
@@ -152,7 +162,7 @@ class ActiveMinyanFragment extends Fragment implements
         }
 
         getActivity().getContentResolver().update(MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS,
-                values, MinyanGoersTable.COLUMN_ID + "=?", new String[]{String.valueOf(goer.getMinyanGoerId())});
+                values, MinyanGoersTable.COLUMN_GOER_ID + "=?", new String[]{String.valueOf(goer.getMinyanGoerId())});
 
         return super.onContextItemSelected(item);
     }
@@ -166,8 +176,8 @@ class ActiveMinyanFragment extends Fragment implements
 
         final AlertDialog alert = new AlertDialog.Builder(getActivity())
             .setView(input)
-            .setTitle("Add a Congregant")
-            .setMessage("Quickly jot down a name for whoever you want to count")
+            .setTitle("Count a Non-Contact")
+            .setMessage("Write down the name of someone you didn't invite who you want to count.")
 
             .setPositiveButton("Save", new DialogInterface.OnClickListener() {
 
@@ -205,6 +215,35 @@ class ActiveMinyanFragment extends Fragment implements
         alert.show();
     }
 
+    @Override
+    public void onActivityResult(int reqCode, int resultCode, Intent data) {
+
+        switch(reqCode) {
+            case (MinyanScheduleSettingsActivity.PICK_CONTACT) :
+                if (resultCode == Activity.RESULT_OK && mEventId > 0 && mScheduleId > 0) {
+
+                    Uri result = data.getData();
+                    String phoneNumberId = result.getLastPathSegment();
+
+                    Intent i = new Intent(getActivity(), SendInvitesService.class);
+                    i.putExtra(SendInvitesService.REQUEST_CODE, SendInvitesService.SEND_INVITE_TO_CONTACT);
+                    i.putExtra(SendInvitesService.EVENT_ID, mEventId);
+                    i.putExtra(SendInvitesService.SCHEDULE_ID, mScheduleId);
+                    i.putExtra(SendInvitesService.PHONE_NUMBER_ID, Long.parseLong(phoneNumberId));
+                    WakefulIntentService.sendWakefulWork(getActivity(), i);
+                }
+                else {
+                    Toast.makeText(getActivity(), "Failed to invite contact!", Toast.LENGTH_SHORT).show();
+                    Log.d("onActivityResult failed", "Event Id: " + mEventId);
+                    Log.d("onActivityResult failed", "Schedule Id: " + mScheduleId);
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
 	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
 		
@@ -213,23 +252,17 @@ class ActiveMinyanFragment extends Fragment implements
 		switch (id) {
 
 		case EVENT:
-			query = MinyanEventsTable.COLUMN_ID + "= (SELECT MAX("
-							+ MinyanEventsTable.COLUMN_ID + ") FROM "
-							+ MinyanEventsTable.TABLE_MINYAN_EVENTS + ")";
 			
 			cursorLoader = new CursorLoader(getActivity(),
 					MinyanMateContentProvider.CONTENT_URI_EVENTS, null, 
-					query, null, null);
+					MinyanEventsTable.QUERY_LATEST_EVENT, null, null);
 			break;
 			
 		case PARTICIPANTS:
-			query = MinyanGoersTable.COLUMN_MINYAN_EVENT_ID + "= (SELECT MAX(" 
-					+ MinyanGoersTable.COLUMN_MINYAN_EVENT_ID + ") FROM " 
-					+ MinyanGoersTable.TABLE_MINYAN_INVITEES + ")";
 			
 			cursorLoader = new CursorLoader(getActivity(),
 					MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS,
-					null, query, null, null);
+					null, MinyanGoersTable.QUERY_LATEST_GOERS, null, null);
 			
 			break;		
 		}
@@ -244,18 +277,60 @@ class ActiveMinyanFragment extends Fragment implements
 		case EVENT:		
 			// TODO fix? on first app load, this table is empty so the cursor result will be empty
 			if (cursor.moveToFirst()) {
-				long startTime = cursor.getLong(cursor.getColumnIndex(MinyanEventsTable.COLUMN_MINYAN_START_TIME));
-				
+				final long scheduleTime = cursor.getLong(cursor.getColumnIndex(MinyanEventsTable.COLUMN_MINYAN_SCHEDULE_TIME));
+                final long startTime = cursor.getLong(cursor.getColumnIndex(MinyanEventsTable.COLUMN_MINYAN_START_TIME));
+                final long endTime = cursor.getLong(cursor.getColumnIndex(MinyanEventsTable.COLUMN_MINYAN_END_TIME));
+
 				Calendar cal = new GregorianCalendar();
 				cal.setTimeInMillis(startTime);
 				int minute = cal.get(Calendar.MINUTE);
 				int hour = cal.get(Calendar.HOUR_OF_DAY);
-				
+
+                String day = cursor.getString(cursor.getColumnIndex(MinyanEventsTable.COLUMN_DAY_NAME));
+                String prayerName = cursor.getString(cursor.getColumnIndex(MinyanEventsTable.COLUMN_PRAYER_NAME));
+                mEventId = cursor.getInt(cursor.getColumnIndex(MinyanEventsTable.COLUMN_EVENT_ID));
+                mScheduleId = cursor.getInt(cursor.getColumnIndex(MinyanEventsTable.COLUMN_MINYAN_SCHEDULE_ID));
+
 				String formattedTime = MinyanScheduleSettingsActivity.formatTimeTextView(getActivity(), hour, minute);
 				TextView timeTextView = (TextView) getActivity().findViewById(R.id.activeMinyanTime);
-				timeTextView.setText(formattedTime);
+				timeTextView.setText(day + prayerName + " begins at " + formattedTime);
 
-                getActivity().findViewById(R.id.addUninvitedPersonButton).setEnabled(true);
+                // Initialize button state and callbacks
+                Button addToCountBtn = (Button) getActivity().findViewById(R.id.addUninvitedPersonButton);
+                Button invToMinyanBtn = (Button) getActivity().findViewById(R.id.inviteContactToMinyanButton);
+
+                // If minyan info is old, don't even bother enabling or setting callbacks
+                long currentTime = System.currentTimeMillis();
+                if (scheduleTime < currentTime && currentTime < endTime) {
+
+                    addToCountBtn.setEnabled(true);
+                    addToCountBtn.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            long currentTime = System.currentTimeMillis();
+                            if (scheduleTime < currentTime && currentTime < endTime) {
+                                addUninvited();
+                            }
+                            else
+                                Toast.makeText(view.getContext(), "Minyan is no longer active!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                    invToMinyanBtn.setEnabled(true);
+                    invToMinyanBtn.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            long currentTime = System.currentTimeMillis();
+                            if (scheduleTime < currentTime && currentTime < endTime) {
+                                Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                                intent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE);
+                                startActivityForResult(intent, MinyanScheduleSettingsActivity.PICK_CONTACT);
+                            }
+                            else
+                                Toast.makeText(view.getContext(), "Minyan is no longer active!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
 			}
 
 			break;
@@ -274,7 +349,6 @@ class ActiveMinyanFragment extends Fragment implements
 			
 			while (cursor.moveToNext()) {
 				MinyanGoer goer = MinyanGoer.cursorToMinyanGoer(cursor);
-				mEventId = mEventId > 0 ? mEventId : goer.getEventId();
 				goers.get(goer.getInviteStatus().toString()).add(goer);
 			}
 

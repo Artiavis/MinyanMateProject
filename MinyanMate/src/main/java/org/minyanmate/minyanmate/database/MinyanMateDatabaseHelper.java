@@ -7,7 +7,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class MinyanMateDatabaseHelper extends SQLiteOpenHelper {
 
 	private static final String DATABASE_NAME = "minyanmate.db";
-	private static final int DATABASE_VERSION = 1;
+	// Updated to 2 on Dec 11 2013
+    private static final int DATABASE_VERSION = 2;
 	
 	public MinyanMateDatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);

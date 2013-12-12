@@ -215,8 +215,8 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
                             ContentValues values = new ContentValues();
                             values.put(MinyanSchedulesTable.COLUMN_SCHEDULE_MESSAGE, msg);
 
-                            getContentResolver().update(MinyanMateContentProvider.CONTENT_URI_TIMES, values,
-                                    MinyanSchedulesTable.COLUMN_ID + "=?", new String[]{Integer.toString(scheduleId)});
+                            getContentResolver().update(MinyanMateContentProvider.CONTENT_URI_SCHEDULES, values,
+                                    MinyanSchedulesTable.COLUMN_SCHEDULE_ID + "=?", new String[]{Integer.toString(scheduleId)});
                         } else {
                             Toast.makeText(v.getContext(), "Could not save your message! It was too long!", Toast.LENGTH_LONG).show();
                         }
@@ -321,7 +321,7 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 		switch (id) {
 		case TIME_LOADER:
 			return new CursorLoader(this, 
-					Uri.parse(MinyanMateContentProvider.CONTENT_URI_TIMES + "/" + this.scheduleId), 
+					Uri.parse(MinyanMateContentProvider.CONTENT_URI_SCHEDULES + "/" + this.scheduleId),
 					null, null, null, 
 					null);
 			
@@ -350,13 +350,15 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 		case TIME_LOADER:
 			cursor.moveToFirst();
 			schedule = MinyanSchedule.schedFromCursor(cursor);
-			timeTextView.setText(formatTimeTextView(this, schedule.getHour(), schedule.getMinute()));
+            String formattedPrayerTime = formatTimeTextView(this, schedule.getHour(), schedule.getMinute());
+            timeTextView.setText(schedule.getPrayerName() + " begins at " + formattedPrayerTime);
 			setTitle(schedule.getDay() + " - " + schedule.getPrayerName());
 		
 			int windowHours = schedule.getSchedulingWindowHours();
 			int windowMinutes = schedule.getSchedulingWindowMinutes();
-			
-			windowTextView.setText(formatWindowTextView(windowHours, windowMinutes) + " hours");
+
+            String formattedTimeInAdvance = formatWindowTextView(windowHours, windowMinutes);
+            windowTextView.setText("Send invites " + formattedTimeInAdvance + " hours beforehand");
 			
 			break;
 			

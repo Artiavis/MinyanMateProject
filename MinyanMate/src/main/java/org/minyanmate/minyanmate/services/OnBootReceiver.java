@@ -21,10 +21,10 @@ public class OnBootReceiver extends BroadcastReceiver{
 		Log.d("OnBootReceiver", "Inside OnBootReceiver");
 		
 		Cursor minyanSchedulesCursor = context.getContentResolver().query(
-				MinyanMateContentProvider.CONTENT_URI_TIMES, 
+				MinyanMateContentProvider.CONTENT_URI_SCHEDULES,
 				null, 
 				MinyanSchedulesTable.COLUMN_IS_ACTIVE + "=?", new String[] { "1" }, 
-				MinyanSchedulesTable.COLUMN_ID + " ASC");
+				MinyanSchedulesTable.COLUMN_SCHEDULE_ID + " ASC");
 		
 		// Get alarm manager to set recurring alarms for minyans
 //		AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

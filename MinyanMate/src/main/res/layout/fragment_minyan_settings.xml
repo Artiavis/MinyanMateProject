@@ -12,13 +12,13 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         
-        <TextView 
+<!--        <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
             android:layout_weight="1"
             android:text="Minyan Time:"
-            />
+            />-->
         
         <TextView 
             android:id="@+id/minyan_setting_timeTextView"
@@ -42,14 +42,14 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         
-        <TextView 
+<!--        <TextView
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
             android:layout_weight="1"
             android:text="Scheduling Length:"
             />
-        
+        -->
         <TextView 
             android:id="@+id/minyan_setting_scheduleWindowTextView"
             android:layout_width="0dp"
@@ -75,7 +75,7 @@
         <ImageButton
             android:id="@+id/minyan_setting_add_contactButton"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
             android:src="@drawable/add_contact"
             android:onClick="pickNewContact" />
@@ -85,11 +85,21 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Custom Message"
+            android:text="Edit Message"
             android:onClick="editCustomMessage" />
         
     </LinearLayout>
-    
+
+    <TextView
+        android:layout_margin="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:text="Invite List" />
+
+
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="0dp"

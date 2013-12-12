@@ -6,7 +6,7 @@ public class MinyanSubscriptionsTable {
 
 	public static final String TABLE_SUBSCRIPTIONS = "subscriptions";
 	
-	public static final String COLUMN_ID = "_id";
+	public static final String COLUMN_SUBSCRIBER_ID = "subscriber_id";
 	
 	/**
 	 * Returns a string with the {@link android.provider.ContactsContract.ContactsColumns.LOOKUP_KEY}.
@@ -22,7 +22,7 @@ public class MinyanSubscriptionsTable {
 	private static final String DATABASE_CREATE = "create table "
 			+ TABLE_SUBSCRIPTIONS
 			+ "(" 
-			+ COLUMN_ID + " integer primary key autoincrement, "
+			+ COLUMN_SUBSCRIBER_ID + " integer primary key autoincrement, "
 			+ COLUMN_CONTACT_LOOKUP_KEY + " text not null, " 
 			+ COLUMN_IS_SUBSCRIBED + " int not null"
 			+ ");";
@@ -30,7 +30,7 @@ public class MinyanSubscriptionsTable {
 	private static final String DATABASE_INDEX = "create index "
 			+ TABLE_SUBSCRIPTIONS + "_index ON " + TABLE_SUBSCRIPTIONS
 			+ "(" 
-			+ COLUMN_ID + ", "
+			+ COLUMN_SUBSCRIBER_ID + ", "
 			+ COLUMN_CONTACT_LOOKUP_KEY
 			+ ");";
 	

@@ -85,9 +85,7 @@ public class OnSmsReceiver extends BroadcastReceiver{
                     String[] projection = null;
 
                     String selection = MinyanGoersTable.COLUMN_PHONE_NUMBER_ID + " = ?"
-                            + " AND " + MinyanGoersTable.COLUMN_MINYAN_EVENT_ID + "= (SELECT MAX("
-                            + MinyanGoersTable.COLUMN_MINYAN_EVENT_ID + ") FROM "
-                            + MinyanGoersTable.TABLE_MINYAN_INVITEES + ")";
+                            + " AND " + MinyanGoersTable.QUERY_LATEST_GOERS;
                     String[] selectionArgs = new String[] { Long.toString(senderPhoneNumberId) };
                     String sortOrder = null;
 
@@ -146,7 +144,7 @@ public class OnSmsReceiver extends BroadcastReceiver{
                         ContentValues eventUpdates = new ContentValues();
                         eventUpdates.put(MinyanEventsTable.COLUMN_IS_MINYAN_COMPLETE, 1);
 
-                        selection = MinyanEventsTable.COLUMN_ID + " = ?";
+                        selection = MinyanEventsTable.COLUMN_EVENT_ID + " = ?";
                         selectionArgs = new String[] { Integer.toString(eventId) };
 
                         rowsUpdated = cr.update(MinyanMateContentProvider.CONTENT_URI_EVENTS, eventUpdates, selection, selectionArgs);

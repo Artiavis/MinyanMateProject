@@ -26,9 +26,7 @@ public class MinyanRegistrar {
 		// Get alarm manager to set recurring alarm for minyan
 		AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 				
-		Intent i =new Intent(context, OnMinyanAlarmReceiver.class);
-		i.putExtra("requestCode", sched.getId());
-		PendingIntent pi = PendingIntent.getBroadcast(context, sched.getId(), i, 0);
+		PendingIntent pi = sendScheduledInvitesPendingIntent(context, sched.getId());
 
 		Calendar date = new GregorianCalendar();
 		date.set(Calendar.HOUR_OF_DAY, sched.getHour());
@@ -46,7 +44,14 @@ public class MinyanRegistrar {
 		
 		Log.d("Alarm Time", "Alarm should fire at " + date.toString());
 	}
-	
+
+    private static  PendingIntent sendScheduledInvitesPendingIntent(Context context, int scheduleId) {
+        Intent i =new Intent(context, OnMinyanAlarmReceiver.class);
+        i.putExtra(SendInvitesService.SCHEDULE_ID, scheduleId);
+        i.putExtra(SendInvitesService.REQUEST_CODE, SendInvitesService.SEND_SCHEDULE_INVITES);
+        return PendingIntent.getBroadcast(context, scheduleId, i, 0);
+    }
+
 	/**
 	 * A brute force method meant to be called from the {@link MinyanMateContentProvider}
 	 * whenever updating any schedule to guarantee that all schedules are updated and synchronized
@@ -88,10 +93,8 @@ public class MinyanRegistrar {
 		
 		// Get alarm manager to cancel recurring alarm for minyan
 		AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-		
-		Intent i =new Intent(context, OnMinyanAlarmReceiver.class);
-		i.putExtra("requestCode", sched.getId());
-		PendingIntent pi = PendingIntent.getBroadcast(context, sched.getId(), i, 0);
+
+		PendingIntent pi = sendScheduledInvitesPendingIntent(context, sched.getId());
 		
 		mgr.cancel(pi);
 	}

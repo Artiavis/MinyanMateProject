@@ -16,12 +16,12 @@ public class OnMinyanAlarmReceiver extends BroadcastReceiver {
 		Log.d("OnMinyanAlarmReciever", "Inside OnMinyanAlarmReceiver");
 		
 		Bundle b = intent.getExtras();
-		int id = b.getInt("requestCode");
+		int id = b.getInt("scheduleId");
 		
 		Log.d("OnMinyanAlarmReceiver", "putting requestCode:" + id);
 
 		Intent i = new Intent(context, SendInvitesService.class);
-		i.putExtra("requestCode", id);
+		i.putExtra("scheduleId", id);
 		
 		
 		Log.d("OnMinyanAlarmReceiver", "Sending wakeful work");

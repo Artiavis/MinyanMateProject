@@ -42,9 +42,9 @@ implements TimePickerDialog.OnTimeSetListener {
 		// ABS( thisID - _id ) = 1 finds immediately adjacent schedules
 		
 			Cursor adjacentSchedules = context.getContentResolver().query(
-					MinyanMateContentProvider.CONTENT_URI_TIMES, 
-					null, "ABS(" + id + "- " + MinyanSchedulesTable.COLUMN_ID + ")=1" , null, 
-					MinyanSchedulesTable.COLUMN_ID + " ASC");
+					MinyanMateContentProvider.CONTENT_URI_SCHEDULES,
+					null, "ABS(" + id + "- " + MinyanSchedulesTable.COLUMN_SCHEDULE_ID + ")=1" , null,
+					MinyanSchedulesTable.COLUMN_SCHEDULE_ID + " ASC");
 			
 			long thisWindowLength = thisScheduleWindow; // assume constant
 			long thisScheduleStartTime = 3600*thisScheduleHour + 60*thisScheduleMinute;
@@ -59,7 +59,7 @@ implements TimePickerDialog.OnTimeSetListener {
 				
 				if ( thisScheduleEndTime + nextWindowLength < nextSchedStartTime) { // no need to check day-wrap-around
 					context.getContentResolver().update(
-							Uri.parse(MinyanMateContentProvider.CONTENT_URI_TIMES + "/" + id),
+							Uri.parse(MinyanMateContentProvider.CONTENT_URI_SCHEDULES + "/" + id),
 							contentValues,
 //								MinyanTimesTable.COLUMN_ID + "=?", new String[] { String.valueOf(childPrayer.getId()) }
 							null, null
@@ -77,7 +77,7 @@ implements TimePickerDialog.OnTimeSetListener {
 				
 				if ( prevSchedEndTime + thisWindowLength < thisScheduleStartTime ) { // no need to check day-wrap-around
 					context.getContentResolver().update(
-							Uri.parse(MinyanMateContentProvider.CONTENT_URI_TIMES + "/" + id),
+							Uri.parse(MinyanMateContentProvider.CONTENT_URI_SCHEDULES + "/" + id),
 							contentValues,
 //								MinyanTimesTable.COLUMN_ID + "=?", new String[] { String.valueOf(childPrayer.getId()) }
 							null, null
@@ -123,7 +123,7 @@ implements TimePickerDialog.OnTimeSetListener {
 					
 					if ( thisScheduleEndTime + nextWindowLength < nextSchedStartTime) {
 						context.getContentResolver().update(
-								Uri.parse(MinyanMateContentProvider.CONTENT_URI_TIMES + "/" + id),
+								Uri.parse(MinyanMateContentProvider.CONTENT_URI_SCHEDULES + "/" + id),
 								contentValues,
 //									MinyanTimesTable.COLUMN_ID + "=?", new String[] { String.valueOf(childPrayer.getId()) }
 								null, null

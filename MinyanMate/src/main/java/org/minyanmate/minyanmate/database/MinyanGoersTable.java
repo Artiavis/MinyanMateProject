@@ -2,6 +2,8 @@ package org.minyanmate.minyanmate.database;
 
 import android.database.sqlite.SQLiteDatabase;
 
+import org.minyanmate.minyanmate.models.InviteStatus;
+
 /**
  * A table of the parties invited to attend a minyan and their identifying information.
  * If a party was automatically invited via a text message, they are identified as not
@@ -10,12 +12,18 @@ import android.database.sqlite.SQLiteDatabase;
  */
 public class MinyanGoersTable {
 
+    public static final String QUERY_LATEST_GOERS = MinyanGoersTable.COLUMN_MINYAN_EVENT_ID +
+            "= (SELECT MAX("
+            + MinyanGoersTable.COLUMN_MINYAN_EVENT_ID + ") FROM "
+            + MinyanGoersTable.TABLE_MINYAN_INVITEES + ")";
+
+
 	public static final String TABLE_MINYAN_INVITEES = "minyan_goers";
 	
 	/**
 	 * Returns an integer describing the id of an invited party to a minyan.
 	 */
-	public static final String COLUMN_ID = "_id";
+	public static final String COLUMN_GOER_ID = "minyan_goer_id";
 	
 	/**
 	 * Returns an integer describing the id of the minyan event associated
@@ -40,7 +48,7 @@ public class MinyanGoersTable {
 	 * and were invited to the minyan via text message, and null otherwise. 
 	 * See {@link #COLUMN_IS_INVITED}.
 	 */
-	public static final String COLUMN_PHONE_NUMBER_ID = "lookup_key";
+	public static final String COLUMN_PHONE_NUMBER_ID = "goer_phone_number_id";
 	
 	/**
 	 * Returns a string with the party's name as entered by the user if the party
@@ -48,10 +56,10 @@ public class MinyanGoersTable {
 	 * as entered in the phone at the time this record was created. See
 	 * {@link #COLUMN_IS_INVITED}.
 	 */
-	public static final String COLUMN_DISPLAY_NAME = "display_name";
+	public static final String COLUMN_DISPLAY_NAME = "goer_display_name";
 	
 	/**
-	 * Returns an integer to indentify the status of the invited party. Is guaranteed
+	 * Returns an integer to identify the status of the invited party. Is guaranteed
 	 * to be 2 for manually entered parties, see {@link #COLUMN_IS_INVITED}.
 	 * <p>
 	 * 1: Party was invited but has not yet responded. <p>
@@ -64,33 +72,93 @@ public class MinyanGoersTable {
 	private static final String DATABASE_CREATE = "create table " 
 			+ TABLE_MINYAN_INVITEES 
 			+ "(" 
-			+ COLUMN_ID + " integer primary key autoincrement, " 
+			+ COLUMN_GOER_ID + " integer primary key autoincrement, "
 			+ COLUMN_MINYAN_EVENT_ID + " integer not null, " 
 			+ COLUMN_IS_INVITED + " integer not null, " 
-			+ COLUMN_PHONE_NUMBER_ID + " text, "
+			+ COLUMN_PHONE_NUMBER_ID + " integer not null, "
 			+ COLUMN_DISPLAY_NAME + " text, "
 			+ COLUMN_INVITE_STATUS + " integer not null, "
 			+ "foreign key(" + COLUMN_MINYAN_EVENT_ID + ") references " 
-				+ MinyanEventsTable.TABLE_MINYAN_EVENTS + "(" + MinyanEventsTable.COLUMN_ID 
+				+ MinyanEventsTable.TABLE_MINYAN_EVENTS + "(" + MinyanEventsTable.COLUMN_EVENT_ID
 				+ ") "
 			+ ");";
 	
 	private static final String DATABASE_INDEX = "create index "
 			+ TABLE_MINYAN_INVITEES + "_index ON " + TABLE_MINYAN_INVITEES
 			+ "(" 
-			+ COLUMN_ID + "," + COLUMN_INVITE_STATUS
+			+ COLUMN_GOER_ID + "," + COLUMN_INVITE_STATUS + "," + COLUMN_MINYAN_EVENT_ID + ","
+                + COLUMN_PHONE_NUMBER_ID
 			+ ");";
-	
+
+
+    private static final String TRIGGER_ON_INSERT_IS_MINYAN_COMPLETE = "on_insert_is_minyan_complete";
+
+    /**
+     * Trigger to update {@link org.minyanmate.minyanmate.database.MinyanEventsTable#COLUMN_IS_MINYAN_COMPLETE}
+     * automatically after an insert into this table. The column should be 'automagically' correct.
+     */
+
+    /*
+    Trigger prototype:
+
+    CREATE TRIGGER update_is_minyan_complete AFTER INSERT ON minyan_goers
+    BEGIN
+        UPDATE minyan_events SET is_minyan_complete = (SELECT(
+         SELECT COUNT(*) FROM (
+          SELECT * FROM minyan_goers
+            WHERE minyan_event_id = new.minyan_event_id AND invite_status = 1
+        )
+      ) > 9);
+     END;
+    * */
+    private static final String DATABASE_INSERT_TRIGGER = "CREATE TRIGGER " + TRIGGER_ON_INSERT_IS_MINYAN_COMPLETE +
+            "AFTER INSERT ON " + TABLE_MINYAN_INVITEES +
+            " BEGIN " +
+            "UPDATE " + MinyanEventsTable.COLUMN_IS_MINYAN_COMPLETE + " SET " +
+            MinyanEventsTable.COLUMN_IS_MINYAN_COMPLETE +
+            " = (SELECT(" +
+            "SELECT COUNT(*) FROM (" +
+            "SELECT * FROM minyan_goers WHERE " + MinyanEventsTable.COLUMN_EVENT_ID +
+            " = new." + COLUMN_MINYAN_EVENT_ID + " AND " + COLUMN_INVITE_STATUS + "="
+            + InviteStatus.toInteger(InviteStatus.ATTENDING) +
+            ")" +
+            ") > 9); " +
+            "END;";
+
+    private static final String TRIGGER_ON_UPDATE_IS_MINYAN_COMPLETE = "on_update_is_minyan_complete";
+
+    /**
+     * Trigger to update {@link org.minyanmate.minyanmate.database.MinyanEventsTable#COLUMN_IS_MINYAN_COMPLETE}
+     * automatically after an update of {@link #COLUMN_INVITE_STATUS}. The column should be 'automagically' correct.
+     */
+
+    private static final String DATABASE_UPDATE_TRIGGER = "CREATE TRIGGER " + TRIGGER_ON_UPDATE_IS_MINYAN_COMPLETE +
+            "AFTER UPDATE OF " + COLUMN_INVITE_STATUS + " ON " + TABLE_MINYAN_INVITEES +
+            " BEGIN " +
+            "UPDATE " + MinyanEventsTable.COLUMN_IS_MINYAN_COMPLETE + " SET " +
+            MinyanEventsTable.COLUMN_IS_MINYAN_COMPLETE +
+            " = (SELECT(" +
+            "SELECT COUNT(*) FROM (" +
+            "SELECT * FROM minyan_goers WHERE " + MinyanEventsTable.COLUMN_EVENT_ID +
+            " = new." + COLUMN_MINYAN_EVENT_ID + " AND " + COLUMN_INVITE_STATUS + "="
+            + InviteStatus.toInteger(InviteStatus.ATTENDING) +
+            ")" +
+            ") > 9); " +
+            "END;";
 
 	
 	public static void onCreate(SQLiteDatabase database) {
 		database.execSQL(DATABASE_CREATE);
 		database.execSQL(DATABASE_INDEX);
+        database.execSQL(DATABASE_INSERT_TRIGGER);
+        database.execSQL(DATABASE_UPDATE_TRIGGER);
 	}
 	
 	public static void onUpgrade(SQLiteDatabase database, int oldVersion,
 			int newVersion) {
 		database.execSQL("DROP TABLE IF EXISTS " + TABLE_MINYAN_INVITEES);
+        database.execSQL("DROP TRIGGER IF EXISTS " + TRIGGER_ON_INSERT_IS_MINYAN_COMPLETE);
+        database.execSQL("DROP TRIGGER IF EXISTS " + TRIGGER_ON_UPDATE_IS_MINYAN_COMPLETE);
 		onCreate(database);
 	}
 	
