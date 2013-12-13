@@ -120,6 +120,9 @@ class ActiveMinyanFragment extends Fragment implements
                     case R.id.moreOptsMenu_MessageParticipants:
                         buildMessageParticipantsDialog();
                         break;
+
+                    case R.id.moreOptsMenu_ShareHeadcount:
+                        shareHeadcount();
                     default:
                         break;
                 }
@@ -178,6 +181,26 @@ class ActiveMinyanFragment extends Fragment implements
 
 		return rootView;
 	}
+
+    private void shareHeadcount() {
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Minyan Headcount");
+        int i[] = new int[3];
+        int sum = 0;
+        for (int j = 0; j < 3; j++) {
+            i[j] = listAdapter.getChildrenCount(j);
+            sum += i[j];
+        }
+        String headcount = "Minyan Headcount:\n" +
+                "Attending: " +i[0] + "/" + sum + "\n" +
+                "Awaiting Response: " + i[1] + "/" + sum + "\n" +
+                "Not Attending: " + i[2] + "/" + sum;
+
+        sharingIntent.putExtra(Intent.EXTRA_TEXT, headcount);
+        sharingIntent.putExtra("exit_on_sent", true);
+        startActivity(Intent.createChooser(sharingIntent, "Share using"));
+    }
 
     // TODO clean this up, the UI is pretty harsh
     private void buildMessageParticipantsDialog() {
