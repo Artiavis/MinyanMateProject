@@ -6,7 +6,14 @@
     
     <string name="title_active_minyan">Active</string>
     <string name="title_edit_minyans">Edit Minyans</string>
-    
+
+    <string-array name="contact_participants_array">
+        <item>Select One</item>
+        <item>Only Attending</item>
+        <item>Both Attending and Awaiting Response</item>
+        <item>Only Awaiting Response</item>
+        <item>Everyone (including Not Attending)</item>
+    </string-array>
     
     <string name="about_app">About</string>
     <string name="terms_of_service">

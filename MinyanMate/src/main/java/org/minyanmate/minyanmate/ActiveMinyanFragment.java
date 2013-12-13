@@ -24,6 +24,9 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +36,7 @@ import org.minyanmate.minyanmate.adapters.ParticipantsExpandableListAdapter;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.database.MinyanEventsTable;
 import org.minyanmate.minyanmate.database.MinyanGoersTable;
+import org.minyanmate.minyanmate.dialogs.OnMessageParticipantsSpinnerItemClicked;
 import org.minyanmate.minyanmate.models.InviteStatus;
 import org.minyanmate.minyanmate.models.MinyanGoer;
 import org.minyanmate.minyanmate.services.SendInvitesService;
@@ -45,21 +49,30 @@ import java.util.List;
 
 class ActiveMinyanFragment extends Fragment implements
 	LoaderManager.LoaderCallbacks<Cursor>{
-	
+
+    // Codes for LoaderManager
 	private static final int EVENT = 1;
 	private static final int PARTICIPANTS = 2;
 
+    // Codes for ContextMenu of ExpandableListView
     private static final int MENUITEM_MARK_ATTENDING = 1;
     private static final int MENUITEM_MARK_AWAITING = 2;
     private static final int MENUITEM_MARK_NOT_ATTENDING = 3;
 
+    // ExpandableListView and adapter
 	private ParticipantsExpandableListAdapter listAdapter;
 	private ExpandableListView expListView;
-	
+
+    // Data about the latest event, if possible
 	private int mEventId = 0;
     private int mScheduleId = 0;
-	
-	
+	private long scheduleTime;
+    private long startTime;
+    private long endTime;
+
+    // Codes and data for moreOptsBtn menu
+
+
 	public ActiveMinyanFragment() {	}
 
 	@Override
@@ -68,23 +81,65 @@ class ActiveMinyanFragment extends Fragment implements
 		View rootView = inflater.inflate(
 				R.layout.fragment_active_minyan, container, false);
 
-        // LoaderManager not guaranteed to run before onActivityResult, therefore restore state
+
+
+        // Restore instance state if previously instantiated, also
+        // LoaderManager is not guaranteed to run before onActivityResult, therefore restore state
         if (savedInstanceState != null)
         {
             mEventId = savedInstanceState.getInt("mEventId");
             mScheduleId = savedInstanceState.getInt("mScheduleId");
+
+            // Disable buttons if context is invalid
+            Button addToCountBtn = (Button) getActivity().findViewById(R.id.addUninvitedPersonButton);
+            Button invToMinyanBtn = (Button) getActivity().findViewById(R.id.inviteContactToMinyanButton);
+            long currTime = System.currentTimeMillis();
+            if ((scheduleTime <= currTime) && (currTime <= endTime)) {
+                invToMinyanBtn.setEnabled(true);
+                addToCountBtn.setEnabled(true);
+            } else {
+                invToMinyanBtn.setEnabled(false);
+                addToCountBtn.setEnabled(false);
+            }
         }
 
+        // Set up additional minyan options
+        ImageButton moreOptsBtn = (ImageButton) rootView.findViewById(R.id.moreMinyanOptsBtn);
+        final PopupMenu popupMenu = new PopupMenu(getActivity(), moreOptsBtn);
+        popupMenu.inflate(R.menu.minyan_more_options);
+        moreOptsBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                popupMenu.show();
+            }
+        });
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.moreOptsMenu_MessageParticipants:
+                        buildMessageParticipantsDialog();
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
+
+        // Initialize the LoaaderManager
 		getLoaderManager().initLoader(EVENT, null, this);
 		getLoaderManager().initLoader(PARTICIPANTS, null, this);
-		
+
+
+
+        // Set the ExpandableListView and its adapter
 		expListView = (ExpandableListView) rootView.findViewById(R.id.activeMinyanParticipantsList);
-		
 		HashMap<String, List<MinyanGoer>> map = new HashMap<String, List<MinyanGoer>>();
 		List<String> list = new ArrayList<String>();
 		listAdapter = new ParticipantsExpandableListAdapter(getActivity(), list, map);
-		
 		expListView.setAdapter(listAdapter);
+        // Set the ExpandableListView context menu
         expListView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
 
             @Override
@@ -123,6 +178,26 @@ class ActiveMinyanFragment extends Fragment implements
 
 		return rootView;
 	}
+
+    // TODO clean this up, the UI is pretty harsh
+    private void buildMessageParticipantsDialog() {
+        if (mEventId > 0) {
+
+            View promptsView = LayoutInflater.from(getActivity()).
+                    inflate(R.layout.message_participants_dialog, null);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            AlertDialog d = builder.setView(promptsView)
+                    .setTitle("Choose whom to message")
+                    .create();
+
+            Spinner spinner = (Spinner) promptsView.findViewById(R.id.sendMessageParticipantsList);
+            spinner.setOnItemSelectedListener(new OnMessageParticipantsSpinnerItemClicked(d));
+            d.show();
+
+        }
+        else
+            Toast.makeText(getActivity(), "There isn't a minyan!", Toast.LENGTH_SHORT).show();
+    }
 
     @Override
     public void onSaveInstanceState(Bundle screenState) {
@@ -280,9 +355,11 @@ class ActiveMinyanFragment extends Fragment implements
 		case EVENT:		
 			// TODO fix? on first app load, this table is empty so the cursor result will be empty
 			if (cursor.moveToFirst()) {
-				final long scheduleTime = cursor.getLong(cursor.getColumnIndex(MinyanEventsTable.COLUMN_MINYAN_SCHEDULE_TIME));
-                final long startTime = cursor.getLong(cursor.getColumnIndex(MinyanEventsTable.COLUMN_MINYAN_START_TIME));
-                final long endTime = cursor.getLong(cursor.getColumnIndex(MinyanEventsTable.COLUMN_MINYAN_END_TIME));
+				scheduleTime = cursor.getLong(cursor.getColumnIndex(MinyanEventsTable.COLUMN_MINYAN_SCHEDULE_TIME));
+                startTime = cursor.getLong(cursor.getColumnIndex(MinyanEventsTable.COLUMN_MINYAN_START_TIME));
+                endTime = cursor.getLong(cursor.getColumnIndex(MinyanEventsTable.COLUMN_MINYAN_END_TIME));
+                mEventId = cursor.getInt(cursor.getColumnIndex(MinyanEventsTable.COLUMN_EVENT_ID));
+                mScheduleId = cursor.getInt(cursor.getColumnIndex(MinyanEventsTable.COLUMN_MINYAN_SCHEDULE_ID));
 
 				Calendar cal = new GregorianCalendar();
 				cal.setTimeInMillis(startTime);
@@ -291,8 +368,6 @@ class ActiveMinyanFragment extends Fragment implements
 
                 String day = cursor.getString(cursor.getColumnIndex(MinyanEventsTable.COLUMN_DAY_NAME));
                 String prayerName = cursor.getString(cursor.getColumnIndex(MinyanEventsTable.COLUMN_PRAYER_NAME));
-                mEventId = cursor.getInt(cursor.getColumnIndex(MinyanEventsTable.COLUMN_EVENT_ID));
-                mScheduleId = cursor.getInt(cursor.getColumnIndex(MinyanEventsTable.COLUMN_MINYAN_SCHEDULE_ID));
 
 				String formattedTime = MinyanScheduleSettingsActivity.formatTimeTextView(getActivity(), hour, minute);
 				TextView timeTextView = (TextView) getActivity().findViewById(R.id.activeMinyanTime);
@@ -301,6 +376,8 @@ class ActiveMinyanFragment extends Fragment implements
                 // Initialize button state and callbacks
                 Button addToCountBtn = (Button) getActivity().findViewById(R.id.addUninvitedPersonButton);
                 Button invToMinyanBtn = (Button) getActivity().findViewById(R.id.inviteContactToMinyanButton);
+                ImageButton moreOptsBtn = (ImageButton) getActivity().findViewById(R.id.moreMinyanOptsBtn);
+                moreOptsBtn.setEnabled(true);
 
                 // If minyan info is old, don't even bother enabling or setting callbacks
                 long currTime = System.currentTimeMillis();
