@@ -88,7 +88,7 @@ public class SendInvitesService extends WakefulIntentService {
                 );
         if (c.moveToNext()) {
             MinyanSchedule sched = MinyanSchedule.schedFromCursor(c);
-
+            c.close();
             Log.d("SendInvitesService", "Scheduling Minyan " + sched.getId());
 
             int prayerHour = sched.getHour();
@@ -123,7 +123,7 @@ public class SendInvitesService extends WakefulIntentService {
                 String name = contactsToBeInvited.getString(MinyanMateContentProvider.ContactMatrix.DISPLAY_NAME);
                 long phoneNumId = contactsToBeInvited.getLong(MinyanMateContentProvider.ContactMatrix.PHONE_NUMBER_ID);
                 String number = contactsToBeInvited.getString(MinyanMateContentProvider.ContactMatrix.PHONE_NUMBER);
-
+                contactsToBeInvited.close();
                 sendInviteSms(sched, eventId, name, phoneNumId, number);
 
 

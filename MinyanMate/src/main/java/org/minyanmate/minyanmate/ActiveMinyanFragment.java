@@ -47,7 +47,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 
-class ActiveMinyanFragment extends Fragment implements
+public class ActiveMinyanFragment extends Fragment implements
 	LoaderManager.LoaderCallbacks<Cursor>{
 
     // Codes for LoaderManager
@@ -73,7 +73,9 @@ class ActiveMinyanFragment extends Fragment implements
     // Codes and data for moreOptsBtn menu
 
 
-	public ActiveMinyanFragment() {	}
+	public ActiveMinyanFragment() {
+        super();
+    }
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -82,17 +84,18 @@ class ActiveMinyanFragment extends Fragment implements
 				R.layout.fragment_active_minyan, container, false);
 
 
-
         // Restore instance state if previously instantiated, also
         // LoaderManager is not guaranteed to run before onActivityResult, therefore restore state
         if (savedInstanceState != null)
         {
             mEventId = savedInstanceState.getInt("mEventId");
             mScheduleId = savedInstanceState.getInt("mScheduleId");
+            startTime = savedInstanceState.getLong("startTime");
+            endTime = savedInstanceState.getLong("endTime");
 
             // Disable buttons if context is invalid
-            Button addToCountBtn = (Button) getActivity().findViewById(R.id.addUninvitedPersonButton);
-            Button invToMinyanBtn = (Button) getActivity().findViewById(R.id.inviteContactToMinyanButton);
+            Button addToCountBtn = (Button) rootView.findViewById(R.id.addUninvitedPersonButton);
+            Button invToMinyanBtn = (Button) rootView.findViewById(R.id.inviteContactToMinyanButton);
             long currTime = System.currentTimeMillis();
             if ((scheduleTime <= currTime) && (currTime <= endTime)) {
                 invToMinyanBtn.setEnabled(true);
@@ -227,6 +230,8 @@ class ActiveMinyanFragment extends Fragment implements
         super.onSaveInstanceState(screenState);
         screenState.putInt("mEventId", mEventId);
         screenState.putInt("mScheduleId", mScheduleId);
+        screenState.putLong("endTime",endTime);
+        screenState.putLong("startTime",startTime);
     }
 
     @Override

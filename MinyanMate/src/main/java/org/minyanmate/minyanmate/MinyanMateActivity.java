@@ -33,6 +33,10 @@ public class MinyanMateActivity extends FragmentActivity implements
 	 */
     private ViewPager mViewPager;
 
+    public MinyanMateActivity() {
+        super();
+    }
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

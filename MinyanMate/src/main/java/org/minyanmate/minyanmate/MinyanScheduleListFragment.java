@@ -25,6 +25,7 @@ public class MinyanScheduleListFragment extends Fragment implements
 	LoaderManager.LoaderCallbacks<Cursor> {
 	
 	public MinyanScheduleListFragment() {
+        super();
 	}
 	
 	private ScheduleExpandableListAdapter listAdapter;
@@ -55,7 +56,7 @@ public class MinyanScheduleListFragment extends Fragment implements
 		return rootView;
 	}
 
-	@Override
+    @Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
 		CursorLoader cursorLoader = new CursorLoader(getActivity(), 
 				MinyanMateContentProvider.CONTENT_URI_SCHEDULES, null, null, null,

@@ -71,6 +71,7 @@ public class OnMessageParticipantsSpinnerItemClicked implements android.widget.A
 //            if ( !cursorOfParticipants.isLast()) // apparently isn't necessary?
             stringBuilder.append(";");
         }
+        cursorOfParticipants.close();
         String msg = stringBuilder.toString();
 
         Log.i("Spinner Sending to: ", msg);

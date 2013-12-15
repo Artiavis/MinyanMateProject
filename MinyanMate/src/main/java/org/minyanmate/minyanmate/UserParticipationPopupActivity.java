@@ -14,6 +14,10 @@ import org.minyanmate.minyanmate.models.InviteStatus;
 
 public class UserParticipationPopupActivity extends Activity {
 
+    public UserParticipationPopupActivity() {
+        super();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

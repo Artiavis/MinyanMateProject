@@ -25,6 +25,10 @@ public class PickMultipleContactsActivity extends ListActivity
 
     Button save_button;
 
+    public PickMultipleContactsActivity() {
+        super();
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -61,7 +61,11 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 	private TextView timeTextView;
 	private TextView windowTextView;
 	private ListView contactList;
-	
+
+    public MinyanScheduleSettingsActivity() {
+        super();
+    }
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -75,7 +79,11 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 			if (extras != null) {
 				scheduleId = extras.getInt("prayerId");
 			}
-		}
+		} else {
+            scheduleId = savedInstanceState.getInt("prayerId");
+            // TODO make parcelable and retreive
+            //schedule = (MinyanSchedule) savedInstanceState.get("schedule");
+        }
 		
 		getSupportLoaderManager().initLoader(TIME_LOADER, null, this); // for times
 		getSupportLoaderManager().initLoader(CONTACT_LOADER, null, this); // for contacts
@@ -104,6 +112,12 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 		return super.onOptionsItemSelected(item);
 	}
 
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putInt("scheduleId", scheduleId);
+        // TODO create parcelable MinyanSchedule and put here
+//        savedInstanceState.putParcelable("schedule", schedule);
+    }
 	
 	
 	/**
