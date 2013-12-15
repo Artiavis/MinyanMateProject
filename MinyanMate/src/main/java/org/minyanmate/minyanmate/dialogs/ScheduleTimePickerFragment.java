@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TimePicker;
 
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
@@ -29,6 +30,7 @@ public class ScheduleTimePickerFragment extends AbstractSchedulePickerDialog {
 	@Override
 	public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
 
+        Log.d("Inside TimePickerDialog", "Just clicked onTimeSet");
         if (ignoreTimeSet)
             return;
 		

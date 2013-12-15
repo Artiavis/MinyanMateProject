@@ -21,8 +21,8 @@ public class MinyanSchedule {
     // TODO implement Parcelable
 
     public static final String RESPONSE_API_INSTRUCTIONS = ". Can you come? Please " +
-            "respond either \"accept\" or \"decline\". Thank you.";
-    public static final int SCHEDULE_MESSAGE_SIZE_LIMIT = 52;
+            "respond \"accept\" or \"decline\". Thank you.";
+    public static final int SCHEDULE_MESSAGE_SIZE_LIMIT = 59;
 
     private int _id;
 	private String day;

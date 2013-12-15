@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.widget.Toast;
 
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
@@ -41,7 +42,11 @@ implements TimePickerDialog.OnTimeSetListener {
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
                         ignoreTimeSet = false;
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                        Log.d("Inside TimePickerDialog for all SDK's", "SDK Version: " + Build.VERSION.SDK_INT);
+                        Log.d("Inside TimePickerDialog", "Device Manufactorer: " + Build.MANUFACTURER);
+                        // doesn't seem to work on Samsung device ?
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH || "samsung".equalsIgnoreCase(Build.MANUFACTURER)) {
+                            Log.d("Inside TimePickerDialog for Pre-ICS or Samsungs", "SDK Version: " + Build.VERSION.SDK_INT);
                             timePickerDialog.onClick(dialog, i);
                         }
                     }
