@@ -1,5 +1,8 @@
 package org.minyanmate.minyanmate.services;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -13,6 +16,8 @@ import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
+import org.minyanmate.minyanmate.MinyanMateActivity;
+import org.minyanmate.minyanmate.R;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.database.MinyanEventsTable;
 import org.minyanmate.minyanmate.database.MinyanGoersTable;
@@ -56,8 +61,8 @@ public class OnSmsReceiver extends BroadcastReceiver{
                     Log.i("SmsReceiver", "senderNum: "+ phoneNumber + "; response: " + response);
 
                     //If SMS doesn't contain one of the two predefined responses, don't attempt to process it
-                    if (!response.toLowerCase(Locale.ENGLISH).trim().equals(POSITIVE_RESPONSE) &&
-                            !response.toLowerCase(Locale.ENGLISH).trim().equals(NEGATIVE_RESPONSE))
+                    if (!response.toLowerCase(Locale.ENGLISH).contains(POSITIVE_RESPONSE) &&
+                            !response.toLowerCase(Locale.ENGLISH).contains(NEGATIVE_RESPONSE))
                         return;
 
                     ContentResolver cr = context.getContentResolver();
@@ -109,9 +114,9 @@ public class OnSmsReceiver extends BroadcastReceiver{
                             Log.i("SmsReceiver", "Already received RSVP from "+senderDisplayName+", updating to "+response+".");
                     }
 
-                    if(response.toLowerCase(Locale.ENGLISH).trim().equals(POSITIVE_RESPONSE))
+                    if(response.toLowerCase(Locale.ENGLISH).contains(POSITIVE_RESPONSE))
                         responseCode = InviteStatus.ATTENDING;
-                    else if(response.toLowerCase(Locale.ENGLISH).trim().equals(NEGATIVE_RESPONSE))
+                    else if(response.toLowerCase(Locale.ENGLISH).contains(NEGATIVE_RESPONSE))
                         responseCode = InviteStatus.NOT_ATTENDING;
 
                     ContentValues goerUpdates = new ContentValues();
@@ -129,7 +134,8 @@ public class OnSmsReceiver extends BroadcastReceiver{
 
                     c.close();
 
-                    //Check how many Goers are going to the event, update event completion status if attendance count > 9
+                    // This shouldn't be explicitly necessary anymore because of the database trigger
+/*                    //Check how many Goers are going to the event, update event completion status if attendance count > 9
                     contentURI = MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS;
                     //projection = new String[] { MinyanGoersTable.COLUMN_GENERAL_NAME };
                     projection = null;
@@ -152,15 +158,95 @@ public class OnSmsReceiver extends BroadcastReceiver{
 
                     }
 
+                    c.close();*/
+
+
+                    notifyMinyanCompletionChange(context, eventId);
+
                     c.close();
 
                 } // end for loop
             } // bundle is null
 
         } catch (Exception e) {
-            Log.e("SmsReceiver", "Exception smsReceiver" +e);
+            Log.e("SmsReceiver", "Exception smsReceiver " +e);
 
         }
+    }
+
+    public void notifyMinyanCompletionChange(Context context, int eventId) {
+
+        ContentResolver cr = context.getContentResolver();
+        NotificationManager notificationManager = (NotificationManager)
+                context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Cursor c = cr.query(MinyanMateContentProvider.CONTENT_URI_EVENTS,
+                null, MinyanEventsTable.COLUMN_EVENT_ID + "=?",
+                new String[] { Integer.toString(eventId) }, null);
+        c.moveToFirst();
+
+        // Is the Minyan count complete ie > 9?
+        boolean hasMinyan = c.getInt(c.getColumnIndex(
+                MinyanEventsTable.COLUMN_IS_MINYAN_COMPLETE)) == 1;
+        // If the minyan is complete, does the user know about it?
+        boolean isMinyanNotified = c.getInt(c.getColumnIndex(
+                MinyanEventsTable.COLUMN_MINYAN_COMPLETE_ALERTED)) == 1;
+
+        boolean completedButNotNotified = hasMinyan && !isMinyanNotified;
+        boolean notifiedButNotLongerComplete = isMinyanNotified && !hasMinyan;
+
+        if (completedButNotNotified) {
+
+            // TODO notify minyan completed
+            Intent notificationIntent = new Intent(context, MinyanMateActivity.class);
+            PendingIntent pi = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+
+            String msg = "Your minyan now has 10 members";
+            Notification n = new Notification.Builder(context)
+                    .setContentTitle("Minyan Complete!")
+                    .setContentText(msg)
+//                    .setStyle(new Notification.BigTextStyle().bigText(msg))
+                    .setSmallIcon(R.drawable.ic_launcher)
+                    .setContentIntent(pi)
+//                                .addAction(R.drawable.edit, "Send headcount", shareIntent)
+                    .getNotification();
+
+            notificationManager.notify(0,n);
+
+            ContentValues eventUpdates = new ContentValues();
+            eventUpdates.put(MinyanEventsTable.COLUMN_MINYAN_COMPLETE_ALERTED, 1);
+            cr.update(MinyanMateContentProvider.CONTENT_URI_EVENTS, eventUpdates,
+                    MinyanEventsTable.COLUMN_EVENT_ID + "=?",
+                    new String[] { Integer.toString(eventId) });
+
+        } else if (notifiedButNotLongerComplete) {
+
+            // TODO notify minyan no longer complete
+            Intent notificationIntent = new Intent(context, MinyanMateActivity.class);
+            PendingIntent pi = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+
+            String msg = "Count dropped under 10";
+            Notification n = new Notification.Builder(context)
+                    .setContentTitle("Minyan Incomplete!")
+                    .setContentText(msg)
+//                    .setStyle(new Notification.BigTextStyle().bigText(msg))
+                    .setSmallIcon(R.drawable.ic_launcher)
+                    .setContentIntent(pi)
+//                                .addAction(R.drawable.edit, "Send headcount", shareIntent)
+                    .getNotification();
+
+
+            notificationManager.notify(0,n);
+
+            ContentValues eventUpdates = new ContentValues();
+            eventUpdates.put(MinyanEventsTable.COLUMN_MINYAN_COMPLETE_ALERTED, 0);
+            cr.update(MinyanMateContentProvider.CONTENT_URI_EVENTS, eventUpdates,
+                    MinyanEventsTable.COLUMN_EVENT_ID + "=?",
+                    new String[] { Integer.toString(eventId) });
+        }
+
+        c.close();
+
     }
 
 }

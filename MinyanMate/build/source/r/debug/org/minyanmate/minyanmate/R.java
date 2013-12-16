@@ -52,6 +52,7 @@ public final class R {
         public static final int minyan_setting_timeTextView=0x7f090014;
         public static final int moreMinyanOptsBtn=0x7f090008;
         public static final int moreOptsMenu_MessageParticipants=0x7f090027;
+        public static final int moreOptsMenu_ShareHeadcount=0x7f090028;
         public static final int multipleContactsList=0x7f090001;
         public static final int multiple_checkable_contact_name=0x7f09000b;
         public static final int multiple_checkable_contact_photo=0x7f09000a;
