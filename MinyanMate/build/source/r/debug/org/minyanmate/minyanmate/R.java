@@ -9,13 +9,14 @@ package org.minyanmate.minyanmate;
 
 public final class R {
     public static final class array {
-        public static final int contact_participants_array=0x7f040000;
+        public static final int contact_participants_array=0x7f050000;
+        public static final int minimal_timezones_list=0x7f050001;
     }
     public static final class attr {
     }
     public static final class dimen {
-        public static final int activity_horizontal_margin=0x7f050000;
-        public static final int activity_vertical_margin=0x7f050001;
+        public static final int activity_horizontal_margin=0x7f060000;
+        public static final int activity_vertical_margin=0x7f060001;
     }
     public static final class drawable {
         public static final int add_contact=0x7f020000;
@@ -25,47 +26,47 @@ public final class R {
         public static final int ic_launcher=0x7f020004;
     }
     public static final class id {
-        public static final int action_settings=0x7f090025;
-        public static final int action_terms_of_service=0x7f090026;
-        public static final int activeMinyanFragment=0x7f090004;
-        public static final int activeMinyanParticipantsList=0x7f090009;
-        public static final int activeMinyanTime=0x7f090005;
-        public static final int addUninvitedPersonButton=0x7f090006;
-        public static final int customMessageEditText=0x7f09000d;
-        public static final int customMessagePreview=0x7f09000c;
-        public static final int customMessageTextLength=0x7f09000e;
-        public static final int include_minyan_list=0x7f090010;
-        public static final int inviteContactToMinyanButton=0x7f090007;
-        public static final int minyanDashboard=0x7f09000f;
-        public static final int minyanDayHeader=0x7f090022;
-        public static final int minyanList=0x7f090012;
-        public static final int minyanListFragment=0x7f090011;
-        public static final int minyanSettingsFragment=0x7f090013;
-        public static final int minyanTimeCheckbox=0x7f090023;
-        public static final int minyanTimeTextview=0x7f090024;
-        public static final int minyan_setting_add_contactButton=0x7f090018;
-        public static final int minyan_setting_add_groupButton=0x7f090019;
-        public static final int minyan_setting_contactsList=0x7f09001a;
-        public static final int minyan_setting_scheduleWindowTextView=0x7f090016;
-        public static final int minyan_setting_setScheduleWindow=0x7f090017;
-        public static final int minyan_setting_setTime=0x7f090015;
-        public static final int minyan_setting_timeTextView=0x7f090014;
-        public static final int moreMinyanOptsBtn=0x7f090008;
-        public static final int moreOptsMenu_MessageParticipants=0x7f090027;
-        public static final int moreOptsMenu_ShareHeadcount=0x7f090028;
-        public static final int multipleContactsList=0x7f090001;
-        public static final int multiple_checkable_contact_name=0x7f09000b;
-        public static final int multiple_checkable_contact_photo=0x7f09000a;
-        public static final int pager=0x7f090000;
-        public static final int participantContactBadge=0x7f09001c;
-        public static final int participantContactName=0x7f09001d;
-        public static final int participantHeader=0x7f09001b;
-        public static final int pick_multiple_contacts_cancelButton=0x7f090002;
-        public static final int pick_multiple_contacts_doneButton=0x7f090003;
-        public static final int removableContactBadge=0x7f09001f;
-        public static final int removableContactName=0x7f090020;
-        public static final int removableRemoveButton=0x7f09001e;
-        public static final int sendMessageParticipantsList=0x7f090021;
+        public static final int action_settings=0x7f0a0025;
+        public static final int action_terms_of_service=0x7f0a0026;
+        public static final int activeMinyanFragment=0x7f0a0004;
+        public static final int activeMinyanParticipantsList=0x7f0a0009;
+        public static final int activeMinyanTime=0x7f0a0005;
+        public static final int addUninvitedPersonButton=0x7f0a0006;
+        public static final int customMessageEditText=0x7f0a000d;
+        public static final int customMessagePreview=0x7f0a000c;
+        public static final int customMessageTextLength=0x7f0a000e;
+        public static final int include_minyan_list=0x7f0a0010;
+        public static final int inviteContactToMinyanButton=0x7f0a0007;
+        public static final int minyanDashboard=0x7f0a000f;
+        public static final int minyanDayHeader=0x7f0a0022;
+        public static final int minyanList=0x7f0a0012;
+        public static final int minyanListFragment=0x7f0a0011;
+        public static final int minyanSettingsFragment=0x7f0a0013;
+        public static final int minyanTimeCheckbox=0x7f0a0023;
+        public static final int minyanTimeTextview=0x7f0a0024;
+        public static final int minyan_setting_add_contactButton=0x7f0a0018;
+        public static final int minyan_setting_add_groupButton=0x7f0a0019;
+        public static final int minyan_setting_contactsList=0x7f0a001a;
+        public static final int minyan_setting_scheduleWindowTextView=0x7f0a0016;
+        public static final int minyan_setting_setScheduleWindow=0x7f0a0017;
+        public static final int minyan_setting_setTime=0x7f0a0015;
+        public static final int minyan_setting_timeTextView=0x7f0a0014;
+        public static final int moreMinyanOptsBtn=0x7f0a0008;
+        public static final int moreOptsMenu_MessageParticipants=0x7f0a0027;
+        public static final int moreOptsMenu_ShareHeadcount=0x7f0a0028;
+        public static final int multipleContactsList=0x7f0a0001;
+        public static final int multiple_checkable_contact_name=0x7f0a000b;
+        public static final int multiple_checkable_contact_photo=0x7f0a000a;
+        public static final int pager=0x7f0a0000;
+        public static final int participantContactBadge=0x7f0a001c;
+        public static final int participantContactName=0x7f0a001d;
+        public static final int participantHeader=0x7f0a001b;
+        public static final int pick_multiple_contacts_cancelButton=0x7f0a0002;
+        public static final int pick_multiple_contacts_doneButton=0x7f0a0003;
+        public static final int removableContactBadge=0x7f0a001f;
+        public static final int removableContactName=0x7f0a0020;
+        public static final int removableRemoveButton=0x7f0a001e;
+        public static final int sendMessageParticipantsList=0x7f0a0021;
     }
     public static final class layout {
         public static final int activity_minyan_mate=0x7f030000;
@@ -84,16 +85,19 @@ public final class R {
         public static final int minyan_time=0x7f03000d;
     }
     public static final class menu {
-        public static final int minyan_mate=0x7f080000;
-        public static final int minyan_more_options=0x7f080001;
+        public static final int minyan_mate=0x7f090000;
+        public static final int minyan_more_options=0x7f090001;
     }
     public static final class string {
-        public static final int about_app=0x7f060000;
-        public static final int action_settings=0x7f060001;
-        public static final int app_name=0x7f060002;
-        public static final int terms_of_service=0x7f060003;
-        public static final int title_active_minyan=0x7f060004;
-        public static final int title_edit_minyans=0x7f060005;
+        public static final int about_app=0x7f070000;
+        public static final int action_settings=0x7f070001;
+        public static final int app_name=0x7f070002;
+        public static final int forwardContactPreference=0x7f070003;
+        public static final int isForwardingPreference=0x7f070004;
+        public static final int terms_of_service=0x7f070005;
+        public static final int timezonePreference=0x7f070006;
+        public static final int title_active_minyan=0x7f070007;
+        public static final int title_edit_minyans=0x7f070008;
     }
     public static final class style {
         /** 
@@ -104,10 +108,13 @@ public final class R {
  API 11 theme customizations can go here. 
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f070000;
+        public static final int AppBaseTheme=0x7f080000;
         /**  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f070001;
-        public static final int Theme_Transparent=0x7f070002;
+        public static final int AppTheme=0x7f080001;
+        public static final int Theme_Transparent=0x7f080002;
+    }
+    public static final class xml {
+        public static final int preferences=0x7f040000;
     }
 }

@@ -3,6 +3,7 @@ package org.minyanmate.minyanmate;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -10,12 +11,14 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import org.minyanmate.minyanmate.dialogs.TermsOfService;
 
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class MinyanMateActivity extends FragmentActivity implements
 		ActionBar.TabListener {
@@ -44,7 +47,8 @@ public class MinyanMateActivity extends FragmentActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_minyan_mate);
 
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        // Check if first app install, if so, initialize TimeZone
+        initializeTimeZone();
 
 		// Set up the action bar.
 		final ActionBar actionBar = getActionBar();
@@ -82,7 +86,9 @@ public class MinyanMateActivity extends FragmentActivity implements
 		}
 	}
 
-	@Override
+
+
+    @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.minyan_mate, menu);
@@ -161,4 +167,25 @@ public class MinyanMateActivity extends FragmentActivity implements
 			return null;
 		}
 	}
+
+    private void initializeTimeZone() {
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        String timeZone = preferences.getString(getString(R.string.timezonePreference),"");
+        Log.i("Current Application Time Zone: ", timeZone);
+
+        // Only check if not default
+        if (timeZone.equalsIgnoreCase("") || timeZone.equalsIgnoreCase("temp")) {
+            TimeZone tz = TimeZone.getDefault();
+            Log.i("Current Device Time Zone: ", tz.getDisplayName());
+            String[] timeZoneList = getResources().getStringArray(R.array.minimal_timezones_list);
+
+            for (int i = 0; i < timeZoneList.length; i++) {
+                if (tz.hasSameRules(TimeZone.getTimeZone(timeZoneList[i]))) {
+                    preferences.edit().putString(getString(R.string.timezonePreference,""),timeZoneList[i]).commit();
+                }
+            }
+        }
+    }
 }

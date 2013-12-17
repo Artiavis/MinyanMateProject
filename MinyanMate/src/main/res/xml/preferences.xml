@@ -11,6 +11,12 @@
         />
 
     <!-- TODO use ringtonepreference to choose/create list of gabbais -->
+    <org.minyanmate.minyanmate.ContactPreference
+        android:dependency="@string/isForwardingPreference"
+        android:key="@string/forwardContactPreference"
+        android:title="Headcount Forwarding Recipient"
+        android:summary="This person will receive headcount forwarding"
+        />
 
     <!-- Use ListPreference to change Locale -->
     <ListPreference
@@ -18,7 +24,7 @@
         android:title="Default Time Zone"
         android:summary="Choose the time zone used when determining Minyan times"
         android:dialogTitle="Choose Your Time Zone"
-        android:defaultValue="US/Eastern" />
+        android:defaultValue="temp" />
 
 
 

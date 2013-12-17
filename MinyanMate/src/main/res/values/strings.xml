@@ -79,6 +79,7 @@
 
     <string name="isForwardingPreference">isForwardingCheckBox</string>
     <string name="timezonePreference">timezonePreferenceList</string>
+    <string name="forwardContactPreference">forwardContactRingtonePreference</string>
 
     <string-array name="minimal_timezones_list">
         <item>US/Eastern</item>
