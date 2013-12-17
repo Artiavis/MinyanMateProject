@@ -161,7 +161,7 @@ public class OnSmsReceiver extends BroadcastReceiver{
                     c.close();*/
 
 
-                    notifyMinyanCompletionChange(context, eventId);
+                    checkMinyanCompletionChange(context, eventId);
 
                     c.close();
 
@@ -174,7 +174,15 @@ public class OnSmsReceiver extends BroadcastReceiver{
         }
     }
 
-    public void notifyMinyanCompletionChange(Context context, int eventId) {
+    /**
+     * Check whether the specified Minyan event has ten members and whether the user
+     * was notified about it. If the count just hit ten and user doesn't know about it,
+     * send a notification, and if it dropped below ten and the user doesn't know abou it,
+     * also send a notification.
+     * @param context the context of the BroadcastReceiver
+     * @param eventId the id of the event
+     */
+    public void checkMinyanCompletionChange(Context context, int eventId) {
 
         ContentResolver cr = context.getContentResolver();
         NotificationManager notificationManager = (NotificationManager)
@@ -197,56 +205,50 @@ public class OnSmsReceiver extends BroadcastReceiver{
 
         if (completedButNotNotified) {
 
-            // TODO notify minyan completed
-            Intent notificationIntent = new Intent(context, MinyanMateActivity.class);
-            PendingIntent pi = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-
-            String msg = "Your minyan now has 10 members";
-            Notification n = new Notification.Builder(context)
-                    .setContentTitle("Minyan Complete!")
-                    .setContentText(msg)
-//                    .setStyle(new Notification.BigTextStyle().bigText(msg))
-                    .setSmallIcon(R.drawable.ic_launcher)
-                    .setContentIntent(pi)
-//                                .addAction(R.drawable.edit, "Send headcount", shareIntent)
-                    .getNotification();
-
-            notificationManager.notify(0,n);
-
-            ContentValues eventUpdates = new ContentValues();
-            eventUpdates.put(MinyanEventsTable.COLUMN_MINYAN_COMPLETE_ALERTED, 1);
-            cr.update(MinyanMateContentProvider.CONTENT_URI_EVENTS, eventUpdates,
-                    MinyanEventsTable.COLUMN_EVENT_ID + "=?",
-                    new String[] { Integer.toString(eventId) });
+            minyanCompleted(true, context, eventId, notificationManager);
 
         } else if (notifiedButNotLongerComplete) {
 
-            // TODO notify minyan no longer complete
-            Intent notificationIntent = new Intent(context, MinyanMateActivity.class);
-            PendingIntent pi = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-
-            String msg = "Count dropped under 10";
-            Notification n = new Notification.Builder(context)
-                    .setContentTitle("Minyan Incomplete!")
-                    .setContentText(msg)
-//                    .setStyle(new Notification.BigTextStyle().bigText(msg))
-                    .setSmallIcon(R.drawable.ic_launcher)
-                    .setContentIntent(pi)
-//                                .addAction(R.drawable.edit, "Send headcount", shareIntent)
-                    .getNotification();
-
-
-            notificationManager.notify(0,n);
-
-            ContentValues eventUpdates = new ContentValues();
-            eventUpdates.put(MinyanEventsTable.COLUMN_MINYAN_COMPLETE_ALERTED, 0);
-            cr.update(MinyanMateContentProvider.CONTENT_URI_EVENTS, eventUpdates,
-                    MinyanEventsTable.COLUMN_EVENT_ID + "=?",
-                    new String[] { Integer.toString(eventId) });
+            minyanCompleted(false, context, eventId, notificationManager);
         }
 
         c.close();
 
+    }
+
+    private void minyanCompleted(boolean hasMinyan, Context context, int eventId,
+                                 NotificationManager notificationManager) {
+        Intent notificationIntent = new Intent(context, MinyanMateActivity.class);
+        PendingIntent pi = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+
+        String title;
+        String msg;
+
+        if (hasMinyan) {
+            title = "Minyan Complete!";
+            msg = "Your minyan now has 10 members";
+        } else {
+            title = "Minyan Incomplete!";
+            msg = "Count dropped below 10";
+        }
+
+        Notification n = new Notification.Builder(context)
+                .setContentTitle(title)
+                .setContentText(msg)
+//                    .setStyle(new Notification.BigTextStyle().bigText(msg))
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setContentIntent(pi)
+//                                .addAction(R.drawable.edit, "Send headcount", shareIntent)
+                .setAutoCancel(true)
+                .getNotification();
+
+        notificationManager.notify(0,n);
+
+        ContentValues eventUpdates = new ContentValues();
+        eventUpdates.put(MinyanEventsTable.COLUMN_MINYAN_COMPLETE_ALERTED, hasMinyan ? 1 : 0);
+        context.getContentResolver().update(MinyanMateContentProvider.CONTENT_URI_EVENTS, eventUpdates,
+                MinyanEventsTable.COLUMN_EVENT_ID + "=?",
+                new String[] { Integer.toString(eventId) });
     }
 
 }

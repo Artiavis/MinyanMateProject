@@ -2,7 +2,9 @@ package org.minyanmate.minyanmate;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -41,6 +43,8 @@ public class MinyanMateActivity extends FragmentActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_minyan_mate);
+
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
 		// Set up the action bar.
 		final ActionBar actionBar = getActionBar();
@@ -92,6 +96,9 @@ public class MinyanMateActivity extends FragmentActivity implements
 	        case R.id.action_terms_of_service:
 	            TermsOfService.showTerms(this);
 	            return true;
+            case R.id.action_settings:
+                startActivity(new Intent(this, SettingsActivity.class));
+                return true;
 	        default:
 	        	return true;
 	    }

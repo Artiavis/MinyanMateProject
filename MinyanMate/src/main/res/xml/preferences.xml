@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Enable forwarding to gabbais -->
+    <CheckBoxPreference
+        android:key="@string/isForwardingPreference"
+        android:title="Forward Notifications"
+        android:summary="Use this if you want to forward important updates to people via SMS, ie gabbais"
+        android:defaultValue="false"
+        />
+
+    <!-- TODO use ringtonepreference to choose/create list of gabbais -->
+
+    <!-- Use ListPreference to change Locale -->
+    <ListPreference
+        android:key="@string/timezonePreference"
+        android:title="Default Time Zone"
+        android:summary="Choose the time zone used when determining Minyan times"
+        android:dialogTitle="Choose Your Time Zone"
+        android:defaultValue="US/Eastern" />
+
+
+
+</PreferenceScreen>
