@@ -57,6 +57,16 @@ public class MinyanRegistrar {
         return PendingIntent.getBroadcast(context, scheduleId, i, 0);
     }
 
+    public static void updateMinyanRegistrar(Context context) {
+
+        Cursor cursor =  context.getContentResolver().query(
+                MinyanMateContentProvider.CONTENT_URI_SCHEDULES,
+                null, null, null, null);
+
+        MinyanRegistrar.registerMinyanEvents(context, cursor);
+        cursor.close();
+    }
+
 	/**
 	 * A brute force method meant to be called from the {@link MinyanMateContentProvider}
 	 * whenever updating any schedule to guarantee that all schedules are updated and synchronized

@@ -11,6 +11,8 @@ import android.preference.RingtonePreference;
 import android.provider.ContactsContract;
 import android.util.Log;
 
+import org.minyanmate.minyanmate.services.MinyanRegistrar;
+
 public class SettingsFragment extends PreferenceFragment
     implements SharedPreferences.OnSharedPreferenceChangeListener {
 
@@ -80,6 +82,9 @@ public class SettingsFragment extends PreferenceFragment
         Log.i("Inside SettingsFragment", "Inside onSharedPreferenceChanged");
 
         Log.i("Inside SettingsFragment", "Key: " + key);
+
+        if (key.equalsIgnoreCase(getString(R.string.timezonePreference)))
+            MinyanRegistrar.updateMinyanRegistrar(getActivity());
 
     }
 }

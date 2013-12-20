@@ -389,12 +389,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 	 * family of data.
 	 */
 	private void updateMinyanRegistrar() {
-		 Cursor cursor = database.getReadableDatabase().query(
-				 MinyanSchedulesTable.TABLE_MINYAN_SCHEDULES, 
-				 null, null, null, null, null, null);
-		 
-		 MinyanRegistrar.registerMinyanEvents(getContext(), cursor);
-		 cursor.close();
+        MinyanRegistrar.updateMinyanRegistrar(getContext());
 	}
 	
 	
