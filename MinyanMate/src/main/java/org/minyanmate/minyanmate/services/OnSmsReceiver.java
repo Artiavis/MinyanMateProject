@@ -1,8 +1,5 @@
 package org.minyanmate.minyanmate.services;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -16,8 +13,6 @@ import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.util.Log;
 
-import org.minyanmate.minyanmate.MinyanMateActivity;
-import org.minyanmate.minyanmate.R;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.database.MinyanEventsTable;
 import org.minyanmate.minyanmate.database.MinyanGoersTable;
@@ -161,7 +156,7 @@ public class OnSmsReceiver extends BroadcastReceiver{
                     c.close();*/
 
 
-                    checkMinyanCompletionChange(context, eventId);
+                    HeadcountUpdater.checkMinyanCompletionChange(context, eventId, false);
 
                     c.close();
 
@@ -172,83 +167,6 @@ public class OnSmsReceiver extends BroadcastReceiver{
             Log.e("SmsReceiver", "Exception smsReceiver " +e);
 
         }
-    }
-
-    /**
-     * Check whether the specified Minyan event has ten members and whether the user
-     * was notified about it. If the count just hit ten and user doesn't know about it,
-     * send a notification, and if it dropped below ten and the user doesn't know abou it,
-     * also send a notification.
-     * @param context the context of the BroadcastReceiver
-     * @param eventId the id of the event
-     */
-    public void checkMinyanCompletionChange(Context context, int eventId) {
-
-        ContentResolver cr = context.getContentResolver();
-        NotificationManager notificationManager = (NotificationManager)
-                context.getSystemService(Context.NOTIFICATION_SERVICE);
-
-        Cursor c = cr.query(MinyanMateContentProvider.CONTENT_URI_EVENTS,
-                null, MinyanEventsTable.COLUMN_EVENT_ID + "=?",
-                new String[] { Integer.toString(eventId) }, null);
-        c.moveToFirst();
-
-        // Is the Minyan count complete ie > 9?
-        boolean hasMinyan = c.getInt(c.getColumnIndex(
-                MinyanEventsTable.COLUMN_IS_MINYAN_COMPLETE)) == 1;
-        // If the minyan is complete, does the user know about it?
-        boolean isMinyanNotified = c.getInt(c.getColumnIndex(
-                MinyanEventsTable.COLUMN_MINYAN_COMPLETE_ALERTED)) == 1;
-
-        boolean completedButNotNotified = hasMinyan && !isMinyanNotified;
-        boolean notifiedButNotLongerComplete = isMinyanNotified && !hasMinyan;
-
-        if (completedButNotNotified) {
-
-            minyanCompleted(true, context, eventId, notificationManager);
-
-        } else if (notifiedButNotLongerComplete) {
-
-            minyanCompleted(false, context, eventId, notificationManager);
-        }
-
-        c.close();
-
-    }
-
-    private void minyanCompleted(boolean hasMinyan, Context context, int eventId,
-                                 NotificationManager notificationManager) {
-        Intent notificationIntent = new Intent(context, MinyanMateActivity.class);
-        PendingIntent pi = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-
-        String title;
-        String msg;
-
-        if (hasMinyan) {
-            title = "Minyan Complete!";
-            msg = "Your minyan now has 10 members";
-        } else {
-            title = "Minyan Incomplete!";
-            msg = "Count dropped below 10";
-        }
-
-        Notification n = new Notification.Builder(context)
-                .setContentTitle(title)
-                .setContentText(msg)
-//                    .setStyle(new Notification.BigTextStyle().bigText(msg))
-                .setSmallIcon(R.drawable.ic_launcher)
-                .setContentIntent(pi)
-//                                .addAction(R.drawable.edit, "Send headcount", shareIntent)
-                .setAutoCancel(true)
-                .getNotification();
-
-        notificationManager.notify(0,n);
-
-        ContentValues eventUpdates = new ContentValues();
-        eventUpdates.put(MinyanEventsTable.COLUMN_MINYAN_COMPLETE_ALERTED, hasMinyan ? 1 : 0);
-        context.getContentResolver().update(MinyanMateContentProvider.CONTENT_URI_EVENTS, eventUpdates,
-                MinyanEventsTable.COLUMN_EVENT_ID + "=?",
-                new String[] { Integer.toString(eventId) });
     }
 
 }

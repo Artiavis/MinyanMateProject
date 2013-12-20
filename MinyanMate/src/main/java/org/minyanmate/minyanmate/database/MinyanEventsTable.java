@@ -104,7 +104,11 @@ public class MinyanEventsTable {
 
 	public static void onUpgrade(SQLiteDatabase database, int oldVersion,
 			int newVersion) {
-		database.execSQL("DROP TABLE IF EXISTS " + TABLE_MINYAN_EVENTS);
-		onCreate(database);
+        if (oldVersion == 1) {
+            database.execSQL("DROP TABLE IF EXISTS " + TABLE_MINYAN_EVENTS);
+            onCreate(database);
+        } else if (oldVersion == 2 && newVersion == 3) {
+            // do nothing!
+        }
 	}
 }

@@ -8,7 +8,8 @@ public class MinyanMateDatabaseHelper extends SQLiteOpenHelper {
 
 	private static final String DATABASE_NAME = "minyanmate.db";
 	// Updated to 2 on Dec 11 2013
-    private static final int DATABASE_VERSION = 2;
+    // Updated to 3 on Dec 19 2013
+    private static final int DATABASE_VERSION = 3;
 	
 	public MinyanMateDatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);

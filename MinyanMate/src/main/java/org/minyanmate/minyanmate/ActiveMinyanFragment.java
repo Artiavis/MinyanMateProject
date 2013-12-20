@@ -39,7 +39,8 @@ import org.minyanmate.minyanmate.database.MinyanGoersTable;
 import org.minyanmate.minyanmate.dialogs.OnMessageParticipantsSpinnerItemClicked;
 import org.minyanmate.minyanmate.models.InviteStatus;
 import org.minyanmate.minyanmate.models.MinyanGoer;
-import org.minyanmate.minyanmate.services.SendInvitesService;
+import org.minyanmate.minyanmate.services.HeadcountUpdater;
+import org.minyanmate.minyanmate.services.SendSmsService;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -189,16 +190,8 @@ public class ActiveMinyanFragment extends Fragment implements
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
         sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Minyan Headcount");
-        int i[] = new int[3];
-        int sum = 0;
-        for (int j = 0; j < 3; j++) {
-            i[j] = listAdapter.getChildrenCount(j);
-            sum += i[j];
-        }
-        String headcount = "Minyan Headcount:\n" +
-                "Attending: " +i[0] + "/" + sum + "\n" +
-                "Awaiting Response: " + i[1] + "/" + sum + "\n" +
-                "Not Attending: " + i[2] + "/" + sum;
+
+        String headcount = HeadcountUpdater.formattedHeadcountMessage(getActivity(), mEventId);
 
         sharingIntent.putExtra(Intent.EXTRA_TEXT, headcount);
         sharingIntent.putExtra("exit_on_sent", true);
@@ -270,6 +263,8 @@ public class ActiveMinyanFragment extends Fragment implements
         getActivity().getContentResolver().update(MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS,
                 values, MinyanGoersTable.COLUMN_GOER_ID + "=?", new String[]{String.valueOf(goer.getMinyanGoerId())});
 
+        HeadcountUpdater.checkMinyanCompletionChange(getActivity(),mEventId, true);
+
         return super.onContextItemSelected(item);
     }
 	
@@ -297,6 +292,8 @@ public class ActiveMinyanFragment extends Fragment implements
                     values.put(MinyanGoersTable.COLUMN_INVITE_STATUS, InviteStatus.toInteger(InviteStatus.ATTENDING));
 
                     getActivity().getContentResolver().insert(MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS, values);
+
+                    HeadcountUpdater.checkMinyanCompletionChange(getActivity(),mEventId,true);
                 }
             })
 
@@ -331,11 +328,11 @@ public class ActiveMinyanFragment extends Fragment implements
                     Uri result = data.getData();
                     String phoneNumberId = result.getLastPathSegment();
 
-                    Intent i = new Intent(getActivity(), SendInvitesService.class);
-                    i.putExtra(SendInvitesService.REQUEST_CODE, SendInvitesService.SEND_INVITE_TO_CONTACT);
-                    i.putExtra(SendInvitesService.EVENT_ID, mEventId);
-                    i.putExtra(SendInvitesService.SCHEDULE_ID, mScheduleId);
-                    i.putExtra(SendInvitesService.PHONE_NUMBER_ID, Long.parseLong(phoneNumberId));
+                    Intent i = new Intent(getActivity(), SendSmsService.class);
+                    i.putExtra(SendSmsService.REQUEST_CODE, SendSmsService.SEND_INVITE_TO_CONTACT);
+                    i.putExtra(SendSmsService.EVENT_ID, mEventId);
+                    i.putExtra(SendSmsService.SCHEDULE_ID, mScheduleId);
+                    i.putExtra(SendSmsService.PHONE_NUMBER_ID, Long.parseLong(phoneNumberId));
                     WakefulIntentService.sendWakefulWork(getActivity(), i);
                 }
                 else {

@@ -54,7 +54,11 @@ public class MinyanContactsTable {
 	
 	public static void onUpgrade(SQLiteDatabase database, int oldVersion,
 			int newVersion) {
-		database.execSQL("DROP TABLE IF EXISTS " + TABLE_MINYAN_CONTACTS);
-		onCreate(database);
+        if (oldVersion == 1) {
+            database.execSQL("DROP TABLE IF EXISTS " + TABLE_MINYAN_CONTACTS);
+            onCreate(database);
+        } else if (oldVersion == 2 && newVersion == 3) {
+            // do nothing!
+        }
 	} 
 }

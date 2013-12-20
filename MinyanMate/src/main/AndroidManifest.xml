@@ -23,7 +23,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="org.minyanmate.minyanmate.MinyanMateActivity"
+            android:name=".MinyanMateActivity"
             android:label="@string/app_name" 
             android:launchMode="singleTop" >
             <intent-filter>
@@ -35,15 +35,21 @@
         <activity
             android:name=".MinyanScheduleSettingsActivity"
             android:label="@string/title_edit_minyans"
-            android:parentActivityName="org.minyanmate.minyanmate.MinyanMateActivity"
+            android:parentActivityName=".MinyanMateActivity"
             >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.minyanmate.minyanmate.MinyanMateActivity" />
+                android:value=".MinyanMateActivity" />
         </activity>
 
         <activity android:name=".SettingsActivity"
-            android:label="Minyan Mate Settings" />
+            android:label="Minyan Mate Settings"
+            android:parentActivityName=".MinyanMateActivity"
+            >
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".MinyanMateActivity" />
+        </activity>
 
         <activity android:name=".UserParticipationPopupActivity"
             android:label="@string/app_name"
@@ -59,19 +65,19 @@
 	        android:exported="false" >
 	    </provider>
 	    
-	    <receiver android:name="org.minyanmate.minyanmate.services.OnBootReceiver" >
+	    <receiver android:name=".services.OnBootReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.ACTION_MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
         
-	    <receiver android:name="org.minyanmate.minyanmate.services.OnMinyanAlarmReceiver">
+	    <receiver android:name=".services.OnMinyanAlarmReceiver">
 	    </receiver>
 	    
-	    <service android:name="org.minyanmate.minyanmate.services.SendInvitesService" />
+	    <service android:name=".services.SendSmsService" />
         
-	    <receiver android:name="org.minyanmate.minyanmate.services.OnSmsReceiver" >
+	    <receiver android:name=".services.OnSmsReceiver" >
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>

@@ -109,7 +109,6 @@ public class MinyanMateContentProvider extends ContentProvider {
 				queryBuilder.setTables(MinyanContactsTable.TABLE_MINYAN_CONTACTS);
 				cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null,
 						MinyanContactsTable.COLUMN_PHONE_NUMBER_ID + " asc");
-				cursor.setNotificationUri(getContext().getContentResolver(), uri);
 
 
 				Cursor phoneContacts = getContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -223,6 +222,9 @@ public class MinyanMateContentProvider extends ContentProvider {
 						break;
 					}
 				}
+                cursor.close();
+                phoneContacts2.close();
+
 				goers.setNotificationUri(getContext().getContentResolver(), uri);
 				
 				return goers;

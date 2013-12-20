@@ -5,8 +5,8 @@
     <!-- Enable forwarding to gabbais -->
     <CheckBoxPreference
         android:key="@string/isForwardingPreference"
-        android:title="Forward Notifications"
-        android:summary="Use this if you want to forward important updates to people via SMS, ie gabbais"
+        android:title="Notification Forwarding"
+        android:summary="Enable to choose someone to receive automatic headcount updates"
         android:defaultValue="false"
         />
 
@@ -14,15 +14,15 @@
     <org.minyanmate.minyanmate.ContactPreference
         android:dependency="@string/isForwardingPreference"
         android:key="@string/forwardContactPreference"
-        android:title="Headcount Forwarding Recipient"
-        android:summary="This person will receive headcount forwarding"
+        android:title="Forwarding Recipient"
+        android:summary="Nobody selected"
         />
 
     <!-- Use ListPreference to change Locale -->
     <ListPreference
         android:key="@string/timezonePreference"
-        android:title="Default Time Zone"
-        android:summary="Choose the time zone used when determining Minyan times"
+        android:title="Time Zone"
+        android:summary="Time zone used when determining times (can be different than your phone's)"
         android:dialogTitle="Choose Your Time Zone"
         android:defaultValue="temp" />
 

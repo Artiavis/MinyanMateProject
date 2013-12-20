@@ -108,21 +108,39 @@ public class MinyanGoersTable {
           SELECT * FROM minyan_goers
             WHERE minyan_event_id = new.minyan_event_id AND invite_status = 1
         )
-      ) > 9);
+      ) > 9) WHERE event_id = new.minyan_event_id;
      END;
     * */
     private static final String DATABASE_INSERT_TRIGGER = "CREATE TRIGGER " + TRIGGER_ON_INSERT_IS_MINYAN_COMPLETE +
-            "AFTER INSERT ON " + TABLE_MINYAN_INVITEES +
+            " AFTER INSERT ON " + TABLE_MINYAN_INVITEES +
             " BEGIN " +
-            "UPDATE " + MinyanEventsTable.TABLE_MINYAN_EVENTS + " SET " +
+            " UPDATE " + MinyanEventsTable.TABLE_MINYAN_EVENTS + " SET " +
             MinyanEventsTable.COLUMN_IS_MINYAN_COMPLETE +
             " = (SELECT(" +
-            "SELECT COUNT(*) FROM (" +
-            "SELECT * FROM minyan_goers WHERE " + MinyanEventsTable.COLUMN_EVENT_ID +
+            "SELECT COUNT(" + COLUMN_INVITE_STATUS + ") FROM (" +
+            "SELECT * FROM " + TABLE_MINYAN_INVITEES + " WHERE " + MinyanGoersTable.COLUMN_MINYAN_EVENT_ID +
             " = new." + COLUMN_MINYAN_EVENT_ID + " AND " + COLUMN_INVITE_STATUS + "="
             + InviteStatus.toInteger(InviteStatus.ATTENDING) +
             ")" +
-            ") > 9); " +
+            ") >= 10) WHERE " + MinyanEventsTable.COLUMN_EVENT_ID +
+                      "=" + "new." + COLUMN_MINYAN_EVENT_ID + "; " +
+            "END;";
+
+    private static final String TRIGGER_ON_DELETE_IS_MINYAN_COMPLETE = "on_delete_is_minyan_complete";
+
+    private static final String DATABASE_DELETE_TRIGGER = "CREATE TRIGGER " + TRIGGER_ON_DELETE_IS_MINYAN_COMPLETE +
+            " AFTER DELETE ON " + TABLE_MINYAN_INVITEES +
+            " BEGIN " +
+            " UPDATE " + MinyanEventsTable.TABLE_MINYAN_EVENTS + " SET " +
+            MinyanEventsTable.COLUMN_IS_MINYAN_COMPLETE +
+            " = (SELECT(" +
+            "SELECT COUNT(" + COLUMN_INVITE_STATUS + ") FROM (" +
+            "SELECT * FROM " + TABLE_MINYAN_INVITEES + " WHERE " + MinyanGoersTable.COLUMN_MINYAN_EVENT_ID +
+            " = new." + COLUMN_MINYAN_EVENT_ID + " AND " + COLUMN_INVITE_STATUS + "="
+            + InviteStatus.toInteger(InviteStatus.ATTENDING) +
+            ")" +
+            ") >= 10) WHERE " + MinyanEventsTable.COLUMN_EVENT_ID +
+            "=" + "new." + COLUMN_MINYAN_EVENT_ID + "; " +
             "END;";
 
     private static final String TRIGGER_ON_UPDATE_IS_MINYAN_COMPLETE = "on_update_is_minyan_complete";
@@ -132,18 +150,20 @@ public class MinyanGoersTable {
      * automatically after an update of {@link #COLUMN_INVITE_STATUS}. The column should be 'automagically' correct.
      */
 
-    private static final String DATABASE_UPDATE_TRIGGER = "CREATE TRIGGER " + TRIGGER_ON_UPDATE_IS_MINYAN_COMPLETE +
-            "AFTER UPDATE OF " + COLUMN_INVITE_STATUS + " ON " + TABLE_MINYAN_INVITEES +
+    private static final String DATABASE_UPDATE_TRIGGER = "CREATE TRIGGER " +
+            TRIGGER_ON_UPDATE_IS_MINYAN_COMPLETE +
+            " AFTER UPDATE OF " + COLUMN_INVITE_STATUS + " ON " + TABLE_MINYAN_INVITEES +
             " BEGIN " +
             "UPDATE " + MinyanEventsTable.TABLE_MINYAN_EVENTS + " SET " +
             MinyanEventsTable.COLUMN_IS_MINYAN_COMPLETE +
             " = (SELECT(" +
-            "SELECT COUNT(*) FROM (" +
-            "SELECT * FROM minyan_goers WHERE " + MinyanEventsTable.COLUMN_EVENT_ID +
+            "SELECT COUNT(" + COLUMN_INVITE_STATUS + ") FROM (" +
+            "SELECT * FROM " + TABLE_MINYAN_INVITEES + " WHERE " + MinyanGoersTable.COLUMN_MINYAN_EVENT_ID +
             " = new." + COLUMN_MINYAN_EVENT_ID + " AND " + COLUMN_INVITE_STATUS + "="
             + InviteStatus.toInteger(InviteStatus.ATTENDING) +
             ")" +
-            ") > 9); " +
+            ") >= 10) WHERE " + MinyanEventsTable.COLUMN_EVENT_ID +
+                    "=" + "new." + COLUMN_MINYAN_EVENT_ID + "; " +
             "END;";
 
 	
@@ -152,14 +172,20 @@ public class MinyanGoersTable {
 		database.execSQL(DATABASE_INDEX);
         database.execSQL(DATABASE_INSERT_TRIGGER);
         database.execSQL(DATABASE_UPDATE_TRIGGER);
+        database.execSQL(DATABASE_DELETE_TRIGGER);
 	}
 	
 	public static void onUpgrade(SQLiteDatabase database, int oldVersion,
 			int newVersion) {
-		database.execSQL("DROP TABLE IF EXISTS " + TABLE_MINYAN_INVITEES);
-        database.execSQL("DROP TRIGGER IF EXISTS " + TRIGGER_ON_INSERT_IS_MINYAN_COMPLETE);
-        database.execSQL("DROP TRIGGER IF EXISTS " + TRIGGER_ON_UPDATE_IS_MINYAN_COMPLETE);
-		onCreate(database);
+        if (oldVersion == 1) {
+            database.execSQL("DROP TABLE IF EXISTS " + TABLE_MINYAN_INVITEES);
+            onCreate(database);
+        } else if (oldVersion == 2 && newVersion == 3) {
+            database.execSQL("DROP TRIGGER IF EXISTS " + TRIGGER_ON_INSERT_IS_MINYAN_COMPLETE+"AFTER"); // typos :(
+            database.execSQL("DROP TRIGGER IF EXISTS " + TRIGGER_ON_UPDATE_IS_MINYAN_COMPLETE+"AFTER"); // typos :(
+            database.execSQL(DATABASE_INSERT_TRIGGER);
+            database.execSQL(DATABASE_UPDATE_TRIGGER);
+            database.execSQL(DATABASE_DELETE_TRIGGER);
+        }
 	}
-	
 }

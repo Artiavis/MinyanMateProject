@@ -7,12 +7,14 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.telephony.SmsManager;
 import android.util.Log;
 
 import com.commonsware.cwac.wakeful.WakefulIntentService;
 
+import org.minyanmate.minyanmate.R;
 import org.minyanmate.minyanmate.UserParticipationPopupActivity;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.database.MinyanContactsTable;
@@ -25,10 +27,10 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.concurrent.TimeUnit;
 
-public class SendInvitesService extends WakefulIntentService {
+public class SendSmsService extends WakefulIntentService {
 
-	public SendInvitesService() {
-		super("SendInvitesService");
+	public SendSmsService() {
+		super("SendSmsService");
 	}
 
     /**
@@ -43,24 +45,27 @@ public class SendInvitesService extends WakefulIntentService {
     public static final int SEND_INVITE_TO_CONTACT = 2;
     public static final int SEND_CANCELLATION_NOTIFICATION = 3;
 
+    public static final int SEND_HEADCOUNT_UPDATE = 4;
+
     public static final String REQUEST_CODE = "requestCode";
     public static final String SCHEDULE_ID = "scheduleId";
     public static final String EVENT_ID = "eventId";
     public static final String PHONE_NUMBER_ID = "phoneNumberId";
+    public static final String UPDATE_MESSAGE = "updateMessgae";
 
     @Override
 	protected void doWakefulWork(Intent intent) {
 
 		Bundle b = intent.getExtras();
 		
-		Log.i("SendInvitesService", "Inside SendInvitesService");
-		Log.d("SendInvitesService", "Bundle: " + b);
+		Log.i("SendSmsService", "Inside SendSmsService");
+		Log.d("SendSmsService", "Bundle: " + b);
 
         int requestCode = b.getInt(REQUEST_CODE);
 		int scheduleId = b.getInt(SCHEDULE_ID);
 
-        Log.d("SendInvitesService", " Request Code: " + requestCode);
-        Log.d("SendInvitesService", " Schedule Id: " + scheduleId);
+        Log.d("SendSmsService", " Request Code: " + requestCode);
+        Log.d("SendSmsService", " Schedule Id: " + scheduleId);
 
         switch (requestCode) {
             case SEND_SCHEDULE_INVITES:
@@ -70,15 +75,44 @@ public class SendInvitesService extends WakefulIntentService {
             case SEND_INVITE_TO_CONTACT:
                 int eventId = b.getInt(EVENT_ID);
                 long phoneNumberId = b.getLong(PHONE_NUMBER_ID);
-                Log.d("SendInvitesService", " Event Id: " + eventId);
-                Log.d("SendInvitesService", " Phone Number Id: " + phoneNumberId);
+                Log.d("SendSmsService", " Event Id: " + eventId);
+                Log.d("SendSmsService", " Phone Number Id: " + phoneNumberId);
                 beginSendInviteToContact(scheduleId, eventId, phoneNumberId);
+                break;
+
+            case SEND_HEADCOUNT_UPDATE:
+                String msg = b.getString(UPDATE_MESSAGE);
+                sendUpdateSms(msg);
+                break;
 
             default:
 
         }
 	}
 
+    private void sendUpdateSms(String msg) {
+
+        String contactUriString = PreferenceManager.getDefaultSharedPreferences(this).getString(
+                getString(R.string.forwardContactPreference), "");
+        Uri contactUri = Uri.parse(contactUriString);
+
+        Cursor phoneContacts = getContentResolver().query(contactUri,
+                null, null, null, null);
+
+        if (phoneContacts != null) {
+            if (phoneContacts.moveToFirst()){
+                String phoneNumber = phoneContacts.getString(
+                        phoneContacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                phoneContacts.close();
+
+                SmsManager smsm = SmsManager.getDefault();
+                smsm.sendTextMessage(phoneNumber, null, msg, null, null);
+            } else
+                Log.e("sendUpdateSms", "Error! Could not send update message!");
+
+            phoneContacts.close();
+        }
+    }
 
 
     private void beginSendScheduleInvites(int scheduleId) {
@@ -89,7 +123,7 @@ public class SendInvitesService extends WakefulIntentService {
         if (c.moveToNext()) {
             MinyanSchedule sched = MinyanSchedule.schedFromCursor(c);
             c.close();
-            Log.d("SendInvitesService", "Scheduling Minyan " + sched.getId());
+            Log.d("SendSmsService", "Scheduling Minyan " + sched.getId());
 
             int prayerHour = sched.getHour();
             int prayerMinute = sched.getMinute();
@@ -110,7 +144,7 @@ public class SendInvitesService extends WakefulIntentService {
             Uri eventUri = getContentResolver().insert(MinyanMateContentProvider.CONTENT_URI_EVENTS, eventValues);
 
             long eventId = ContentUris.parseId(eventUri);
-            Log.i("SendInvitesService", "Event id: " + eventId);
+            Log.i("SendSmsService", "Event id: " + eventId);
 
             Cursor contactsToBeInvited = getContentResolver().query(
                     MinyanMateContentProvider.CONTENT_URI_CONTACTS, null,
@@ -127,7 +161,7 @@ public class SendInvitesService extends WakefulIntentService {
                 sendInviteSms(sched, eventId, name, phoneNumId, number);
 
 
-                SystemClock.sleep(1000);
+                SystemClock.sleep(800);
             }
             UserParticipationPopupActivity.createUserParticipationPopup((int) eventId, getApplicationContext());
 
@@ -162,7 +196,7 @@ public class SendInvitesService extends WakefulIntentService {
 
         ContentValues inviteValues;
 
-        Log.i("SendInvitesService", "Inviting " + name);
+        Log.i("SendSmsService", "Inviting " + name);
         SmsManager smsm = SmsManager.getDefault();
 
         String fullInviteMessage = MinyanSchedule.formatInviteMessage(this, sched.getInviteMessage(),

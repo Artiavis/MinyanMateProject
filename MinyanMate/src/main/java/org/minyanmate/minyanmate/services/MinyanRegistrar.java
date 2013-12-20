@@ -4,14 +4,18 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import org.minyanmate.minyanmate.R;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.models.MinyanSchedule;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 /**
  * A class which exposes static functionality to register, reschedule,
@@ -19,7 +23,7 @@ import java.util.GregorianCalendar;
  */
 public class MinyanRegistrar {
 
-	public static void registerMinyanEvent(Context context, MinyanSchedule sched) {		
+	public static void registerMinyanEvent(Context context, MinyanSchedule sched, TimeZone timeZone) {
 		
 		Log.d("MinyanRegistrar", "Inside MinyanRegistrar registering minyan " + sched.getId());
 		
@@ -29,7 +33,7 @@ public class MinyanRegistrar {
         Log.d("Minyan Registrar Registering schedule", " Schedule Id: " + sched.getId());
 		PendingIntent pi = sendScheduledInvitesPendingIntent(context, sched.getId());
 
-		Calendar date = new GregorianCalendar();
+		Calendar date = new GregorianCalendar(timeZone);
 		date.set(Calendar.HOUR_OF_DAY, sched.getHour());
 		date.set(Calendar.MINUTE, sched.getMinute());
 		date.set(Calendar.DAY_OF_WEEK, sched.getDayNum());
@@ -48,8 +52,8 @@ public class MinyanRegistrar {
 
     private static  PendingIntent sendScheduledInvitesPendingIntent(Context context, int scheduleId) {
         Intent i =new Intent(context, OnMinyanAlarmReceiver.class);
-        i.putExtra(SendInvitesService.SCHEDULE_ID, scheduleId);
-        i.putExtra(SendInvitesService.REQUEST_CODE, SendInvitesService.SEND_SCHEDULE_INVITES);
+        i.putExtra(SendSmsService.SCHEDULE_ID, scheduleId);
+        i.putExtra(SendSmsService.REQUEST_CODE, SendSmsService.SEND_SCHEDULE_INVITES);
         return PendingIntent.getBroadcast(context, scheduleId, i, 0);
     }
 
@@ -65,7 +69,10 @@ public class MinyanRegistrar {
 	public static void registerMinyanEvents(Context context, Cursor cursor) {
 		
 		Log.d("MinyanRegistrar", "Inside MinyanRegistrar registering all minyans");
-		
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String timeZoneId = preferences.getString(context.getString(R.string.timezonePreference),"");
+		TimeZone timeZone = TimeZone.getTimeZone(timeZoneId);
 		while (cursor.moveToNext()) {
 			
 			MinyanSchedule sched = MinyanSchedule.schedFromCursor(cursor);
@@ -75,7 +82,7 @@ public class MinyanRegistrar {
 			
 			// Register a minyan to be scheduled if it's marked active
 			if (sched.isActive()) {
-				registerMinyanEvent(context, sched);
+				registerMinyanEvent(context, sched, timeZone);
 			}
 		}
 	}
