@@ -1,4 +1,4 @@
-package org.minyanmate.minyanmate.services;
+package org.minyanmate.minyanmate.services.sms_services;
 
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -51,7 +51,14 @@ public class SendSmsService extends WakefulIntentService {
     public static final String SCHEDULE_ID = "scheduleId";
     public static final String EVENT_ID = "eventId";
     public static final String PHONE_NUMBER_ID = "phoneNumberId";
-    public static final String UPDATE_MESSAGE = "updateMessgae";
+    public static final String UPDATE_MESSAGE = "updateMessage";
+    public static final String ATTEMPT_NUMBER = "attemptNumber";
+
+    /**
+     * Only attempt to send a message so many times. If the number of attempts stored in
+     * #ATTEMPT_NUMBER is greater than #ATTEMPT_LIMIT, stop trying and notify user.
+     */
+    protected static final int ATTEMPT_LIMIT = 3;
 
     @Override
 	protected void doWakefulWork(Intent intent) {

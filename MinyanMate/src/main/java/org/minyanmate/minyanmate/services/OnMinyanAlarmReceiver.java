@@ -8,6 +8,8 @@ import android.util.Log;
 
 import com.commonsware.cwac.wakeful.WakefulIntentService;
 
+import org.minyanmate.minyanmate.services.sms_services.SendSmsService;
+
 public class OnMinyanAlarmReceiver extends BroadcastReceiver {
 
 	@Override

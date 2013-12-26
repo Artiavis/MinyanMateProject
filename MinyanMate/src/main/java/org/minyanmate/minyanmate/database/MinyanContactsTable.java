@@ -46,7 +46,14 @@ public class MinyanContactsTable {
 			+ "(" 
 			+ COLUMN_MINYAN_CONTACT_ID
 			+ ");";
-	
+
+    /*
+    * Created in Version 1
+    * Changed slightly in Version 2
+    * Not modified in Version 3
+    * */
+
+
 	public static void onCreate(SQLiteDatabase database) {
 		database.execSQL(DATABASE_CREATE);
 		database.execSQL(DATABASE_INDEX);

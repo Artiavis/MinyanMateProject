@@ -11,7 +11,7 @@
         />
 
     <!-- TODO use ringtonepreference to choose/create list of gabbais -->
-    <org.minyanmate.minyanmate.ContactPreference
+    <org.minyanmate.minyanmate.preferences.ContactPreference
         android:dependency="@string/isForwardingPreference"
         android:key="@string/forwardContactPreference"
         android:title="Forwarding Recipient"

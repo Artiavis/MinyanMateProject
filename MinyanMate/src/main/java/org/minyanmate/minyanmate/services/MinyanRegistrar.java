@@ -12,6 +12,7 @@ import android.util.Log;
 import org.minyanmate.minyanmate.R;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.models.MinyanSchedule;
+import org.minyanmate.minyanmate.services.sms_services.SendSmsService;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;

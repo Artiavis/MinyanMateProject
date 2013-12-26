@@ -166,7 +166,11 @@ public class MinyanGoersTable {
                     "=" + "new." + COLUMN_MINYAN_EVENT_ID + "; " +
             "END;";
 
-	
+    /*
+    * Created in Version 1
+    * Changed added misspelled triggers onUpdate and onInsert in Version 2
+    * Corrected spelling of triggers and other mistakes in Version 3
+    * */
 	public static void onCreate(SQLiteDatabase database) {
 		database.execSQL(DATABASE_CREATE);
 		database.execSQL(DATABASE_INDEX);
@@ -181,8 +185,9 @@ public class MinyanGoersTable {
             database.execSQL("DROP TABLE IF EXISTS " + TABLE_MINYAN_INVITEES);
             onCreate(database);
         } else if (oldVersion == 2 && newVersion == 3) {
-            database.execSQL("DROP TRIGGER IF EXISTS " + TRIGGER_ON_INSERT_IS_MINYAN_COMPLETE+"AFTER"); // typos :(
-            database.execSQL("DROP TRIGGER IF EXISTS " + TRIGGER_ON_UPDATE_IS_MINYAN_COMPLETE+"AFTER"); // typos :(
+            // the trigger names were misspelled...
+            database.execSQL("DROP TRIGGER IF EXISTS on_insert_is_minyan_completeAFTER"); // typos :(
+            database.execSQL("DROP TRIGGER IF EXISTS on_update_is_minyan_completeAFTER"); // typos :(
             database.execSQL(DATABASE_INSERT_TRIGGER);
             database.execSQL(DATABASE_UPDATE_TRIGGER);
             database.execSQL(DATABASE_DELETE_TRIGGER);

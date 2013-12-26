@@ -33,7 +33,12 @@ public class MinyanSubscriptionsTable {
 			+ COLUMN_SUBSCRIBER_ID + ", "
 			+ COLUMN_CONTACT_LOOKUP_KEY
 			+ ");";
-	
+
+    /*
+    * Created in Version 1, still as-of-yet unused
+    * Nothing changed in Version 2
+    * Nothing changed in version 3
+    * */
 	public static void onCreate(SQLiteDatabase database) {
 		database.execSQL(DATABASE_CREATE);
 		database.execSQL(DATABASE_INDEX);

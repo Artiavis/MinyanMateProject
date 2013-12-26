@@ -20,6 +20,7 @@ import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.database.MinyanEventsTable;
 import org.minyanmate.minyanmate.database.MinyanGoersTable;
 import org.minyanmate.minyanmate.models.InviteStatus;
+import org.minyanmate.minyanmate.services.sms_services.SendSmsService;
 
 public class HeadcountUpdater {
 

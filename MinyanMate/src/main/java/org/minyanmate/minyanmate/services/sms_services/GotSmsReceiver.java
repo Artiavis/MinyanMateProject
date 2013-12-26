@@ -1,4 +1,4 @@
-package org.minyanmate.minyanmate.services;
+package org.minyanmate.minyanmate.services.sms_services;
 
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
@@ -17,6 +17,7 @@ import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.database.MinyanEventsTable;
 import org.minyanmate.minyanmate.database.MinyanGoersTable;
 import org.minyanmate.minyanmate.models.InviteStatus;
+import org.minyanmate.minyanmate.services.HeadcountUpdater;
 
 import java.util.Locale;
 
@@ -28,7 +29,7 @@ import java.util.Locale;
  * {@link MinyanGoersTable#COLUMN_INVITE_STATUS} is 1), log their
  * attendance. 
  */
-public class OnSmsReceiver extends BroadcastReceiver{
+public class GotSmsReceiver extends BroadcastReceiver{
 
     public static final String POSITIVE_RESPONSE = "accept";
     public static final String NEGATIVE_RESPONSE = "decline";
@@ -49,7 +50,7 @@ public class OnSmsReceiver extends BroadcastReceiver{
                 for (int i = 0; i < pdusObj.length; i++) {
 
                     SmsMessage currentMessage = SmsMessage.createFromPdu((byte[]) pdusObj[i]);
-                    String phoneNumber = currentMessage.getDisplayOriginatingAddress();
+                    String phoneNumber = currentMessage.getOriginatingAddress();
                     String response = currentMessage.getDisplayMessageBody();
 
 

@@ -72,12 +72,13 @@
             </intent-filter>
         </receiver>
         
-	    <receiver android:name=".services.OnMinyanAlarmReceiver">
-	    </receiver>
-	    
-	    <service android:name=".services.SendSmsService" />
+	    <receiver android:name=".services.OnMinyanAlarmReceiver" />
+
+        <receiver android:name=".services.sms_services.SentSmsStatusReceiver" />
+
+	    <service android:name=".services.sms_services.SendSmsService" />
         
-	    <receiver android:name=".services.OnSmsReceiver" >
+	    <receiver android:name=".services.sms_services.GotSmsReceiver" >
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>

@@ -40,7 +40,7 @@ import org.minyanmate.minyanmate.dialogs.OnMessageParticipantsSpinnerItemClicked
 import org.minyanmate.minyanmate.models.InviteStatus;
 import org.minyanmate.minyanmate.models.MinyanGoer;
 import org.minyanmate.minyanmate.services.HeadcountUpdater;
-import org.minyanmate.minyanmate.services.SendSmsService;
+import org.minyanmate.minyanmate.services.sms_services.SendSmsService;
 
 import java.util.ArrayList;
 import java.util.Calendar;

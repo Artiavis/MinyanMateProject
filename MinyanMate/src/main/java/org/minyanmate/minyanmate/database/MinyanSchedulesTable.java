@@ -104,7 +104,12 @@ public class MinyanSchedulesTable {
 			+ COLUMN_PRAYER_NUM + ", " 
 			+ COLUMN_IS_ACTIVE
 			+ ");";
-	
+
+    /*
+    * Created in Version 1
+    * Added a Kabbalat Shabbat schedule in Version 2
+    * Nothing changed in version 3
+    * */
 	public static void onCreate(SQLiteDatabase database) {
 		database.execSQL(DATABASE_CREATE);
 		database.execSQL(DATABASE_INDEX);

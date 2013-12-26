@@ -1,4 +1,4 @@
-package org.minyanmate.minyanmate;
+package org.minyanmate.minyanmate.preferences;
 
 import android.content.Context;
 import android.content.Intent;

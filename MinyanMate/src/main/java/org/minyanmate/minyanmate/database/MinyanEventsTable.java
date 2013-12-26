@@ -54,7 +54,6 @@ public class MinyanEventsTable {
      * it implies that someone backed out, and an alert should be fired, after which this should
      * be toggled back to 0.</p>
      */
-    // TODO implement the above alert functionality
     public static final String COLUMN_MINYAN_COMPLETE_ALERTED = "minyan_complete_alerted";
 
     /**
@@ -96,6 +95,12 @@ public class MinyanEventsTable {
 			+ COLUMN_IS_MINYAN_COMPLETE + ", "
             + COLUMN_MINYAN_SCHEDULE_ID
 			+ ");";
+
+    /*
+    * Created in Version 1
+    * Changed slightly in Version 2
+    * Not modified in Version 3
+    * */
 
 	public static void onCreate(SQLiteDatabase database) {
 		database.execSQL(DATABASE_CREATE);
