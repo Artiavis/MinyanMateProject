@@ -44,7 +44,7 @@ public class MinyanGoersTable {
 	public static final String COLUMN_IS_INVITED = "is_invited";
 	
 	/**
-	 * Returns a string with the party's lookup_key if they are in the user's contacts
+	 * Returns a string with the party's phone number id if they are in the user's contacts
 	 * and were invited to the minyan via text message, and null otherwise. 
 	 * See {@link #COLUMN_IS_INVITED}.
 	 */

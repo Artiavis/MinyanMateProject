@@ -15,7 +15,6 @@ import org.minyanmate.minyanmate.models.MinyanSchedule;
 import org.minyanmate.minyanmate.services.sms_services.SendSmsService;
 
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 /**
@@ -34,7 +33,7 @@ public class MinyanRegistrar {
         Log.d("Minyan Registrar Registering schedule", " Schedule Id: " + sched.getId());
 		PendingIntent pi = sendScheduledInvitesPendingIntent(context, sched.getId());
 
-		Calendar date = new GregorianCalendar(timeZone);
+		Calendar date = Calendar.getInstance(timeZone);
 		date.set(Calendar.HOUR_OF_DAY, sched.getHour());
 		date.set(Calendar.MINUTE, sched.getMinute());
 		date.set(Calendar.DAY_OF_WEEK, sched.getDayNum());

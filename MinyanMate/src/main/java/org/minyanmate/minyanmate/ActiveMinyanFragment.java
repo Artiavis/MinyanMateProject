@@ -328,12 +328,30 @@ public class ActiveMinyanFragment extends Fragment implements
                     Uri result = data.getData();
                     String phoneNumberId = result.getLastPathSegment();
 
-                    Intent i = new Intent(getActivity(), SendSmsService.class);
-                    i.putExtra(SendSmsService.REQUEST_CODE, SendSmsService.SEND_INVITE_TO_CONTACT);
-                    i.putExtra(SendSmsService.EVENT_ID, mEventId);
-                    i.putExtra(SendSmsService.SCHEDULE_ID, mScheduleId);
-                    i.putExtra(SendSmsService.PHONE_NUMBER_ID, Long.parseLong(phoneNumberId));
-                    WakefulIntentService.sendWakefulWork(getActivity(), i);
+                    // check whether person was already invited
+                    String selection = MinyanGoersTable.COLUMN_PHONE_NUMBER_ID + " = ?"
+                            + " AND " + MinyanGoersTable.QUERY_LATEST_GOERS;
+                    Cursor c = getActivity().getContentResolver().query(
+                            MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS,
+                            null, selection, new String[] { phoneNumberId }, null
+                    );
+
+                    // If count is 0, person hasn't been invited yet, so invite them
+                    if (c.getCount() == 0) {
+                        Intent i = new Intent(getActivity(), SendSmsService.class);
+                        i.putExtra(SendSmsService.REQUEST_CODE, SendSmsService.SEND_INVITE_TO_CONTACT);
+                        i.putExtra(SendSmsService.EVENT_ID, mEventId);
+                        i.putExtra(SendSmsService.SCHEDULE_ID, mScheduleId);
+                        i.putExtra(SendSmsService.PHONE_NUMBER_ID, Long.parseLong(phoneNumberId));
+                        WakefulIntentService.sendWakefulWork(getActivity(), i);
+                    } else {
+                        Toast.makeText(getActivity(), "Contact already invited!", Toast.LENGTH_SHORT).show();
+                        Log.d("onActivityResult succeeded", "Event Id: " + mEventId);
+                        Log.d("onActivityResult succeeded", "Schedule Id: " + mScheduleId);
+                        Log.d("onActivityResult succeeded", "Person was already invited!");
+                    }
+
+                    c.close();
                 }
                 else {
                     Toast.makeText(getActivity(), "Failed to invite contact!", Toast.LENGTH_SHORT).show();

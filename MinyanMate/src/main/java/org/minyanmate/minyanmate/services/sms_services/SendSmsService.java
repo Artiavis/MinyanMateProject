@@ -1,5 +1,6 @@
 package org.minyanmate.minyanmate.services.sms_services;
 
+import android.app.PendingIntent;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -25,11 +26,12 @@ import org.minyanmate.minyanmate.models.MinyanSchedule;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class SendSmsService extends WakefulIntentService {
 
-	public SendSmsService() {
+    public SendSmsService() {
 		super("SendSmsService");
 	}
 
@@ -43,22 +45,34 @@ public class SendSmsService extends WakefulIntentService {
      * The requestCode to be used after selecting a contact to be invited, ad-hoc.
      */
     public static final int SEND_INVITE_TO_CONTACT = 2;
+
+    /**
+     * To be used if implementing a feature to automatically cancel a minyan.
+     * Not currently implemented.
+     */
     public static final int SEND_CANCELLATION_NOTIFICATION = 3;
 
     public static final int SEND_HEADCOUNT_UPDATE = 4;
+
+    /**
+     * Used by {@link org.minyanmate.minyanmate.services.sms_services.ResendSmsReceiver}
+     * to indicate that it will attempt to resend a batch of Sms
+     */
+    public static final int RESEND_FAILED_INVITES = 5;
 
     public static final String REQUEST_CODE = "requestCode";
     public static final String SCHEDULE_ID = "scheduleId";
     public static final String EVENT_ID = "eventId";
     public static final String PHONE_NUMBER_ID = "phoneNumberId";
     public static final String UPDATE_MESSAGE = "updateMessage";
-    public static final String ATTEMPT_NUMBER = "attemptNumber";
+    public static final String SMS_INVITE = "smsInvite";
+    public static final String SMS_INVITATIONS = "smsInvitations";
+    public static final String TIMES_SENT = "timesSent";
 
     /**
-     * Only attempt to send a message so many times. If the number of attempts stored in
-     * #ATTEMPT_NUMBER is greater than #ATTEMPT_LIMIT, stop trying and notify user.
+     * Used to uniquely identify all pendingintents for {@link #sendInviteSms}
      */
-    protected static final int ATTEMPT_LIMIT = 3;
+    private static final int pendingIntentNumber = 0;
 
     @Override
 	protected void doWakefulWork(Intent intent) {
@@ -92,10 +106,22 @@ public class SendSmsService extends WakefulIntentService {
                 sendUpdateSms(msg);
                 break;
 
+            case RESEND_FAILED_INVITES:
+                SmsInvitationsList smsInvitationsList = b.getParcelable(SendSmsService.SMS_INVITATIONS);
+                sendScheduledInvites(smsInvitationsList);
+
+                break;
+
             default:
 
         }
 	}
+
+    /**
+     * Forward an Sms to an interested third party containing a summary of the latest headcount.
+     * Is used in conjunction with forwarding contact preferences.
+     * @param msg the text of the message to be sent
+     */
 
     private void sendUpdateSms(String msg) {
 
@@ -121,7 +147,12 @@ public class SendSmsService extends WakefulIntentService {
         }
     }
 
-
+    /**
+     * Upon reaching the scheduled time of a service, query the latest information about that
+     * service and contact all subscribed parties with that information. Additionally creates
+     * an event in the database for that service.
+     * @param scheduleId the id of the service to begin
+     */
     private void beginSendScheduleInvites(int scheduleId) {
         Cursor c = getContentResolver().query(
                 Uri.parse(MinyanMateContentProvider.CONTENT_URI_SCHEDULES + "/" + scheduleId),
@@ -158,23 +189,59 @@ public class SendSmsService extends WakefulIntentService {
                     MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID + "=?",
                     new String[] { String.valueOf(scheduleId) }, null);
 
+            // Create smsInvitationsList to pass to the following method
+            SmsInvitationsList smsInvitationsList = new SmsInvitationsList((int) eventId);
 
             while (contactsToBeInvited.moveToNext()) {
 
                 String name = contactsToBeInvited.getString(MinyanMateContentProvider.ContactMatrix.DISPLAY_NAME);
                 long phoneNumId = contactsToBeInvited.getLong(MinyanMateContentProvider.ContactMatrix.PHONE_NUMBER_ID);
                 String number = contactsToBeInvited.getString(MinyanMateContentProvider.ContactMatrix.PHONE_NUMBER);
-                contactsToBeInvited.close();
-                sendInviteSms(sched, eventId, name, phoneNumId, number);
+                String fullInviteMessage = MinyanSchedule.formatInviteMessage(this, sched.getInviteMessage(),
+                        sched.getPrayerName(), sched.getHour(), sched.getMinute());
 
-
-                SystemClock.sleep(800);
+                SmsInvite smsInvite = new SmsInvite(fullInviteMessage, number, phoneNumId, name);
+                smsInvitationsList.getSmsInviteList().add(smsInvite);
             }
-            UserParticipationPopupActivity.createUserParticipationPopup((int) eventId, getApplicationContext());
+            contactsToBeInvited.close();
+            sendScheduledInvites(smsInvitationsList);
 
+        } else {
+            Log.e("SendSmsService: beginSendScheduledInvites", "No minyans by this id!");
         }
     }
 
+    /**
+     * A function to send invitations to the list contained in smsInvitationlist.
+     * This function can be called both the original time invitations get sent out
+     * as well as successive times if any of the original invitations failed.
+     *
+     * @param smsInvitationsList An object with the eventId, the number of times sent, and a list of invitations
+     * to send out.
+     */
+    private void sendScheduledInvites(SmsInvitationsList smsInvitationsList) {
+
+        // Get list of contacts from smsInvitationsList
+        List<SmsInvite> smsInvites = smsInvitationsList.getSmsInviteList();
+
+        for(SmsInvite smsInvite : smsInvites) {
+
+            sendInviteSms(smsInvitationsList.getEventId(), smsInvitationsList.getTimesSent(),
+                    smsInvite);
+            SystemClock.sleep(800);
+        }
+        UserParticipationPopupActivity.createUserParticipationPopup(smsInvitationsList.getEventId(),
+                getApplicationContext());
+
+    }
+
+    /**
+     * Sends an additional invite to a contact who was not originally intended to receive one
+     * according to the database.
+     * @param scheduleId the id of the service to invite contact to
+     * @param eventId the instance of the service to invite contact to
+     * @param phoneNumberId the phone number id of that contact
+     */
     private void beginSendInviteToContact(int scheduleId, int eventId, long phoneNumberId) {
         Cursor scheduleCursor = getContentResolver().query(
                 Uri.parse(MinyanMateContentProvider.CONTENT_URI_SCHEDULES + "/" + scheduleId),
@@ -182,7 +249,9 @@ public class SendSmsService extends WakefulIntentService {
         );
 
         if (scheduleCursor.moveToFirst()) {
+
             MinyanSchedule schedule = MinyanSchedule.schedFromCursor(scheduleCursor);
+            scheduleCursor.close();
 
             Cursor phoneCursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone._ID + "=?",
                     new String[] { Long.toString(phoneNumberId) }, null);
@@ -193,12 +262,56 @@ public class SendSmsService extends WakefulIntentService {
                         ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                 String number = phoneCursor.getString(phoneCursor.getColumnIndex(
                         ContactsContract.CommonDataKinds.Phone.NUMBER));
+                phoneCursor.close();
 
-                sendInviteSms(schedule, eventId, name, phoneNumberId, number);
+                String fullInviteMessage = MinyanSchedule.formatInviteMessage(this, schedule.getInviteMessage(),
+                        schedule.getPrayerName(), schedule.getHour(), schedule.getMinute());
+
+                SmsInvite smsInvite = new SmsInvite(fullInviteMessage, number, phoneNumberId, name);
+                sendInviteSms(eventId, 1, smsInvite);
+
+//                sendInviteSms(schedule, eventId, name, phoneNumberId, number);
+            } else {
+                Log.e("SendSmsService: beginSendInviteToContact", "No contact by that id!");
             }
+        } else {
+            Log.e("SendSmsService: beginSendInviteToContact", "No minyan by that schedule id!");
         }
     }
 
+    /**
+     * A new method for actually performing the sms invitations. Also constructs
+     * a {@link android.app.PendingIntent} for both the success and fail cases.
+     * @param eventId
+     * @param timesSent
+     * @param smsInvite
+     */
+    private void sendInviteSms(int eventId, int timesSent, SmsInvite smsInvite) {
+
+        Log.i("SendSmsService", "Inviting " + smsInvite.getName());
+        SmsManager smsm = SmsManager.getDefault();
+
+        Intent si = new Intent(getApplicationContext(), SentSmsStatusReceiver.class);
+        si.putExtra(SMS_INVITE, smsInvite);
+        si.putExtra(EVENT_ID, eventId);
+        si.putExtra(TIMES_SENT, timesSent);
+        PendingIntent sentIntent = PendingIntent.getBroadcast(getApplicationContext(),
+                pendingIntentNumber, si, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent di = new Intent(getApplicationContext(), SmsSentReceiver.class);
+        di.putExtra(REQUEST_CODE, SmsSentReceiver.INVITE_RECEIVED);
+        di.putExtra(SMS_INVITE, smsInvite);
+        di.putExtra(EVENT_ID, eventId);
+        PendingIntent deliveryIntent = PendingIntent.getBroadcast(getApplicationContext(),
+                pendingIntentNumber, di, PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+        smsm.sendTextMessage(smsInvite.getInviteAddress(), null, smsInvite.getInviteMessage(),
+                sentIntent, deliveryIntent);
+
+    }
+
+    @Deprecated
     private void sendInviteSms(MinyanSchedule sched, long eventId, String name, long phoneNumId, String number) {
 
         ContentValues inviteValues;
@@ -220,5 +333,4 @@ public class SendSmsService extends WakefulIntentService {
         inviteValues.put(MinyanGoersTable.COLUMN_MINYAN_EVENT_ID, eventId);
         getContentResolver().insert(MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS, inviteValues);
     }
-
 }
