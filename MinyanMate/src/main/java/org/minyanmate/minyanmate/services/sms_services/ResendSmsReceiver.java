@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.util.Log;
 
 import com.commonsware.cwac.wakeful.WakefulIntentService;
@@ -18,24 +19,37 @@ import org.minyanmate.minyanmate.R;
  */
 public class ResendSmsReceiver extends BroadcastReceiver {
 
-    public static final int SEND_LIMIT = 3;
+    public static final int RESEND_LIMIT = 2;
 
     public static final String MANUAL_RESEND = "manualResend";
 
     @Override
     public void onReceive(Context context, Intent intent) {
 
+        // this is coming up null
         SmsInvitationsList smsInvitationsList = intent.getParcelableExtra(SendSmsService.SMS_INVITATIONS);
+
         boolean manualResend = intent.getBooleanExtra(MANUAL_RESEND, false);
 
+        Log.i("ResendSmsReceiver", "Receiving resend list " + smsInvitationsList);
+
         if (smsInvitationsList != null) {
+
+            Log.i("ResendSmsReceiver", "There are " + smsInvitationsList.getSmsInviteList().size() +
+            " invitations and manualResend is " + manualResend);
+
             // If not too many retries, automatically begin sending again
-            if (smsInvitationsList.getTimesSent() < SEND_LIMIT || manualResend) {
+            if (smsInvitationsList.getTimesSent() - 1 < RESEND_LIMIT || manualResend) {
+
+                Log.d("ResendSmsReceiver", "Resending invitations");
 
                 smsInvitationsList.incrementTimesSent();
+                smsInvitationsList.setIsNewList(false);
+                smsInvitationsList.clearFile(context);
+
 
                 Intent i = new Intent(context, SendSmsService.class);
-                i.putExtra(SendSmsService.SMS_INVITATIONS, smsInvitationsList);
+                i.putExtra(SendSmsService.SMS_INVITATIONS, (Parcelable) smsInvitationsList);
                 i.putExtra(SendSmsService.REQUEST_CODE, SendSmsService.RESEND_FAILED_INVITES);
                 WakefulIntentService.sendWakefulWork(context, i);
             }
@@ -43,10 +57,13 @@ public class ResendSmsReceiver extends BroadcastReceiver {
             // If there are too many retries, prompt the user to manually resend
             else {
 
+                Log.d("ResendSmsReceiver", "Too many retries, sending notification");
+
                 Intent i = new Intent(context, ResendSmsReceiver.class);
-                i.putExtra(SendSmsService.SMS_INVITATIONS, smsInvitationsList);
+                i.putExtra(SendSmsService.SMS_INVITATIONS, (Parcelable) smsInvitationsList);
                 i.putExtra(MANUAL_RESEND, true);
-                PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
+                PendingIntent pi = PendingIntent.getBroadcast(context, 0, i,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
 
                 NotificationManager nm = (NotificationManager)
                         context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -63,7 +80,7 @@ public class ResendSmsReceiver extends BroadcastReceiver {
 
             }
         } else {
-            Log.d("ResendSmsReceiver: onReceive","No smsInvitationsList object received!");
+            Log.e("ResendSmsReceiver: onReceive","No smsInvitationsList object received!");
         }
     }
 }

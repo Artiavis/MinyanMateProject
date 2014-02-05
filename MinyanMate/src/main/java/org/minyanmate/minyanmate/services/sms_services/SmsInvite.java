@@ -3,6 +3,8 @@ package org.minyanmate.minyanmate.services.sms_services;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.Serializable;
+
 /**
  * Created by Jeff on 2/3/14.
  *
@@ -10,7 +12,7 @@ import android.os.Parcelable;
  * an Sms in the event of a failure.
  */
 
-public class SmsInvite implements Parcelable {
+public class SmsInvite implements Parcelable, Serializable {
 
     public SmsInvite(String msg, String addr, long numid, String name) {
         this.inviteMessage = msg;
@@ -46,7 +48,7 @@ public class SmsInvite implements Parcelable {
         inParcel.readStringArray(strings);
         this.inviteMessage = strings[0];
         this.inviteAddress = strings[1];
-        this.name          = strings[3];
+        this.name          = strings[2];
 
         phoneNumberId = inParcel.readLong();
     }

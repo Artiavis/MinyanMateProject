@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
@@ -72,7 +73,7 @@ public class SendSmsService extends WakefulIntentService {
     /**
      * Used to uniquely identify all pendingintents for {@link #sendInviteSms}
      */
-    private static final int pendingIntentNumber = 0;
+    private static int pendingIntentNumber = 0;
 
     @Override
 	protected void doWakefulWork(Intent intent) {
@@ -206,6 +207,9 @@ public class SendSmsService extends WakefulIntentService {
             contactsToBeInvited.close();
             sendScheduledInvites(smsInvitationsList);
 
+            UserParticipationPopupActivity.createUserParticipationPopup(smsInvitationsList.getEventId(),
+                    getApplicationContext());
+
         } else {
             Log.e("SendSmsService: beginSendScheduledInvites", "No minyans by this id!");
         }
@@ -221,6 +225,9 @@ public class SendSmsService extends WakefulIntentService {
      */
     private void sendScheduledInvites(SmsInvitationsList smsInvitationsList) {
 
+
+        Log.d("SendSmsService: sendScheduledInvites","Sending " +
+                smsInvitationsList.getSmsInviteList().size() + " invites");
         // Get list of contacts from smsInvitationsList
         List<SmsInvite> smsInvites = smsInvitationsList.getSmsInviteList();
 
@@ -230,9 +237,6 @@ public class SendSmsService extends WakefulIntentService {
                     smsInvite);
             SystemClock.sleep(800);
         }
-        UserParticipationPopupActivity.createUserParticipationPopup(smsInvitationsList.getEventId(),
-                getApplicationContext());
-
     }
 
     /**
@@ -288,27 +292,30 @@ public class SendSmsService extends WakefulIntentService {
      */
     private void sendInviteSms(int eventId, int timesSent, SmsInvite smsInvite) {
 
-        Log.i("SendSmsService", "Inviting " + smsInvite.getName());
+        Log.i("SendSmsService", "Inviting " + smsInvite.getName() + " for the " + timesSent +
+                " time with pendingIntent number " + pendingIntentNumber);
         SmsManager smsm = SmsManager.getDefault();
 
         Intent si = new Intent(getApplicationContext(), SentSmsStatusReceiver.class);
-        si.putExtra(SMS_INVITE, smsInvite);
+        si.putExtra(SMS_INVITE, (Parcelable) smsInvite);
         si.putExtra(EVENT_ID, eventId);
         si.putExtra(TIMES_SENT, timesSent);
         PendingIntent sentIntent = PendingIntent.getBroadcast(getApplicationContext(),
                 pendingIntentNumber, si, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Intent di = new Intent(getApplicationContext(), SmsSentReceiver.class);
-        di.putExtra(REQUEST_CODE, SmsSentReceiver.INVITE_RECEIVED);
-        di.putExtra(SMS_INVITE, smsInvite);
-        di.putExtra(EVENT_ID, eventId);
-        PendingIntent deliveryIntent = PendingIntent.getBroadcast(getApplicationContext(),
-                pendingIntentNumber, di, PendingIntent.FLAG_UPDATE_CURRENT);
+        // this doesn't seem to work on all networks so switch to using sentintents
+//        Intent di = new Intent(getApplicationContext(), SmsSentReceiver.class);
+//        di.putExtra(REQUEST_CODE, SmsSentReceiver.INVITE_RECEIVED);
+//        di.putExtra(SMS_INVITE, (Parcelable) smsInvite);
+//        di.putExtra(EVENT_ID, eventId);
+//        PendingIntent deliveryIntent = PendingIntent.getBroadcast(getApplicationContext(),
+//                pendingIntentNumber, di, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
         smsm.sendTextMessage(smsInvite.getInviteAddress(), null, smsInvite.getInviteMessage(),
-                sentIntent, deliveryIntent);
+                sentIntent, null);
 
+        pendingIntentNumber++;
     }
 
     @Deprecated
@@ -322,7 +329,7 @@ public class SendSmsService extends WakefulIntentService {
         String fullInviteMessage = MinyanSchedule.formatInviteMessage(this, sched.getInviteMessage(),
                 sched.getPrayerName(), sched.getHour(), sched.getMinute());
 
-        // TODO fire intent to log the invited recipient in the Goers table if the message was received
+        //  fire intent to log the invited recipient in the Goers table if the message was received
         smsm.sendTextMessage(number, null, fullInviteMessage, null, null);
 
         inviteValues = new ContentValues();

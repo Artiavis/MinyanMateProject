@@ -1,9 +1,18 @@
 package org.minyanmate.minyanmate.services.sms_services;
 
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,10 +20,15 @@ import java.util.List;
  * Used to to parcel invite message data for passing around
  * {@link org.minyanmate.minyanmate.services.sms_services}
  */
-public class SmsInvitationsList implements Parcelable {
+public class SmsInvitationsList implements Parcelable, Serializable {
 
+    /**
+     * The name of the cached file to use for storing a SmsInvitationsList
+     */
+    static final String FILENAME = "invitationsListCache";
     private int eventId;
     private int timesSent = 1;
+    private boolean isNewList = true;
     private List<SmsInvite> smsInviteList = new ArrayList<SmsInvite>();
 
     public SmsInvitationsList(int eventId) {
@@ -44,6 +58,14 @@ public class SmsInvitationsList implements Parcelable {
         return timesSent;
     }
 
+    public boolean isNewList() {
+        return isNewList;
+    }
+
+    public void setIsNewList(boolean isNewList) {
+        this.isNewList = isNewList;
+    }
+
     public List<SmsInvite> getSmsInviteList() {
         return smsInviteList;
     }
@@ -69,6 +91,59 @@ public class SmsInvitationsList implements Parcelable {
         inParcel.readTypedList(smsInviteList, SmsInvite.CREATOR);
     }
 
+    static SmsInvitationsList readListFromFile(Context context) {
+
+        FileInputStream fis = null;
+        ObjectInputStream is = null;
+        SmsInvitationsList smsInvitationsList = null;
+
+        try {
+
+            fis = context.openFileInput(SmsInvitationsList.FILENAME);
+
+            try {
+                is = new ObjectInputStream(fis);
+                smsInvitationsList = (SmsInvitationsList) is.readObject();
+                is.close();
+            } catch (StreamCorruptedException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            fis.close();
+            return smsInvitationsList; // may be null and that's okay
+
+        } catch (FileNotFoundException e) {
+            System.err.println("File " + FILENAME + " does not exist");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    void writeListToFile(Context context) {
+
+        try {
+            FileOutputStream fos = context.openFileOutput(SmsInvitationsList.FILENAME, Context.MODE_PRIVATE);
+            try {
+                ObjectOutputStream os = new ObjectOutputStream(fos);
+                os.writeObject(this);
+                os.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void clearFile(Context context) {
+
+        context.deleteFile(FILENAME);
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -76,7 +151,7 @@ public class SmsInvitationsList implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel destParcel, int flags) {
-        destParcel.writeIntArray(new int[] { this.eventId, this.timesSent });
+        destParcel.writeIntArray(new int[] { this.eventId, this.timesSent});
         destParcel.writeTypedList(this.smsInviteList);
     }
 

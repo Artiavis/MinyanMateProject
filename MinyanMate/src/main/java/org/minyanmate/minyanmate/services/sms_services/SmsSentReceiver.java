@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.database.MinyanGoersTable;
@@ -16,12 +17,16 @@ import org.minyanmate.minyanmate.models.InviteStatus;
  * {@link org.minyanmate.minyanmate.services.sms_services.SendSmsService} to receive the
  * deliveryIntent.
  */
+@Deprecated
 public class SmsSentReceiver extends BroadcastReceiver {
 
     public static final int INVITE_RECEIVED = 1;
 
     @Override
     public void onReceive(Context context, Intent intent) {
+
+        Log.d("SmsSentReceiver","Sms delivery intent received!");
+
         int requestCode = intent.getIntExtra(SendSmsService.REQUEST_CODE, 0);
         switch (requestCode) {
             case INVITE_RECEIVED:
@@ -34,8 +39,12 @@ public class SmsSentReceiver extends BroadcastReceiver {
     }
 
     private void insertSmsInviteRecord(Context context, Bundle bundle) {
+
+
         SmsInvite smsInvite = bundle.getParcelable(SendSmsService.SMS_INVITE);
         int eventId = bundle.getInt(SendSmsService.EVENT_ID);
+
+        Log.d("SmsSentReceiver", "inserting invite for " + smsInvite.getName());
 
         ContentValues inviteValues = new ContentValues();
         inviteValues.put(MinyanGoersTable.COLUMN_DISPLAY_NAME, smsInvite.getName());

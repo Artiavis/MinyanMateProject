@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.minyanmate.minyanmate"
     android:versionCode="10"
-    android:versionName="0.9.0" >
+    android:versionName="0.9.1" >
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -64,7 +64,9 @@
 	        android:name=".contentprovider.MinyanMateContentProvider"
 	        android:exported="false" >
 	    </provider>
-	    
+
+        <service android:name=".services.sms_services.SendSmsService" />
+
 	    <receiver android:name=".services.OnBootReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -76,7 +78,9 @@
 
         <receiver android:name=".services.sms_services.SentSmsStatusReceiver" />
 
-	    <service android:name=".services.sms_services.SendSmsService" />
+        <receiver android:name=".services.sms_services.ResendSmsReceiver" />
+
+        <!--<receiver android:name=".services.sms_services.SmsSentReceiver" />-->
         
 	    <receiver android:name=".services.sms_services.GotSmsReceiver" >
             <intent-filter>
