@@ -23,17 +23,7 @@ import java.util.TimeZone;
 public class MinyanMateActivity extends FragmentActivity implements
 		ActionBar.TabListener {
 
-	/**
-	 * The {@link android.support.v4.view.PagerAdapter} that will provide
-	 * fragments for each of the sections. We use a
-	 * {@link android.support.v4.app.FragmentPagerAdapter} derivative, which
-	 * will keep every loaded fragment in memory. If this becomes too memory
-	 * intensive, it may be best to switch to a
-	 * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-	 */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
-
-	/**
+    /**
 	 * The {@link ViewPager} that will host the section contents.
 	 */
     private ViewPager mViewPager;
@@ -52,12 +42,21 @@ public class MinyanMateActivity extends FragmentActivity implements
 
 		// Set up the action bar.
 		final ActionBar actionBar = getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        assert actionBar != null;
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the app.
-		mSectionsPagerAdapter = new SectionsPagerAdapter(
-				getSupportFragmentManager());
+		/*
+	  The {@link android.support.v4.view.PagerAdapter} that will provide
+	  fragments for each of the sections. We use a
+	  {@link android.support.v4.app.FragmentPagerAdapter} derivative, which
+	  will keep every loaded fragment in memory. If this becomes too memory
+	  intensive, it may be best to switch to a
+	  {@link android.support.v4.app.FragmentStatePagerAdapter}.
+	 */
+        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(
+                getSupportFragmentManager());
 
 		// Set up the ViewPager with the sections adapter.
 		mViewPager = (ViewPager) findViewById(R.id.pager);
@@ -81,8 +80,9 @@ public class MinyanMateActivity extends FragmentActivity implements
 			// the TabListener interface, as the callback (listener) for when
 			// this tab is selected.
 			actionBar.addTab(actionBar.newTab()
-					.setText(mSectionsPagerAdapter.getPageTitle(i))
-					.setTabListener(this));
+//                    .setText(mSectionsPagerAdapter.getPageTitle(i))
+                    .setIcon(mSectionsPagerAdapter.getPageIcon(i))
+                    .setTabListener(this));
 		}
 	}
 
@@ -155,6 +155,20 @@ public class MinyanMateActivity extends FragmentActivity implements
 			return 2;
 		}
 
+        public int getPageIcon(int position) {
+            switch (position) {
+            case 0:
+                return R.drawable.minyan_list;
+            case 1:
+                return R.drawable.wall_clock;
+            case 2:
+                return R.drawable.manage_contacts;
+            default:
+                break;
+            }
+            return R.drawable.ic_launcher;
+        }
+        
 		@Override
 		public CharSequence getPageTitle(int position) {
 			Locale l = Locale.getDefault();
@@ -163,6 +177,8 @@ public class MinyanMateActivity extends FragmentActivity implements
 				return getString(R.string.title_active_minyan).toUpperCase(l);
 			case 1:
 				return getString(R.string.title_edit_minyans).toUpperCase(l);
+            case 2:
+                return "Manage Contacts".toUpperCase(l);
 			}
 			return null;
 		}
@@ -181,9 +197,9 @@ public class MinyanMateActivity extends FragmentActivity implements
             Log.i("Current Device Time Zone: ", tz.getDisplayName());
             String[] timeZoneList = getResources().getStringArray(R.array.minimal_timezones_list);
 
-            for (int i = 0; i < timeZoneList.length; i++) {
-                if (tz.hasSameRules(TimeZone.getTimeZone(timeZoneList[i]))) {
-                    preferences.edit().putString(getString(R.string.timezonePreference,""),timeZoneList[i]).commit();
+            for (String aTimeZone : timeZoneList) {
+                if (tz.hasSameRules(TimeZone.getTimeZone(aTimeZone))) {
+                    preferences.edit().putString(getString(R.string.timezonePreference, ""), aTimeZone).commit();
                 }
             }
         }

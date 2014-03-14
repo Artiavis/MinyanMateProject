@@ -44,7 +44,7 @@ import java.util.Locale;
 /**
  * Provides access to general details about a weekly minyan event, and permits
  * changing the time and invite list. Is called from {@link MinyanScheduleListFragment}
- * and can subsequently call the Android contact picker or {@link PickMultipleContactsActivity}.
+ * and can subsequently call the Android contact picker
  *
  */
 public class MinyanScheduleSettingsActivity extends FragmentActivity
@@ -169,7 +169,7 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 	}
 	
 	/**
-	 * The onClick event handler to select multiple contacts using the {@link PickMultipleContactsActivity} 
+	 * The onClick event handler to edit a custom message
 	 * activity.
 	 * @param view
 	 */
