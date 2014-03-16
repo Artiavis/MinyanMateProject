@@ -55,7 +55,7 @@ public class RemovableContactListAdapter extends CursorAdapter {
 		badge.assignContactUri(contactUri);
 		
 		if (null == (cur.getString(ContactMatrix.THUMBNAIL_PHOTO_URI)))
-			badge.setImageResource(R.drawable.add_contact);
+			badge.setImageResource(R.drawable.social_add_person_light);
 		else {
 			Uri imageuri = Uri.parse(cur.getString(ContactMatrix.THUMBNAIL_PHOTO_URI));
 			badge.setImageURI(imageuri);

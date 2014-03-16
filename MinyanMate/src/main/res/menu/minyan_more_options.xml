@@ -2,6 +2,22 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/moreOptsMenu_MessageParticipants" android:title="Message Participants"/>
-    <item android:id="@+id/moreOptsMenu_ShareHeadcount" android:title="Share Headcount" />
+    <item android:id="@+id/moreOptsMenu_AddPerson"
+        android:title="Add Person..."
+        android:showAsAction="ifRoom"
+        android:icon="@drawable/social_add_person_light"
+        />
+
+    <item android:id="@+id/moreOptsMenu_MessageParticipants"
+        android:title="Message Participants"
+        android:showAsAction="ifRoom"
+        android:icon="@drawable/social_chat_light"
+        />
+
+    <item android:id="@+id/moreOptsMenu_ShareHeadcount"
+        android:title="Share Headcount"
+        android:icon="@drawable/social_share_light"
+        android:showAsAction="ifRoom"
+
+        />
 </menu>

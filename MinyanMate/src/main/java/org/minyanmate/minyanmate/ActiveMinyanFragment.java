@@ -16,6 +16,8 @@ import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -83,6 +85,9 @@ public class ActiveMinyanFragment extends Fragment implements
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(
 				R.layout.fragment_active_minyan, container, false);
+
+        // Use this to declare the use of a custom menu, thus using onCreateOptionsMenu
+        setHasOptionsMenu(true);
 
 
         // Restore instance state if previously instantiated, also
@@ -185,6 +190,21 @@ public class ActiveMinyanFragment extends Fragment implements
 
 		return rootView;
 	}
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+
+
+        // First inflate the new menu options, and only afterwards inflate the base menu
+        // Diagram below, reference http://stackoverflow.com/a/4954800/1993865
+        /*
+            Menu:    ()
+            inflate new: ( new )
+            inflate base: ( new, old)
+        */
+        menuInflater.inflate(R.menu.minyan_more_options, menu);
+        super.onCreateOptionsMenu(menu, menuInflater);
+    }
 
     private void shareHeadcount() {
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);

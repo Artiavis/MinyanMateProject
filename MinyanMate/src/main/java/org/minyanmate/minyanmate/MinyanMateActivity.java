@@ -44,6 +44,10 @@ public class MinyanMateActivity extends FragmentActivity implements
 		final ActionBar actionBar = getActionBar();
         assert actionBar != null;
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setDisplayShowHomeEnabled(false);
+
+        // TODO this should have a polymorphic (and custom) menu for each pgae
 
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the app.
@@ -92,6 +96,7 @@ public class MinyanMateActivity extends FragmentActivity implements
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.minyan_mate, menu);
+
 		return true;
 	}
 	
@@ -158,11 +163,11 @@ public class MinyanMateActivity extends FragmentActivity implements
         public int getPageIcon(int position) {
             switch (position) {
             case 0:
-                return R.drawable.minyan_list;
+                return R.drawable.collections_view_as_list_light;
             case 1:
-                return R.drawable.wall_clock;
+                return R.drawable.device_access_time_light;
             case 2:
-                return R.drawable.manage_contacts;
+                return R.drawable.social_cc_bcc_light;
             default:
                 break;
             }

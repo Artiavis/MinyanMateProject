@@ -2,13 +2,13 @@
 
     <item
         android:id="@+id/action_settings"
-        android:orderInCategory="100"
+        android:orderInCategory="200"
         android:showAsAction="never"
         android:title="@string/action_settings"/>
     
     <item
         android:id="@+id/action_terms_of_service"
-        android:orderInCategory="200"
+        android:orderInCategory="300"
         android:showAsAction="never"
         android:title="@string/about_app"
         />

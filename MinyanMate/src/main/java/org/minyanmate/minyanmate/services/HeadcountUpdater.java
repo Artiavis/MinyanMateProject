@@ -133,7 +133,7 @@ public class HeadcountUpdater {
 //                    .setStyle(new Notification.BigTextStyle().bigText(msg))
                 .setSmallIcon(R.drawable.ic_launcher)
                 .setContentIntent(pi)
-//                                .addAction(R.drawable.edit, "Send headcount", shareIntent)
+//                                .addAction(R.drawable.content_edit_dark, "Send headcount", shareIntent)
                 .setAutoCancel(true)
                 .getNotification();
 

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_add_contact"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"
+        android:title="Add New Contact"
+        android:icon="@drawable/social_add_person_light" />
+</menu>

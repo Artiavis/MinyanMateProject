@@ -8,7 +8,7 @@
         android:id="@+id/removableRemoveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/discard"
+        android:src="@drawable/content_discard_light"
         android:layout_alignParentRight="true" />
     
     <QuickContactBadge
