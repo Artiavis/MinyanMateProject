@@ -31,7 +31,7 @@ import android.widget.Toast;
 import org.minyanmate.minyanmate.adapters.RemovableContactListAdapter;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.database.MinyanContactsTable;
-import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
+import org.minyanmate.minyanmate.database.MinyanPrayerSchedulesTable;
 import org.minyanmate.minyanmate.dialogs.ScheduleTimePickerFragment;
 import org.minyanmate.minyanmate.dialogs.ScheduleWindowPickerFragent;
 import org.minyanmate.minyanmate.dialogs.TermsOfService;
@@ -53,7 +53,6 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 	public static final int TIME_LOADER = 1;
 	public static final int CONTACT_LOADER = 2;
 	public final static int PICK_CONTACT = 10;
-	public final static int PICK_MULTIPLE_CONTACTS = 20;
 	
 	private int scheduleId;
 	private MinyanSchedule schedule;
@@ -227,10 +226,10 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 
                         if (msg.length() <= MinyanSchedule.SCHEDULE_MESSAGE_SIZE_LIMIT) {
                             ContentValues values = new ContentValues();
-                            values.put(MinyanSchedulesTable.COLUMN_SCHEDULE_MESSAGE, msg);
+                            values.put(MinyanPrayerSchedulesTable.COLUMN_SCHEDULE_MESSAGE, msg);
 
                             getContentResolver().update(MinyanMateContentProvider.CONTENT_URI_SCHEDULES, values,
-                                    MinyanSchedulesTable.COLUMN_SCHEDULE_ID + "=?", new String[]{Integer.toString(scheduleId)});
+                                    MinyanPrayerSchedulesTable.COLUMN_PRAYER_SCHEDULE_ID + "=?", new String[]{Integer.toString(scheduleId)});
                         } else {
                             Toast.makeText(v.getContext(), "Could not save your message! It was too long!", Toast.LENGTH_LONG).show();
                         }
@@ -282,21 +281,18 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 	public void onActivityResult(int reqCode, int resultCode, Intent data) {
 		
 		switch(reqCode) {
-		case (PICK_CONTACT) :
-			if (resultCode == Activity.RESULT_OK) {
-				
-				Uri result = data.getData();
-				saveContactData(result);
-				
-			}
-			break;
-			
-		case (PICK_MULTIPLE_CONTACTS):
-			if (resultCode == Activity.RESULT_OK) {
-				
-				// do stuff
-			}
-		}
+            case (PICK_CONTACT):
+                if (resultCode == Activity.RESULT_OK) {
+
+                    Uri result = data.getData();
+                    saveContactData(result);
+
+                }
+                break;
+
+            default:
+                break;
+        }
 	}
 	
 	/**
@@ -326,6 +322,8 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 		} else {
 			Toast.makeText(this, "Failed to save contact!", Toast.LENGTH_SHORT).show();
 		}
+
+        temp.close();
 	}
 	
 
@@ -377,7 +375,8 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 			break;
 			
 		case CONTACT_LOADER:
-			CursorAdapter adapter = new RemovableContactListAdapter(this, cursor);
+			CursorAdapter adapter = new RemovableContactListAdapter(this, cursor,
+                    new RemovableContactListAdapter.DistinctContactCallbacks());
 			contactList.setAdapter(adapter);
 			
 			break;

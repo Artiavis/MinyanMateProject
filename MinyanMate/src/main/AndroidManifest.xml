@@ -36,8 +36,15 @@
         <activity
             android:name=".MinyanScheduleSettingsActivity"
             android:label="@string/title_edit_minyans"
-            android:parentActivityName=".MinyanMateActivity"
-            >
+            android:parentActivityName=".MinyanMateActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MinyanMateActivity" />
+        </activity>
+
+        <activity android:name=".ContactManagerActivity"
+            android:label="Manage a Contact"
+            android:parentActivityName=".MinyanMateActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MinyanMateActivity" />
@@ -47,9 +54,9 @@
             android:label="Minyan Mate Settings"
             android:parentActivityName=".MinyanMateActivity"
             >
-        <meta-data
-            android:name="android.support.PARENT_ACTIVITY"
-            android:value=".MinyanMateActivity" />
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MinyanMateActivity" />
         </activity>
 
         <activity android:name=".UserParticipationPopupActivity"

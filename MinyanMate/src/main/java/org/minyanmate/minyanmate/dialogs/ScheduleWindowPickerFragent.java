@@ -8,7 +8,7 @@ import android.util.Log;
 import android.widget.TimePicker;
 
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
+import org.minyanmate.minyanmate.database.MinyanPrayerSchedulesTable;
 
 import java.util.concurrent.TimeUnit;
 
@@ -43,7 +43,7 @@ public class ScheduleWindowPickerFragent extends AbstractSchedulePickerDialog {
 		ContentValues values = new ContentValues();
 		long windowLength = TimeUnit.HOURS.toMillis(hourOfDay) + TimeUnit.MINUTES.toMillis(minute);
 		
-		values.put(MinyanSchedulesTable.COLUMN_SCHEDULE_WINDOW, windowLength);
+		values.put(MinyanPrayerSchedulesTable.COLUMN_SCHEDULE_WINDOW, windowLength);
 		
 		saveSelection(view.getContext(), schedule.getHour(), schedule.getMinute(), 
 				windowLength, values);

@@ -23,7 +23,7 @@ public class MinyanContactsTable {
 	public static final String COLUMN_PHONE_NUMBER_ID = "contact_phone_id";
 	
 	/**
-	 * Returns an integer with a primary key to the {@link MinyanSchedulesTable#TABLE_MINYAN_SCHEDULES} table.
+	 * Returns an integer with a primary key to the {@link MinyanPrayerSchedulesTable#TABLE_MINYAN_PRAYER_SCHEDULES} table.
 	 */
 	public static final String COLUMN_MINYAN_SCHEDULE_ID = "minyan_schedule_id";
 	
@@ -37,7 +37,7 @@ public class MinyanContactsTable {
 				+ COLUMN_MINYAN_SCHEDULE_ID 
 				+ ") on conflict replace, "
 				+ "foreign key(" + COLUMN_MINYAN_SCHEDULE_ID + ") references "
-				+ MinyanSchedulesTable.TABLE_MINYAN_SCHEDULES + "(" + MinyanSchedulesTable.COLUMN_SCHEDULE_ID
+				+ MinyanPrayerSchedulesTable.TABLE_MINYAN_PRAYER_SCHEDULES + "(" + MinyanPrayerSchedulesTable.COLUMN_PRAYER_SCHEDULE_ID
 				+ ")" 
 			+ ");";
 	

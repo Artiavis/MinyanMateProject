@@ -58,17 +58,17 @@ public class MinyanEventsTable {
 
     /**
      * Returns the integer index of the Minyan Schedule, corresponding to
-     * {@link org.minyanmate.minyanmate.database.MinyanSchedulesTable.COLUMN_SCHEDULE_ID}
+     * {@link MinyanPrayerSchedulesTable.COLUMN_SCHEDULE_ID}
      */
     public static final String COLUMN_MINYAN_SCHEDULE_ID = "minyan_schedule_id";
 
     /**
-     * A string corresponding with {@link MinyanSchedulesTable#COLUMN_DAY_NUM}, Sunday - Saturday.
+     * A string corresponding with {@link MinyanPrayerSchedulesTable#COLUMN_DAY_NUM}, Sunday - Saturday.
      */
     public static final String COLUMN_DAY_NAME = "event_day_name";
 
     /**
-     * A string corresponding with {@link MinyanSchedulesTable#COLUMN_PRAYER_NUM}, indicating
+     * A string corresponding with {@link MinyanPrayerSchedulesTable#COLUMN_PRAYER_NUM}, indicating
      * the name of the service (Shacharis, Mincha, Maariv).
      */
     public static final String COLUMN_PRAYER_NAME = "event_prayer_name";

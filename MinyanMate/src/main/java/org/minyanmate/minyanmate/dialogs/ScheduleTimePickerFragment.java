@@ -8,7 +8,7 @@ import android.util.Log;
 import android.widget.TimePicker;
 
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
+import org.minyanmate.minyanmate.database.MinyanPrayerSchedulesTable;
 
 /**
  * A DialogFragment with a Time Picker, used to update the time of a schedule
@@ -35,8 +35,8 @@ public class ScheduleTimePickerFragment extends AbstractSchedulePickerDialog {
             return;
 		
 		ContentValues values = new ContentValues();
-		values.put(MinyanSchedulesTable.COLUMN_PRAYER_HOUR, hourOfDay);
-		values.put(MinyanSchedulesTable.COLUMN_PRAYER_MIN, minute);
+		values.put(MinyanPrayerSchedulesTable.COLUMN_PRAYER_HOUR, hourOfDay);
+		values.put(MinyanPrayerSchedulesTable.COLUMN_PRAYER_MIN, minute);
 		
 		saveSelection(view.getContext(), hourOfDay, minute, 
 				schedule.getSchedulingWindowLength(), values);

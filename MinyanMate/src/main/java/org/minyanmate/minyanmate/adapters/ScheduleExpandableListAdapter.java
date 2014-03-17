@@ -15,7 +15,7 @@ import android.widget.TextView;
 import org.minyanmate.minyanmate.MinyanScheduleSettingsActivity;
 import org.minyanmate.minyanmate.R;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
+import org.minyanmate.minyanmate.database.MinyanPrayerSchedulesTable;
 import org.minyanmate.minyanmate.models.MinyanSchedule;
 
 import java.util.HashMap;
@@ -101,7 +101,7 @@ public class ScheduleExpandableListAdapter extends BaseExpandableListAdapter {
 				// Try and cancel/initiate alarm
 				
 				ContentValues values = new ContentValues();
-				values.put(MinyanSchedulesTable.COLUMN_IS_ACTIVE, ((CheckBox) v).isChecked() ? 1 : 0);
+				values.put(MinyanPrayerSchedulesTable.COLUMN_IS_ACTIVE, ((CheckBox) v).isChecked() ? 1 : 0);
 				
 				int updateCount = context.getContentResolver().update(
 						Uri.parse(MinyanMateContentProvider.CONTENT_URI_SCHEDULES + "/" + childPrayer.getId()),

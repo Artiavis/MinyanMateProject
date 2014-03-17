@@ -30,9 +30,14 @@ import org.minyanmate.minyanmate.database.MinyanContactsTable;
  */
 public class RemovableContactListAdapter extends CursorAdapter {
 
-    public RemovableContactListAdapter(Context context, Cursor c) {
+    private final RemovableContactCallbacks removableContactCallbacks;
+
+    public RemovableContactListAdapter(Context context, Cursor c, RemovableContactCallbacks removableContactCallbacks) {
 		super(context, c, false);
+        this.removableContactCallbacks = removableContactCallbacks;
     }
+
+
 
 	@Override
 	public void bindView(View view, Context context,
@@ -56,8 +61,8 @@ public class RemovableContactListAdapter extends CursorAdapter {
 		if (null == (cur.getString(ContactMatrix.THUMBNAIL_PHOTO_URI)))
 			badge.setImageResource(R.drawable.social_add_person_light);
 		else {
-			Uri imageuri = Uri.parse(cur.getString(ContactMatrix.THUMBNAIL_PHOTO_URI));
-			badge.setImageURI(imageuri);
+			Uri imageUri = Uri.parse(cur.getString(ContactMatrix.THUMBNAIL_PHOTO_URI));
+			badge.setImageURI(imageUri);
 		}
 
 		imgButton.setOnClickListener(new OnClickListener() {
@@ -71,11 +76,9 @@ public class RemovableContactListAdapter extends CursorAdapter {
 				        switch (which){
 				        case DialogInterface.BUTTON_POSITIVE:
 				            //Yes button clicked
-				        	
-							c.getContentResolver().delete(MinyanMateContentProvider.CONTENT_URI_CONTACTS, 
-									MinyanContactsTable.COLUMN_PHONE_NUMBER_ID + "=?"
-									+ " and " + MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID + "=?", 
-									new String[] { phoneNumberId, String.valueOf(scheduleId) });
+
+                            removableContactCallbacks.delete(c, phoneNumberId, String.valueOf(scheduleId));
+
 				            break;
 
 				        case DialogInterface.BUTTON_NEGATIVE:
@@ -98,4 +101,42 @@ public class RemovableContactListAdapter extends CursorAdapter {
 		return LayoutInflater.from(context).
 				inflate(R.layout.fragment_removable_contact, viewGroup, false);
 	}
+
+    static public interface RemovableContactCallbacks {
+
+        public void onClick();
+        public void delete(Context c, String phoneNumberId, String scheduleId);
+    }
+
+    static public class DistinctContactCallbacks implements RemovableContactCallbacks {
+
+        @Override
+        public void onClick() {
+            return;
+        }
+
+        @Override
+        public void delete(Context c, String phoneNumberId, String scheduleId) {
+            c.getContentResolver().delete(MinyanMateContentProvider.CONTENT_URI_CONTACTS,
+                    MinyanContactsTable.COLUMN_PHONE_NUMBER_ID + "=?"
+                            + " and " + MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID + "=?",
+                    new String[] { phoneNumberId, scheduleId });
+        }
+    }
+
+    static public class IndistinctContactCallbacks implements RemovableContactCallbacks {
+
+        // TODO implement an interface for starting {@link ContactManagerActivity}
+        @Override
+        public void onClick() {
+
+        }
+
+        @Override
+        public void delete(Context c, String phoneNumberId, String scheduleId) {
+            c.getContentResolver().delete(MinyanMateContentProvider.CONTENT_URI_CONTACTS,
+                    MinyanContactsTable.COLUMN_PHONE_NUMBER_ID + "=?",
+                    new String[] { phoneNumberId });
+        }
+    }
 }

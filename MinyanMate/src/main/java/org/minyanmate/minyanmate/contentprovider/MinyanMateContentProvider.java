@@ -16,7 +16,7 @@ import org.minyanmate.minyanmate.database.MinyanContactsTable;
 import org.minyanmate.minyanmate.database.MinyanEventsTable;
 import org.minyanmate.minyanmate.database.MinyanGoersTable;
 import org.minyanmate.minyanmate.database.MinyanMateDatabaseHelper;
-import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
+import org.minyanmate.minyanmate.database.MinyanPrayerSchedulesTable;
 import org.minyanmate.minyanmate.database.MinyanSubscriptionsTable;
 import org.minyanmate.minyanmate.services.MinyanRegistrar;
 
@@ -88,10 +88,10 @@ public class MinyanMateContentProvider extends ContentProvider {
 		switch (uriType) {
 
 			case SCHEDULE_ID:
-				queryBuilder.appendWhere(MinyanSchedulesTable.COLUMN_SCHEDULE_ID + "=" + uri.getLastPathSegment());
+				queryBuilder.appendWhere(MinyanPrayerSchedulesTable.COLUMN_PRAYER_SCHEDULE_ID + "=" + uri.getLastPathSegment());
 				// Fall through
 			case SCHEDULES:
-				queryBuilder.setTables(MinyanSchedulesTable.TABLE_MINYAN_SCHEDULES);
+				queryBuilder.setTables(MinyanPrayerSchedulesTable.TABLE_MINYAN_PRAYER_SCHEDULES);
 				cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
 				cursor.setNotificationUri(getContext().getContentResolver(), uri);
 				return cursor;
@@ -108,8 +108,13 @@ public class MinyanMateContentProvider extends ContentProvider {
 				 * representing the JOIN of the stored contact keys and the phone's contact info
 				 */
 
-				queryBuilder.setTables(MinyanContactsTable.TABLE_MINYAN_CONTACTS);
-				cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null,
+                // perform a join between the actual contacts table and the schedules table
+				queryBuilder.setTables(MinyanContactsTable.TABLE_MINYAN_CONTACTS +
+                    " INNER JOIN " + MinyanPrayerSchedulesTable.TABLE_MINYAN_PRAYER_SCHEDULES +
+                    " ON " + MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID + " = " +
+                    MinyanPrayerSchedulesTable.COLUMN_PRAYER_SCHEDULE_ID);
+
+				cursor = queryBuilder.query(db, null, selection, selectionArgs, null, null,
 						MinyanContactsTable.COLUMN_PHONE_NUMBER_ID + " asc");
 
 
@@ -136,8 +141,13 @@ public class MinyanMateContentProvider extends ContentProvider {
 							phoneContacts.getString(phoneContacts.getColumnIndex(Phone.NUMBER)),
 							phoneContacts.getString(phoneContacts.getColumnIndex(Phone.LOOKUP_KEY)),
                             phoneContacts.getString(phoneContacts.getColumnIndex(Phone.CONTACT_ID)),
-                            cursor.getLong(cursor.getColumnIndex(MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID))
-						});
+                            cursor.getLong(cursor.getColumnIndex(MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID)),
+                            cursor.getString(cursor.getColumnIndex(MinyanPrayerSchedulesTable.COLUMN_PRAYER_NAME)),
+                            cursor.getString(cursor.getColumnIndex(MinyanPrayerSchedulesTable.COLUMN_DAY_NAME)),
+                            cursor.getString(cursor.getColumnIndex(MinyanPrayerSchedulesTable.COLUMN_PRAYER_HOUR)),
+                            cursor.getString(cursor.getColumnIndex(MinyanPrayerSchedulesTable.COLUMN_PRAYER_MIN)),
+                            cursor.getInt(cursor.getColumnIndex(MinyanPrayerSchedulesTable.COLUMN_IS_ACTIVE))
+                        });
 
 						break;
 					}
@@ -344,7 +354,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 		int rowsUpdated = 0;
 		switch (uriType) {
 			case SCHEDULES:
-				rowsUpdated = db.update(MinyanSchedulesTable.TABLE_MINYAN_SCHEDULES,
+				rowsUpdated = db.update(MinyanPrayerSchedulesTable.TABLE_MINYAN_PRAYER_SCHEDULES,
 						values, selection, selectionArgs);
 				
 				// Update the MinyanRegistrar
@@ -352,8 +362,8 @@ public class MinyanMateContentProvider extends ContentProvider {
 				break;
 			case SCHEDULE_ID:
 				// TODO implement this
-				rowsUpdated = db.update(MinyanSchedulesTable.TABLE_MINYAN_SCHEDULES, values,
-						MinyanSchedulesTable.COLUMN_SCHEDULE_ID + "=?", new String[] { uri.getLastPathSegment() });
+				rowsUpdated = db.update(MinyanPrayerSchedulesTable.TABLE_MINYAN_PRAYER_SCHEDULES, values,
+						MinyanPrayerSchedulesTable.COLUMN_PRAYER_SCHEDULE_ID + "=?", new String[] { uri.getLastPathSegment() });
 				
 				// Update the MinyanRegistrar
 				updateMinyanRegistrar();
@@ -416,7 +426,12 @@ public class MinyanMateContentProvider extends ContentProvider {
                 Phone.NUMBER,
                 Phone.LOOKUP_KEY,
                 Phone.CONTACT_ID,
-                MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID
+                MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID,
+                MinyanPrayerSchedulesTable.COLUMN_PRAYER_NAME,
+                MinyanPrayerSchedulesTable.COLUMN_DAY_NAME,
+                MinyanPrayerSchedulesTable.COLUMN_PRAYER_HOUR,
+                MinyanPrayerSchedulesTable.COLUMN_PRAYER_MIN,
+                MinyanPrayerSchedulesTable.COLUMN_IS_ACTIVE
         };
 		
 		public static final int PHONE_NUMBER_ID = 0;
@@ -426,6 +441,11 @@ public class MinyanMateContentProvider extends ContentProvider {
 		public static final int LOOKUP_KEY = 4;
         public static final int CONTACT_ID = 5;
         public static final int SCHEDULE_ID = 6;
+        public static final int PRAYER_NAME = 7;
+        public static final int PRAYER_DAY = 8;
+        public static final int PRAYER_HOUR = 9;
+        public static final int PRAYER_MIN = 10;
+        public static final int IS_PRAYER_ACTIVE = 11;
 	}
 	
 	/**

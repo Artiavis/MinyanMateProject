@@ -4,7 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 
 import org.minyanmate.minyanmate.MinyanScheduleSettingsActivity;
-import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
+import org.minyanmate.minyanmate.database.MinyanPrayerSchedulesTable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * A model class containing the attributes of objects from the 
- * {@link MinyanSchedulesTable#TABLE_MINYAN_SCHEDULES} table. Contains 
+ * {@link org.minyanmate.minyanmate.database.MinyanPrayerSchedulesTable#TABLE_MINYAN_PRAYER_SCHEDULES} table. Contains
  * {@link MinyanSchedule#schedFromCursor(Cursor)} and {@link MinyanSchedule#cursorToScheduleList(Cursor)}
  * static helper methods to pull Prayer objects from the cursors.
  */
@@ -63,11 +63,11 @@ public class MinyanSchedule {
      *                to facilitate time localization
      * @param userCustomMsg a user's personalized custom message to be prepended to the default message
      * @param prayerName the name of the prayer, see
-     *      {@link org.minyanmate.minyanmate.database.MinyanSchedulesTable#COLUMN_PRAYER_NAME}
+     *      {@link org.minyanmate.minyanmate.database.MinyanPrayerSchedulesTable#COLUMN_PRAYER_NAME}
      * @param prayerHour the hour of the prayer, see
-     *                   {@link org.minyanmate.minyanmate.database.MinyanSchedulesTable#COLUMN_PRAYER_HOUR}
+     *                   {@link org.minyanmate.minyanmate.database.MinyanPrayerSchedulesTable#COLUMN_PRAYER_HOUR}
      * @param prayerMinute the minute of the prayer, see
-     *                  {@link org.minyanmate.minyanmate.database.MinyanSchedulesTable#COLUMN_PRAYER_MIN}
+     *                  {@link org.minyanmate.minyanmate.database.MinyanPrayerSchedulesTable#COLUMN_PRAYER_MIN}
      * @return a String with the formatted final message
      */
     public static String formatInviteMessage(Context context, String userCustomMsg, String prayerName, int prayerHour, int prayerMinute) {
@@ -130,35 +130,35 @@ public class MinyanSchedule {
 	
 	/**
 	 * A helper function to extract the columns from a cursor over the 
-	 * {@link MinyanSchedulesTable#TABLE_MINYAN_SCHEDULES} and returns a new {@link MinyanSchedule} object
+	 * {@link org.minyanmate.minyanmate.database.MinyanPrayerSchedulesTable#TABLE_MINYAN_PRAYER_SCHEDULES} and returns a new {@link MinyanSchedule} object
 	 * based upon it. 
 	 * <p>
-	 * @param cursor a cursor over the {@link MinyanSchedulesTable#TABLE_MINYAN_SCHEDULES} table
+	 * @param cursor a cursor over the {@link org.minyanmate.minyanmate.database.MinyanPrayerSchedulesTable#TABLE_MINYAN_PRAYER_SCHEDULES} table
 	 * which is already moved to a specific row. 
 	 * @return prayer, a new {@link MinyanSchedule} object
 	 */
 	public static MinyanSchedule schedFromCursor(Cursor cursor) {
 		
-		int id = cursor.getInt(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_SCHEDULE_ID));
-		int dayNum = cursor.getInt(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_DAY_NUM));
-		long winLen = cursor.getLong(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_SCHEDULE_WINDOW));
-		int hour = cursor.getInt(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_PRAYER_HOUR));
-		int min = cursor.getInt(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_PRAYER_MIN));
-		int prayerNum = cursor.getInt(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_PRAYER_NUM));
-		boolean isActive = (cursor.getInt(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_IS_ACTIVE)) == 1);
-		String dayName = cursor.getString(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_DAY_NAME));
-		String prayerName = cursor.getString(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_PRAYER_NAME));
-		String invMsg = cursor.getString(cursor.getColumnIndex(MinyanSchedulesTable.COLUMN_SCHEDULE_MESSAGE));
+		int id = cursor.getInt(cursor.getColumnIndex(MinyanPrayerSchedulesTable.COLUMN_PRAYER_SCHEDULE_ID));
+		int dayNum = cursor.getInt(cursor.getColumnIndex(MinyanPrayerSchedulesTable.COLUMN_DAY_NUM));
+		long winLen = cursor.getLong(cursor.getColumnIndex(MinyanPrayerSchedulesTable.COLUMN_SCHEDULE_WINDOW));
+		int hour = cursor.getInt(cursor.getColumnIndex(MinyanPrayerSchedulesTable.COLUMN_PRAYER_HOUR));
+		int min = cursor.getInt(cursor.getColumnIndex(MinyanPrayerSchedulesTable.COLUMN_PRAYER_MIN));
+		int prayerNum = cursor.getInt(cursor.getColumnIndex(MinyanPrayerSchedulesTable.COLUMN_PRAYER_NUM));
+		boolean isActive = (cursor.getInt(cursor.getColumnIndex(MinyanPrayerSchedulesTable.COLUMN_IS_ACTIVE)) == 1);
+		String dayName = cursor.getString(cursor.getColumnIndex(MinyanPrayerSchedulesTable.COLUMN_DAY_NAME));
+		String prayerName = cursor.getString(cursor.getColumnIndex(MinyanPrayerSchedulesTable.COLUMN_PRAYER_NAME));
+		String invMsg = cursor.getString(cursor.getColumnIndex(MinyanPrayerSchedulesTable.COLUMN_SCHEDULE_MESSAGE));
 		
 		return new MinyanSchedule(id, dayName, dayNum, prayerNum, prayerName, winLen,hour, min, isActive, invMsg);
 	}
 	
 	/**
 	 * Given a cursor over a set of multiple results from the 
-	 * {@link MinyanSchedulesTable#TABLE_MINYAN_SCHEDULES} table, iterate over the cursor using
+	 * {@link org.minyanmate.minyanmate.database.MinyanPrayerSchedulesTable#TABLE_MINYAN_PRAYER_SCHEDULES} table, iterate over the cursor using
 	 * {@link MinyanSchedule#schedFromCursor(Cursor)} to generate a list of {@link MinyanSchedule} objects.
 	 * <p>
-	 * @param cursor a new cursor over the {@link MinyanSchedulesTable#TABLE_MINYAN_SCHEDULES} table.
+	 * @param cursor a new cursor over the {@link org.minyanmate.minyanmate.database.MinyanPrayerSchedulesTable#TABLE_MINYAN_PRAYER_SCHEDULES} table.
 	 * @return prayerList, a list of new {@link MinyanSchedule} objects
 	 */
 	public static List<MinyanSchedule> cursorToScheduleList(Cursor cursor) {

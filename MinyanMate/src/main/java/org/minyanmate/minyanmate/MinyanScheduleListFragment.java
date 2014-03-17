@@ -14,7 +14,7 @@ import android.widget.ExpandableListView;
 
 import org.minyanmate.minyanmate.adapters.ScheduleExpandableListAdapter;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
+import org.minyanmate.minyanmate.database.MinyanPrayerSchedulesTable;
 import org.minyanmate.minyanmate.models.MinyanSchedule;
 
 import java.util.ArrayList;
@@ -60,9 +60,9 @@ public class MinyanScheduleListFragment extends Fragment implements
 	public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
 		CursorLoader cursorLoader = new CursorLoader(getActivity(), 
 				MinyanMateContentProvider.CONTENT_URI_SCHEDULES, null, null, null,
-				MinyanSchedulesTable.COLUMN_DAY_NUM + ", " 
-				+ MinyanSchedulesTable.COLUMN_PRAYER_HOUR + ", "
-				+ MinyanSchedulesTable.COLUMN_PRAYER_MIN);
+				MinyanPrayerSchedulesTable.COLUMN_DAY_NUM + ", "
+				+ MinyanPrayerSchedulesTable.COLUMN_PRAYER_HOUR + ", "
+				+ MinyanPrayerSchedulesTable.COLUMN_PRAYER_MIN);
 		return cursorLoader;
 	}
 

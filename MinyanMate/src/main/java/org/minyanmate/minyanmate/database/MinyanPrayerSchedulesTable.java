@@ -10,18 +10,18 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * A class containing the column descriptions and {@link MinyanSchedulesTable#onCreate(SQLiteDatabase)}
- * and {@link MinyanSchedulesTable#onUpgrade(SQLiteDatabase, int, int)} commands. Used to dereference
+ * A class containing the column descriptions and {@link MinyanPrayerSchedulesTable#onCreate(SQLiteDatabase)}
+ * and {@link MinyanPrayerSchedulesTable#onUpgrade(SQLiteDatabase, int, int)} commands. Used to dereference
  * columns from the {@link MinyanMateContentProvider}.
  */
-public class MinyanSchedulesTable {
+public class MinyanPrayerSchedulesTable {
 
-	public static final String TABLE_MINYAN_SCHEDULES = "minyan_schedules";
+	public static final String TABLE_MINYAN_PRAYER_SCHEDULES = "minyan_schedules";
 	
 	/**
 	 * Describes the unique integer identifier of a row.
 	 */
-	public static final String COLUMN_SCHEDULE_ID = "schedule_id";
+	public static final String COLUMN_PRAYER_SCHEDULE_ID = "schedule_id";
 	
 	/**
 	 * An integer describing the day, from 1 - 7, with Sunday always corresponding
@@ -65,12 +65,12 @@ public class MinyanSchedulesTable {
 	public static final String COLUMN_IS_ACTIVE = "is_active";
 	
 	/**
-	 * A string corresponding with {@link MinyanSchedulesTable#COLUMN_DAY_NUM}, Sunday - Saturday.
+	 * A string corresponding with {@link MinyanPrayerSchedulesTable#COLUMN_DAY_NUM}, Sunday - Saturday.
 	 */
 	public static final String COLUMN_DAY_NAME = "day_name";
 	
 	/**
-	 * A string corresponding with {@link MinyanSchedulesTable#COLUMN_PRAYER_NUM}, indicating
+	 * A string corresponding with {@link MinyanPrayerSchedulesTable#COLUMN_PRAYER_NUM}, indicating
 	 * the name of the service (Shacharis, Mincha, Maariv).
 	 */
 	public static final String COLUMN_PRAYER_NAME = "prayer_name";
@@ -82,9 +82,9 @@ public class MinyanSchedulesTable {
 	public static final String COLUMN_SCHEDULE_MESSAGE = "invite_msg";
 
     private static final String DATABASE_CREATE = "create table "
-			+ TABLE_MINYAN_SCHEDULES
+			+ TABLE_MINYAN_PRAYER_SCHEDULES
 			+ "(" 
-			+ COLUMN_SCHEDULE_ID + " integer primary key autoincrement, "
+			+ COLUMN_PRAYER_SCHEDULE_ID + " integer primary key autoincrement, "
 			+ COLUMN_DAY_NUM + " int not null, " 
 			+ COLUMN_DAY_NAME + " text not null, "
 			+ COLUMN_PRAYER_NUM + " int not null, " 
@@ -97,9 +97,9 @@ public class MinyanSchedulesTable {
 
 
 	private static final String DATABASE_INDEX = "create index "
-			+ TABLE_MINYAN_SCHEDULES + "_index ON " + TABLE_MINYAN_SCHEDULES
+			+ TABLE_MINYAN_PRAYER_SCHEDULES + "_index ON " + TABLE_MINYAN_PRAYER_SCHEDULES
 			+ "(" 
-			+ COLUMN_SCHEDULE_ID + ", "
+			+ COLUMN_PRAYER_SCHEDULE_ID + ", "
 			+ COLUMN_DAY_NUM + ", "
 			+ COLUMN_PRAYER_NUM + ", " 
 			+ COLUMN_IS_ACTIVE
@@ -130,7 +130,7 @@ public class MinyanSchedulesTable {
 				time.put(COLUMN_SCHEDULE_WINDOW, TimeUnit.HOURS.toMillis(1));
 				time.put(COLUMN_IS_ACTIVE, 0);
 				time.put(COLUMN_SCHEDULE_MESSAGE, "");
-				database.insert(TABLE_MINYAN_SCHEDULES, null, time);
+				database.insert(TABLE_MINYAN_PRAYER_SCHEDULES, null, time);
 			}
 		}
 	}
@@ -138,7 +138,7 @@ public class MinyanSchedulesTable {
 	public static void onUpgrade(SQLiteDatabase database, int oldVersion,
 			int newVersion) {
         if (oldVersion == 1) {
-            database.execSQL("DROP TABLE IF EXISTS " + TABLE_MINYAN_SCHEDULES);
+            database.execSQL("DROP TABLE IF EXISTS " + TABLE_MINYAN_PRAYER_SCHEDULES);
             onCreate(database);
         } else if (oldVersion == 2 && newVersion == 3) {
             // do nothing!

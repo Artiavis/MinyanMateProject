@@ -15,7 +15,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-import org.minyanmate.minyanmate.database.MinyanSchedulesTable;
+import org.minyanmate.minyanmate.database.MinyanPrayerSchedulesTable;
 import org.minyanmate.minyanmate.models.MinyanSchedule;
 
 import java.util.concurrent.TimeUnit;
@@ -86,8 +86,8 @@ implements TimePickerDialog.OnTimeSetListener {
 		
 			Cursor adjacentSchedules = context.getContentResolver().query(
 					MinyanMateContentProvider.CONTENT_URI_SCHEDULES,
-					null, "ABS(" + id + "- " + MinyanSchedulesTable.COLUMN_SCHEDULE_ID + ")=1" , null,
-					MinyanSchedulesTable.COLUMN_SCHEDULE_ID + " ASC");
+					null, "ABS(" + id + "- " + MinyanPrayerSchedulesTable.COLUMN_PRAYER_SCHEDULE_ID + ")=1" , null,
+					MinyanPrayerSchedulesTable.COLUMN_PRAYER_SCHEDULE_ID + " ASC");
 			
 			long thisWindowLength = thisScheduleWindow; // assume constant
 			long thisScheduleStartTime = TimeUnit.HOURS.toMillis(thisScheduleHour) + TimeUnit.MINUTES.toMillis(thisScheduleMinute);

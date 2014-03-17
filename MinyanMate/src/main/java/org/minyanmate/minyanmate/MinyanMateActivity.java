@@ -47,8 +47,6 @@ public class MinyanMateActivity extends FragmentActivity implements
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayShowHomeEnabled(false);
 
-        // TODO this should have a polymorphic (and custom) menu for each pgae
-
 		// Create the adapter that will return a fragment for each of the three
 		// primary sections of the app.
 		/*
@@ -152,7 +150,7 @@ public class MinyanMateActivity extends FragmentActivity implements
 			case 1:
 				return new MinyanScheduleDashboardFragment();
             case 2:
-                return new ContactManagerFragment();
+                return new ContactsManagerFragment();
 			default:
 				return new MinyanScheduleDashboardFragment();
 			}
