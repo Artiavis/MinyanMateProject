@@ -81,7 +81,8 @@ public class MinyanMateContentProvider extends ContentProvider {
 		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
 		SQLiteDatabase db = database.getWritableDatabase();
 		Cursor cursor;
-		
+		boolean useDistinctLeft = false;
+
 		int uriType = sURIMatcher.match(uri);
 
 		switch (uriType) {
@@ -98,6 +99,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 
 			case CONTACT_ID:
 				queryBuilder.appendWhere(MinyanContactsTable.COLUMN_MINYAN_CONTACT_ID + "=" + uri.getLastPathSegment());
+                useDistinctLeft = true;
 				// fall through
 			case CONTACTS:
 
@@ -118,7 +120,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 
 				IntCursorJoiner joiner = new IntCursorJoiner(cursor,
 						new String[] { MinyanContactsTable.COLUMN_PHONE_NUMBER_ID},
-						phoneContacts, new String[] { Phone._ID });
+						phoneContacts, new String[] { Phone._ID }, useDistinctLeft);
 
 				for (IntCursorJoiner.Result joinerResult : joiner) {
 					switch (joinerResult) {
@@ -181,7 +183,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 
 				IntCursorJoiner goersJoiner = new IntCursorJoiner(cursor,
 						new String[] { MinyanGoersTable.COLUMN_PHONE_NUMBER_ID},
-						phoneContacts2, new String[] { Phone._ID });
+						phoneContacts2, new String[] { Phone._ID }, false);
 
 				for (IntCursorJoiner.Result joinerResult : goersJoiner) {
 					// TODO fix the issue where the eventId isn't being saved

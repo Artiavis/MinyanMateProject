@@ -19,13 +19,15 @@ import java.util.Iterator;
         private int[] mColumnsRight;
         private long[] mValues;
 
+        private boolean isLeftDistinct;
+
         public enum Result {
             RIGHT, LEFT, BOTH
         }
 
         public IntCursorJoiner(
                 Cursor cursorLeft, String[] columnNamesLeft,
-                Cursor cursorRight, String[] columnNamesRight) {
+                Cursor cursorRight, String[] columnNamesRight, boolean isLeftDistinct) {
 
             if (columnNamesLeft.length != columnNamesRight.length) {
                 throw new IllegalArgumentException(
@@ -44,6 +46,8 @@ import java.util.Iterator;
             mColumnsRight = buildColumnIndiciesArray(cursorRight, columnNamesRight);
 
             mValues = new long[mColumnsLeft.length * 2];
+
+            this.isLeftDistinct = isLeftDistinct;
 
         }
 
@@ -138,7 +142,9 @@ import java.util.Iterator;
                         break;
                     case BOTH:
                         mCursorLeft.moveToNext();
-                        mCursorRight.moveToNext();
+                        // DON'T STEP, THIS ALLOWS FULLY COMPLETE JOINS
+                        if (!isLeftDistinct)
+                            mCursorRight.moveToNext();
                         break;
                 }
                 mCompareResultIsValid = false;
