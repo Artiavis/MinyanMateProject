@@ -79,7 +79,7 @@ public class ParticipantsExpandableListAdapter extends BaseExpandableListAdapter
 		} else if (goer instanceof UninvitedMinyanGoer) {
 			// clear the uri's in case view is being recycled
 			badge.assignContactUri(null);
-			badge.setImageResource(R.drawable.social_add_person_light);
+			badge.setImageResource(R.drawable.social_person_light);
 		}
 		
 		name.setText(goer.getName());

@@ -499,7 +499,10 @@ public class ActiveMinyanFragment extends Fragment implements
 			HashMap<String, List<MinyanGoer>> goers = new HashMap<String, List<MinyanGoer>>();
 			for (String cat : categories) 
 				goers.put(cat, new ArrayList<MinyanGoer>());
-			
+
+            // Always reset cursor to default position, sometimes it comes in
+            // remembering it already reached the end
+            cursor.moveToFirst();cursor.moveToPrevious();
 			while (cursor.moveToNext()) {
 				MinyanGoer goer = MinyanGoer.cursorToMinyanGoer(cursor);
 				goers.get(goer.getInviteStatus().toString()).add(goer);

@@ -91,14 +91,20 @@
     </LinearLayout>
 
     <TextView
-        android:layout_margin="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
+        android:layout_margin="5dp"
         android:textStyle="bold"
         android:textSize="16sp"
-        android:text="Invite List" />
+        android:text="Subscribed to This Minyan" />
 
+    <View android:background="#000000"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_width = "fill_parent"
+        android:layout_height="1dip"
+        android:layout_centerVertical ="true" />
 
     <LinearLayout
         android:layout_width="fill_parent"

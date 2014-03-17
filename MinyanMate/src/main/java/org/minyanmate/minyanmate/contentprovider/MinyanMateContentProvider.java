@@ -183,7 +183,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 
 				IntCursorJoiner goersJoiner = new IntCursorJoiner(cursor,
 						new String[] { MinyanGoersTable.COLUMN_PHONE_NUMBER_ID},
-						phoneContacts2, new String[] { Phone._ID }, false);
+						phoneContacts2, new String[] { Phone._ID }, true);
 
 				for (IntCursorJoiner.Result joinerResult : goersJoiner) {
 					// TODO fix the issue where the eventId isn't being saved
