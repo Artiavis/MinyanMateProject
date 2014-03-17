@@ -111,8 +111,9 @@ public class MinyanMateActivity extends FragmentActivity implements
                 startActivity(new Intent(this, SettingsActivity.class));
                 return true;
 	        default:
-	        	return true;
+	        	break;
 	    }
+        return false;
 	}
 
 	@Override
@@ -150,6 +151,8 @@ public class MinyanMateActivity extends FragmentActivity implements
 				return new ActiveMinyanFragment();
 			case 1:
 				return new MinyanScheduleDashboardFragment();
+            case 2:
+                return new ContactManagerFragment();
 			default:
 				return new MinyanScheduleDashboardFragment();
 			}
@@ -157,7 +160,7 @@ public class MinyanMateActivity extends FragmentActivity implements
 
 		@Override
 		public int getCount() {
-			return 2;
+			return 3;
 		}
 
         public int getPageIcon(int position) {
@@ -165,7 +168,7 @@ public class MinyanMateActivity extends FragmentActivity implements
             case 0:
                 return R.drawable.collections_view_as_list_light;
             case 1:
-                return R.drawable.device_access_time_light;
+                return R.drawable.collections_go_to_today_light;
             case 2:
                 return R.drawable.social_cc_bcc_light;
             default:

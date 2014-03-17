@@ -30,8 +30,7 @@ import org.minyanmate.minyanmate.database.MinyanContactsTable;
  */
 public class RemovableContactListAdapter extends CursorAdapter {
 
-    public RemovableContactListAdapter(Context context, Cursor c,
-                                       int prayerId) {
+    public RemovableContactListAdapter(Context context, Cursor c) {
 		super(context, c, false);
     }
 

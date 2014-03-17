@@ -83,9 +83,9 @@ public class MinyanMateContentProvider extends ContentProvider {
 		Cursor cursor;
 		
 		int uriType = sURIMatcher.match(uri);
-		
+
 		switch (uriType) {
-		
+
 			case SCHEDULE_ID:
 				queryBuilder.appendWhere(MinyanSchedulesTable.COLUMN_SCHEDULE_ID + "=" + uri.getLastPathSegment());
 				// Fall through
@@ -100,12 +100,12 @@ public class MinyanMateContentProvider extends ContentProvider {
 				queryBuilder.appendWhere(MinyanContactsTable.COLUMN_MINYAN_CONTACT_ID + "=" + uri.getLastPathSegment());
 				// fall through
 			case CONTACTS:
-				
+
 				/*
 				 * use CursorJoiner and MatrixCursor to create a cursor of a data abstraction
 				 * representing the JOIN of the stored contact keys and the phone's contact info
 				 */
-				
+
 				queryBuilder.setTables(MinyanContactsTable.TABLE_MINYAN_CONTACTS);
 				cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null,
 						MinyanContactsTable.COLUMN_PHONE_NUMBER_ID + " asc");
@@ -113,13 +113,13 @@ public class MinyanMateContentProvider extends ContentProvider {
 
 				Cursor phoneContacts = getContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
 						ContactMatrix.queryProj, null, null, Phone._ID + " asc");
-				
+
 				MatrixCursor minyanContactsMatrix = new MatrixCursor(ContactMatrix.matrixAttrs);
 
 				IntCursorJoiner joiner = new IntCursorJoiner(cursor,
 						new String[] { MinyanContactsTable.COLUMN_PHONE_NUMBER_ID},
 						phoneContacts, new String[] { Phone._ID });
-				
+
 				for (IntCursorJoiner.Result joinerResult : joiner) {
 					switch (joinerResult) {
 					case LEFT: // Ignore LEFT JOIN
@@ -136,58 +136,58 @@ public class MinyanMateContentProvider extends ContentProvider {
                             phoneContacts.getString(phoneContacts.getColumnIndex(Phone.CONTACT_ID)),
                             cursor.getLong(cursor.getColumnIndex(MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID))
 						});
-						
+
 						break;
 					}
 				}
                 cursor.close();
                 phoneContacts.close();
-				
+
 				minyanContactsMatrix.setNotificationUri(getContext().getContentResolver(), uri);
-				
+
 				return minyanContactsMatrix;
-			
+
 			case EVENT_ID:
 				queryBuilder.appendWhere(MinyanEventsTable.COLUMN_EVENT_ID + "=" + uri.getLastPathSegment());
 				// fall through
 			case EVENTS:
 				// Inner join
 				queryBuilder.setTables(MinyanEventsTable.TABLE_MINYAN_EVENTS);
-				cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, 
+				cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null,
 						sortOrder);
 				cursor.setNotificationUri(getContext().getContentResolver(), uri);
 				return cursor;
-				
+
 			case GOER_ID:
 				queryBuilder.appendWhere("(" + MinyanGoersTable.COLUMN_PHONE_NUMBER_ID + "=" + uri.getLastPathSegment()
 						+ " OR " + MinyanGoersTable.COLUMN_DISPLAY_NAME + "=" + uri.getLastPathSegment() + ")");
 				// fall through
 			case GOERS:
-				
+
 				/*
 				 * use CursorJoiner and MatrixCursor to create a cursor of a data abstraction
 				 * representing the JOIN of the stored contact keys and the phone's contact info
 				 */
-				
+
 				queryBuilder.setTables(MinyanGoersTable.TABLE_MINYAN_INVITEES);
-				cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, 
+				cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null,
 						MinyanGoersTable.COLUMN_PHONE_NUMBER_ID + " asc");
-				cursor.setNotificationUri(getContext().getContentResolver(), uri);		
-				
+				cursor.setNotificationUri(getContext().getContentResolver(), uri);
+
 				Cursor phoneContacts2 = getContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
 						GoerMatrix.queryProj, null, null, Phone._ID + " asc");
-				
+
 				MatrixCursor goers = new MatrixCursor(GoerMatrix.matrixAttrs);
-				
+
 				IntCursorJoiner goersJoiner = new IntCursorJoiner(cursor,
 						new String[] { MinyanGoersTable.COLUMN_PHONE_NUMBER_ID},
 						phoneContacts2, new String[] { Phone._ID });
-				
+
 				for (IntCursorJoiner.Result joinerResult : goersJoiner) {
 					// TODO fix the issue where the eventId isn't being saved
 					switch (joinerResult) {
 					case LEFT: // Left join is result of a random attendee and should be recorded as such
-						
+
 						goers.addRow(new Object[] {
 							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_GOER_ID)),
 							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_IS_INVITED)),
@@ -200,12 +200,12 @@ public class MinyanMateContentProvider extends ContentProvider {
 							null,
                             null
 						});
-						
+
 						break;
 					case RIGHT: // Ignore RIGHT JOIN
 						break;
 					case BOTH: // Only do things on inner joins
-						
+
 						goers.addRow(new Object[] {
 							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_GOER_ID)),
 							cursor.getInt(cursor.getColumnIndex(MinyanGoersTable.COLUMN_IS_INVITED)),
@@ -218,7 +218,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 							phoneContacts2.getString(phoneContacts2.getColumnIndex(Phone.LOOKUP_KEY)),
                             phoneContacts2.getString(phoneContacts2.getColumnIndex(Phone.CONTACT_ID))
 						});
-						
+
 						break;
 					}
 				}
@@ -226,9 +226,9 @@ public class MinyanMateContentProvider extends ContentProvider {
                 phoneContacts2.close();
 
 				goers.setNotificationUri(getContext().getContentResolver(), uri);
-				
+
 				return goers;
-				
+
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
 		}

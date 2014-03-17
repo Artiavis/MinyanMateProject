@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -20,14 +19,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
-import android.widget.ImageButton;
-import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -67,6 +62,7 @@ public class ActiveMinyanFragment extends Fragment implements
 	private ExpandableListView expListView;
 
     // Data about the latest event, if possible
+    private boolean isEventCurrent = false;
 	private int mEventId = 0;
     private int mScheduleId = 0;
 	private long scheduleTime;
@@ -99,45 +95,7 @@ public class ActiveMinyanFragment extends Fragment implements
             startTime = savedInstanceState.getLong("startTime");
             endTime = savedInstanceState.getLong("endTime");
 
-            // Disable buttons if context is invalid
-            Button addToCountBtn = (Button) rootView.findViewById(R.id.addUninvitedPersonButton);
-            Button invToMinyanBtn = (Button) rootView.findViewById(R.id.inviteContactToMinyanButton);
-            long currTime = System.currentTimeMillis();
-            if ((scheduleTime <= currTime) && (currTime <= endTime)) {
-                invToMinyanBtn.setEnabled(true);
-                addToCountBtn.setEnabled(true);
-            } else {
-                invToMinyanBtn.setEnabled(false);
-                addToCountBtn.setEnabled(false);
-            }
         }
-
-        // Set up additional minyan options
-        ImageButton moreOptsBtn = (ImageButton) rootView.findViewById(R.id.moreMinyanOptsBtn);
-        final PopupMenu popupMenu = new PopupMenu(getActivity(), moreOptsBtn);
-        popupMenu.inflate(R.menu.minyan_more_options);
-        moreOptsBtn.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                popupMenu.show();
-            }
-        });
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                switch (menuItem.getItemId()) {
-                    case R.id.moreOptsMenu_MessageParticipants:
-                        buildMessageParticipantsDialog();
-                        break;
-
-                    case R.id.moreOptsMenu_ShareHeadcount:
-                        shareHeadcount();
-                    default:
-                        break;
-                }
-                return true;
-            }
-        });
 
         // Initialize the LoaaderManager
 		getLoaderManager().initLoader(EVENT, null, this);
@@ -192,6 +150,57 @@ public class ActiveMinyanFragment extends Fragment implements
 	}
 
     @Override
+    public void onStart() {
+        super.onStart();
+
+        // If the latest info says the event hasn't yet expired, check again
+        if (isEventCurrent)
+            refreshEventData();
+    }
+
+    /**
+     * Call this whenever this Fragment enters visibility, when the event data
+     * is known to have changed, or otherwise time-sensitive controls need to be checked.
+     * This function calls {@link android.app.Activity#invalidateOptionsMenu()} to force
+     * a refresh of the time-sensitive menu buttons.
+     */
+    private void refreshEventData() {
+
+        // Disable buttons if context is invalid
+        long currTime = System.currentTimeMillis();
+
+        isEventCurrent = ((scheduleTime <= currTime) && (currTime <= endTime)) ? true : false;
+        getActivity().invalidateOptionsMenu();
+    }
+
+    /**
+     * This is used to disable the availability of certain menu items based on time sensitivity
+     */
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        setMoreMenuOptionsEnabled(menu, isEventCurrent);
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    /**
+     * Call this function to disable/enable menu buttons relating to time-sensitive data
+     * @param menu the menu to modify
+     * @param isEnabled whether to enable or disable the menu selections
+     */
+    private void setMoreMenuOptionsEnabled(Menu menu, boolean isEnabled) {
+
+        List<MenuItem> menuItems = new ArrayList<MenuItem>();
+        menuItems.add(menu.findItem(R.id.moreOptsMenu_AddPerson));
+        menuItems.add(menu.findItem(R.id.moreOptsMenu_MessageParticipants));
+        menuItems.add(menu.findItem(R.id.moreOptsMenu_ShareHeadcount));
+
+        for (MenuItem item : menuItems) {
+            item.setEnabled(isEnabled);
+            item.getIcon().setAlpha(isEnabled ? 255 : 64);
+        }
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
 
 
@@ -204,6 +213,35 @@ public class ActiveMinyanFragment extends Fragment implements
         */
         menuInflater.inflate(R.menu.minyan_more_options, menu);
         super.onCreateOptionsMenu(menu, menuInflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        getActivity().invalidateOptionsMenu();
+        if (isEventCurrent) {
+
+            switch (item.getItemId()) {
+                case R.id.moreOptsMenu_AddPerson:
+                    addUninvited();
+                    return true;
+
+                case R.id.moreOptsMenu_MessageParticipants:
+                    buildMessageParticipantsDialog();
+                    return true;
+
+                case R.id.moreOptsMenu_ShareHeadcount:
+                    shareHeadcount();
+                    return true;
+
+                default:
+                    break;
+            }
+
+        } else
+            Toast.makeText(getActivity(), "Minyan expired!", Toast.LENGTH_SHORT);
+
+        return false;
     }
 
     private void shareHeadcount() {
@@ -424,23 +462,18 @@ public class ActiveMinyanFragment extends Fragment implements
                 mEventId = cursor.getInt(cursor.getColumnIndex(MinyanEventsTable.COLUMN_EVENT_ID));
                 mScheduleId = cursor.getInt(cursor.getColumnIndex(MinyanEventsTable.COLUMN_MINYAN_SCHEDULE_ID));
 
-				Calendar cal = new GregorianCalendar();
-				cal.setTimeInMillis(startTime);
-				int minute = cal.get(Calendar.MINUTE);
-				int hour = cal.get(Calendar.HOUR_OF_DAY);
-
                 String day = cursor.getString(cursor.getColumnIndex(MinyanEventsTable.COLUMN_DAY_NAME));
                 String prayerName = cursor.getString(cursor.getColumnIndex(MinyanEventsTable.COLUMN_PRAYER_NAME));
 
-				String formattedTime = MinyanScheduleSettingsActivity.formatTimeTextView(getActivity(), hour, minute);
+                // Print latest event data
+                Calendar cal = new GregorianCalendar();
+                cal.setTimeInMillis(startTime);
+                int minute = cal.get(Calendar.MINUTE);
+                int hour = cal.get(Calendar.HOUR_OF_DAY);
+
+                String formattedTime = MinyanScheduleSettingsActivity.formatTimeTextView(getActivity(), hour, minute);
 				TextView timeTextView = (TextView) getActivity().findViewById(R.id.activeMinyanTime);
 				timeTextView.setText(day + " " + prayerName + " begins at " + formattedTime);
-
-                // Initialize button state and callbacks
-                Button addToCountBtn = (Button) getActivity().findViewById(R.id.addUninvitedPersonButton);
-                Button invToMinyanBtn = (Button) getActivity().findViewById(R.id.inviteContactToMinyanButton);
-                ImageButton moreOptsBtn = (ImageButton) getActivity().findViewById(R.id.moreMinyanOptsBtn);
-                moreOptsBtn.setEnabled(true);
 
                 // If minyan info is old, don't even bother enabling or setting callbacks
                 long currTime = System.currentTimeMillis();
@@ -450,39 +483,7 @@ public class ActiveMinyanFragment extends Fragment implements
                 Log.d("Event Info", "Current Time:  " + currTime);
                 Log.d("Event Info", "End Time:      " + endTime);
 
-                if ((scheduleTime <= currTime) && (currTime <= endTime)) {
-
-                    addToCountBtn.setEnabled(true);
-                    addToCountBtn.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            long currentTime = System.currentTimeMillis();
-                            if ((scheduleTime < currentTime) && (currentTime < endTime)) {
-                                Log.d("Event Info", "Schedule Time: " + scheduleTime);
-                                Log.d("Event Info", "Current Time:  " + currentTime);
-                                Log.d("Event Info", "End Time:      " + endTime);
-                                addUninvited();
-                            }
-                            else
-                                Toast.makeText(view.getContext(), "Minyan is no longer active!", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-                    invToMinyanBtn.setEnabled(true);
-                    invToMinyanBtn.setOnClickListener(new OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            long currentTime = System.currentTimeMillis();
-                            if ((scheduleTime < currentTime) && (currentTime < endTime)) {
-                                Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-                                intent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE);
-                                startActivityForResult(intent, MinyanScheduleSettingsActivity.PICK_CONTACT);
-                            }
-                            else
-                                Toast.makeText(view.getContext(), "Minyan is no longer active!", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
+                refreshEventData();
 			}
 
 			break;

@@ -11,21 +11,9 @@
         android:layout_weight="0.1"
         >
 
-        <ListView
-            android:id="@+id/manage_contacts_contactsList"
-            android:layout_height="fill_parent"
-            android:layout_width="fill_parent"
-            android:dividerHeight="2dp"
-            />
+        <include layout="@layout/contact_list" />
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/manage_contacts_addContactBtn"
-        android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
-        android:padding="@dimen/activity_vertical_margin"
-        android:text="Add New Person"
-        />
 
 </LinearLayout>

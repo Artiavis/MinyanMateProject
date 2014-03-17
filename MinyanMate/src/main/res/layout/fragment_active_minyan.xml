@@ -14,7 +14,7 @@
         android:text="This will be populated with the latest minyan time." />
     
     <!-- Control buttons for Adding an Uninvited Participant, Contacting all Participants, and Cancelling the Minyan, etc -->
-    
+<!--
     <LinearLayout 
         android:orientation="horizontal"
         android:layout_width="fill_parent"
@@ -48,8 +48,7 @@
             android:id="@+id/moreMinyanOptsBtn"
             android:src="@drawable/ic_action_overflow_dark" />
 
-
-    </LinearLayout>
+    </LinearLayout>-->
 
     <TextView
         android:layout_margin="10dp"

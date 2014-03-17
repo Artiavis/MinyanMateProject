@@ -377,7 +377,7 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 			break;
 			
 		case CONTACT_LOADER:
-			CursorAdapter adapter = new RemovableContactListAdapter(this, cursor, scheduleId);
+			CursorAdapter adapter = new RemovableContactListAdapter(this, cursor);
 			contactList.setAdapter(adapter);
 			
 			break;

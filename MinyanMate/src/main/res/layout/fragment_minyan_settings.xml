@@ -105,13 +105,8 @@
         android:layout_height="0dp"
         android:layout_weight="0.1"
         >
-        
-        <ListView 
-            android:id="@+id/minyan_setting_contactsList"
-            android:layout_height="fill_parent"
-            android:layout_width="fill_parent"
-            android:dividerHeight="2dp"
-            />
+
+        <include layout="@layout/contact_list" />
         
     </LinearLayout>
 
