@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -158,6 +159,14 @@ public class ActiveMinyanFragment extends Fragment implements
             refreshEventData();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        getResources().getDrawable(R.drawable.social_chat_light).setAlpha(255);
+        getResources().getDrawable(R.drawable.social_share_light).setAlpha(255);
+        getResources().getDrawable(R.drawable.social_add_person_light).setAlpha(255);
+    }
+
     /**
      * Call this whenever this Fragment enters visibility, when the event data
      * is known to have changed, or otherwise time-sensitive controls need to be checked.
@@ -223,7 +232,14 @@ public class ActiveMinyanFragment extends Fragment implements
 
             switch (item.getItemId()) {
                 case R.id.moreOptsMenu_AddPerson:
+                    return true;
+
+                case R.id.moreOptsMenu_AddAnon:
                     addUninvited();
+                    return true;
+
+                case R.id.moreOptsMenu_InviteNew:
+                    pickNewContact();
                     return true;
 
                 case R.id.moreOptsMenu_MessageParticipants:
@@ -242,6 +258,15 @@ public class ActiveMinyanFragment extends Fragment implements
             Toast.makeText(getActivity(), "Minyan expired!", Toast.LENGTH_SHORT);
 
         return false;
+    }
+
+    /**
+     * The handler to select a single Contact using Android's contact picker
+     */
+    public void pickNewContact() {
+        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        intent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE);
+        startActivityForResult(intent, MinyanScheduleSettingsActivity.PICK_CONTACT);
     }
 
     private void shareHeadcount() {

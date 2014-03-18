@@ -6,7 +6,16 @@
         android:title="Add Person..."
         android:showAsAction="ifRoom"
         android:icon="@drawable/social_add_person_light"
-        />
+        >
+
+        <menu>
+            <item android:id="@+id/moreOptsMenu_AddAnon"
+                android:title="Add Anonymous" />
+            <item android:id="@+id/moreOptsMenu_InviteNew"
+                android:title="Invite Another Contact" />
+        </menu>
+
+    </item>
 
     <item android:id="@+id/moreOptsMenu_MessageParticipants"
         android:title="Message Participants"

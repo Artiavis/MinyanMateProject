@@ -63,10 +63,12 @@ public final class R {
         public static final int minyan_setting_setScheduleWindow=0x7f0a0010;
         public static final int minyan_setting_setTime=0x7f0a000e;
         public static final int minyan_setting_timeTextView=0x7f0a000d;
+        public static final int moreOptsMenu_AddAnon=0x7f0a0021;
         public static final int moreOptsMenu_AddNewContact=0x7f0a001d;
         public static final int moreOptsMenu_AddPerson=0x7f0a0020;
-        public static final int moreOptsMenu_MessageParticipants=0x7f0a0021;
-        public static final int moreOptsMenu_ShareHeadcount=0x7f0a0022;
+        public static final int moreOptsMenu_InviteNew=0x7f0a0022;
+        public static final int moreOptsMenu_MessageParticipants=0x7f0a0023;
+        public static final int moreOptsMenu_ShareHeadcount=0x7f0a0024;
         public static final int pager=0x7f0a0000;
         public static final int participantContactBadge=0x7f0a0014;
         public static final int participantContactName=0x7f0a0015;

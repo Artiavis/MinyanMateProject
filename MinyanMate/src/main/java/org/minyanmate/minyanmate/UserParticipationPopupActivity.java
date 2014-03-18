@@ -54,12 +54,14 @@ public class UserParticipationPopupActivity extends Activity {
                 inviteValues.put(MinyanGoersTable.COLUMN_MINYAN_EVENT_ID, id);
                 getContentResolver().insert(MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS, inviteValues);
 
+                dialogInterface.dismiss();
                 finish();
             }
         })
         .setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
                 finish();
             }
         });
