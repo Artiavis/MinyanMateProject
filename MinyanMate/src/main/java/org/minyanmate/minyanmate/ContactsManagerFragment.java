@@ -156,6 +156,8 @@ public class ContactsManagerFragment extends Fragment implements
                 // Begin activity
                 Intent intent = new Intent(getActivity(), ContactManagerActivity.class);
                 intent.putExtra(ContactManagerActivity.PHONE_ID, Integer.parseInt(phoneNumberId));
+                intent.putExtra(ContactManagerActivity.CONTACT_NAME,
+                        temp2.getString(temp2.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)));
                 getActivity().startActivity(intent);
 
             } else // this code doesn't appear to be reachable, either a phone uri exists or it doesn't

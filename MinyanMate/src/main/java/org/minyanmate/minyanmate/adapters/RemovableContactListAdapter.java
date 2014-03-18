@@ -50,14 +50,15 @@ public class RemovableContactListAdapter extends CursorAdapter {
 		QuickContactBadge badge = (QuickContactBadge) view.findViewById(R.id.removableContactBadge);
 		TextView nameText = (TextView) view.findViewById(R.id.removableContactName);
 		ImageButton imgButton = (ImageButton) view.findViewById(R.id.removableRemoveButton);
-		
+
+        final String name = cur.getString(ContactMatrix.DISPLAY_NAME);
 		final long contactId = cur.getLong(ContactMatrix.CONTACT_ID);
 		final String lookUpKey = cur.getString(ContactMatrix.LOOKUP_KEY);
         final int phoneNumberId = cur.getInt(ContactMatrix.PHONE_NUMBER_ID);
         final int minyanScheduleId = cur.getInt(ContactMatrix.CONTACT_SCHEDULE_ID);
 		Uri contactUri = Contacts.getLookupUri(contactId, lookUpKey);
 
-		nameText.setText(cur.getString(ContactMatrix.DISPLAY_NAME));
+		nameText.setText(name);
 		badge.assignContactUri(contactUri);
 		
 		if (null == (cur.getString(ContactMatrix.THUMBNAIL_PHOTO_URI)))
@@ -75,7 +76,7 @@ public class RemovableContactListAdapter extends CursorAdapter {
             nameText.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    removableContactCallbacks.onClickTextView(c, phoneNumberId);
+                    removableContactCallbacks.onClickTextView(c, phoneNumberId, name );
                 }
             });
         }
@@ -129,12 +130,12 @@ public class RemovableContactListAdapter extends CursorAdapter {
      * different contexts. (This eliminates having redundant files and boilerplate code.) There
      * are two callbacks: {@link #delete(android.content.Context, String, String)}, which is called
      * when the ImageButton is pressed, to delete either a single person from a single schedule,
-     * or a single person from many schedules; and {@link #onClickTextView(android.content.Context, int)},
+     * or a single person from many schedules; and {@link #onClickTextView(android.content.Context, int, String)},
      * which is called when the TextView.
      */
     static public interface RemovableContactCallbacks {
 
-        public void onClickTextView(Context c, int phoneNumberId);
+        public void onClickTextView(Context c, int phoneNumberId, String displayName);
         public void delete(Context c, String phoneNumberId, String scheduleId);
     }
 
@@ -145,7 +146,7 @@ public class RemovableContactListAdapter extends CursorAdapter {
     static public class DistinctContactCallbacks implements RemovableContactCallbacks {
 
         @Override
-        public void onClickTextView(Context c, int phoneNumberId) {
+        public void onClickTextView(Context c, int phoneNumberId, String displayName) {
             return;
         }
 
@@ -161,9 +162,10 @@ public class RemovableContactListAdapter extends CursorAdapter {
     static public class IndistinctContactCallbacks implements RemovableContactCallbacks {
 
         @Override
-        public void onClickTextView(Context c, int phoneNumberId) {
+        public void onClickTextView(Context c, int phoneNumberId, String displayName) {
             Intent intent = new Intent(c, ContactManagerActivity.class);
             intent.putExtra(ContactManagerActivity.PHONE_ID, phoneNumberId);
+            intent.putExtra(ContactManagerActivity.CONTACT_NAME, displayName);
             c.startActivity(intent);
         }
 

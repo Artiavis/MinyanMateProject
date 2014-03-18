@@ -45,7 +45,9 @@ public class ContactManagerActivity extends FragmentActivity
 
     // other variables
     public static final String PHONE_ID = "phoneNumberId";
+    public static final String CONTACT_NAME = "contactName";
     private int phoneNumberId;
+    private String contactName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +56,13 @@ public class ContactManagerActivity extends FragmentActivity
 
         // Restore state
         phoneNumberId = getIntent().getIntExtra(PHONE_ID, 0);
+        contactName = getIntent().getStringExtra(CONTACT_NAME);
 
         // phoneNumberId should *always* have a positive value
         assert (phoneNumberId != 0);
+        assert(contactName != null);
+
+        setTitle("Editing - " + contactName);
 
         // Loader Callbacks
         getSupportLoaderManager().initLoader(0, null, this);
