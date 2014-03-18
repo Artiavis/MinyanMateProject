@@ -155,8 +155,7 @@ public class ActiveMinyanFragment extends Fragment implements
         super.onStart();
 
         // If the latest info says the event hasn't yet expired, check again
-        if (isEventCurrent)
-            refreshEventData();
+        refreshEventData();
     }
 
     @Override

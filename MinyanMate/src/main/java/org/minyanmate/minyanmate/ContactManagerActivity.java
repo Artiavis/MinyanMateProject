@@ -8,6 +8,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.widget.ExpandableListView;
+import android.widget.TextView;
 
 import org.minyanmate.minyanmate.adapters.ScheduleExpandableListAdapter;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
@@ -53,6 +54,8 @@ public class ContactManagerActivity extends FragmentActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_minyan_list);
+
+        ((TextView) findViewById(R.id.minyan_schedule_headerText)).setText("Subscribed to the Following Minyans");
 
         // Restore state
         phoneNumberId = getIntent().getIntExtra(PHONE_ID, 0);

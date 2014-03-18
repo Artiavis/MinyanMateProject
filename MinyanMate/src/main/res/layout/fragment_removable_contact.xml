@@ -22,10 +22,11 @@
     
     <TextView
         android:id="@+id/removableContactName"
-        android:gravity="center_vertical"
+        android:text="tes"
         android:layout_width="fill_parent"
-        android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
         android:layout_height="match_parent"
+        android:paddingTop="14dp"
+        android:paddingLeft="?android:attr/listPreferredItemPaddingLeft"
         android:layout_alignTop="@id/removableContactBadge"
         android:layout_alignBottom="@id/removableContactBadge"
         android:layout_toRightOf="@id/removableContactBadge"
