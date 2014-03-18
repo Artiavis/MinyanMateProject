@@ -11,13 +11,14 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.text.TextUtils;
+import android.util.Log;
 
 import org.minyanmate.minyanmate.database.MinyanContactsTable;
 import org.minyanmate.minyanmate.database.MinyanEventsTable;
 import org.minyanmate.minyanmate.database.MinyanGoersTable;
 import org.minyanmate.minyanmate.database.MinyanMateDatabaseHelper;
 import org.minyanmate.minyanmate.database.MinyanPrayerSchedulesTable;
-import org.minyanmate.minyanmate.database.MinyanSubscriptionsTable;
 import org.minyanmate.minyanmate.services.MinyanRegistrar;
 
 public class MinyanMateContentProvider extends ContentProvider {
@@ -33,6 +34,8 @@ public class MinyanMateContentProvider extends ContentProvider {
 	private static final int EVENT_ID = 6;
 	private static final int GOERS = 7;
 	private static final int GOER_ID = 8;
+    private static final int CONTACT_SCHEDULES = 9;
+    private static final int CONTACT_SCHEDULE = 10;
 	
 	
 	private static final String AUTHORITY = "org.minyanmate.minyanmate.contentprovider";
@@ -40,11 +43,13 @@ public class MinyanMateContentProvider extends ContentProvider {
 	private static final String PATH_CONTACTS = "contacts";
 	private static final String PATH_EVENTS = "events";
 	private static final String PATH_GOERS = "goers";
+    private static final String PATH_CONTACT_SCHEDULES = "contact-schedules";
 	
 	public static final Uri CONTENT_URI_SCHEDULES = Uri.parse("content://" + AUTHORITY + "/" + PATH_SCHEDULES);
 	public static final Uri CONTENT_URI_CONTACTS = Uri.parse("content://" + AUTHORITY + "/" + PATH_CONTACTS);
 	public static final Uri CONTENT_URI_EVENTS = Uri.parse("content://" + AUTHORITY + "/" + PATH_EVENTS);
 	public static final Uri CONTENT_URI_EVENT_GOERS = Uri.parse("content://" + AUTHORITY + "/" + PATH_GOERS);
+    public static final Uri CONTENT_URI_CONTACT_SCHEDULES = Uri.parse("content://" + AUTHORITY + "/" + PATH_CONTACT_SCHEDULES);
 	
 	// Not really sure what these do but they seem to be used for passing MIME types for intents...
 	public static final String CONTENT_TYPE_TIME = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd.minyanmate.times";
@@ -66,6 +71,8 @@ public class MinyanMateContentProvider extends ContentProvider {
 		sURIMatcher.addURI(AUTHORITY, PATH_EVENTS + "/#", EVENT_ID);
 		sURIMatcher.addURI(AUTHORITY, PATH_GOERS, GOERS);
 		sURIMatcher.addURI(AUTHORITY, PATH_GOERS + "/*", GOER_ID);
+        sURIMatcher.addURI(AUTHORITY, PATH_CONTACT_SCHEDULES, CONTACT_SCHEDULES);
+        sURIMatcher.addURI(AUTHORITY, PATH_CONTACT_SCHEDULES + "/*", CONTACT_SCHEDULE);
 	}
 	
 	@Override
@@ -81,6 +88,7 @@ public class MinyanMateContentProvider extends ContentProvider {
 		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
 		SQLiteDatabase db = database.getWritableDatabase();
 		Cursor cursor;
+        Cursor phoneContacts;
 		boolean useDistinctLeft = false;
 
 		int uriType = sURIMatcher.match(uri);
@@ -96,57 +104,77 @@ public class MinyanMateContentProvider extends ContentProvider {
 				cursor.setNotificationUri(getContext().getContentResolver(), uri);
 				return cursor;
 
+            case CONTACT_SCHEDULE:
 
-			case CONTACT_ID:
-				queryBuilder.appendWhere(MinyanContactsTable.COLUMN_MINYAN_CONTACT_ID + "=" + uri.getLastPathSegment());
+                String lastPartOfUrl = uri.getLastPathSegment();
+
+                /* sqlite> select * from minyan_schedules LEFT JOIN (select * from (select * from
+                    minyan_contacts where contact_phone_id = ?)) ON schedule_id =
+                    minyan_schedule_id WHERE contact_phone_id ISNULL OR contact_phone_id = ?;
+                * */
+
+                String query = new StringBuilder()
+                        .append("SELECT ").append(TextUtils.join(",",ContactScheduleMatrix.matrixAttrs))
+                        .append(" FROM ")
+                        .append(MinyanPrayerSchedulesTable.TABLE_MINYAN_PRAYER_SCHEDULES)
+                        .append(" LEFT JOIN (SELECT * FROM (SELECT * FROM ")
+                        .append(MinyanContactsTable.TABLE_MINYAN_CONTACTS).append(" WHERE ")
+                        .append(MinyanContactsTable.COLUMN_PHONE_NUMBER_ID).append(" = ")
+                        .append(lastPartOfUrl).append(")) ON ")
+                        .append(MinyanPrayerSchedulesTable.COLUMN_PRAYER_SCHEDULE_ID).append(" = ")
+                        .append(MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID).append(" WHERE ")
+                        .append(MinyanContactsTable.COLUMN_PHONE_NUMBER_ID).append(" ISNULL OR ")
+                        .append(MinyanContactsTable.COLUMN_PHONE_NUMBER_ID).append(" = ")
+                        .append(lastPartOfUrl)
+                        .toString();
+
+                Log.d("Contact Schedule Query", query);
+
+                cursor = db.rawQuery(query, null);
+                cursor.setNotificationUri(getContext().getContentResolver(), CONTENT_URI_CONTACTS);
+
+                return cursor;
+
+            case CONTACT_ID:
+				queryBuilder.appendWhere(MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID + "=" + uri.getLastPathSegment());
                 useDistinctLeft = true;
 				// fall through
 			case CONTACTS:
-
 				/*
 				 * use CursorJoiner and MatrixCursor to create a cursor of a data abstraction
 				 * representing the JOIN of the stored contact keys and the phone's contact info
 				 */
 
-                // perform a join between the actual contacts table and the schedules table
-				queryBuilder.setTables(MinyanContactsTable.TABLE_MINYAN_CONTACTS +
-                    " INNER JOIN " + MinyanPrayerSchedulesTable.TABLE_MINYAN_PRAYER_SCHEDULES +
-                    " ON " + MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID + " = " +
-                    MinyanPrayerSchedulesTable.COLUMN_PRAYER_SCHEDULE_ID);
+                queryBuilder.setTables(MinyanContactsTable.TABLE_MINYAN_CONTACTS);
 
 				cursor = queryBuilder.query(db, null, selection, selectionArgs, null, null,
 						MinyanContactsTable.COLUMN_PHONE_NUMBER_ID + " asc");
 
 
-				Cursor phoneContacts = getContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-						ContactMatrix.queryProj, null, null, Phone._ID + " asc");
+                phoneContacts = getContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                        ContactMatrix.queryProj, null, null, Phone._ID + " asc");
 
 				MatrixCursor minyanContactsMatrix = new MatrixCursor(ContactMatrix.matrixAttrs);
 
-				IntCursorJoiner joiner = new IntCursorJoiner(cursor,
+				IntCursorJoiner contactsJoiner = new IntCursorJoiner(cursor,
 						new String[] { MinyanContactsTable.COLUMN_PHONE_NUMBER_ID},
 						phoneContacts, new String[] { Phone._ID }, useDistinctLeft);
 
-				for (IntCursorJoiner.Result joinerResult : joiner) {
+				for (IntCursorJoiner.Result joinerResult : contactsJoiner) {
 					switch (joinerResult) {
 					case LEFT: // Ignore LEFT JOIN
                         break;
 					case RIGHT: // Ignore RIGHT JOIN
 						break;
 					case BOTH: // Only do things on inner joins
-						minyanContactsMatrix.addRow(new Object[] {
-							phoneContacts.getLong(phoneContacts.getColumnIndex(Phone._ID)),
-							phoneContacts.getString(phoneContacts.getColumnIndex(Phone.PHOTO_THUMBNAIL_URI)),
-							phoneContacts.getString(phoneContacts.getColumnIndex(Phone.DISPLAY_NAME)),
-							phoneContacts.getString(phoneContacts.getColumnIndex(Phone.NUMBER)),
-							phoneContacts.getString(phoneContacts.getColumnIndex(Phone.LOOKUP_KEY)),
-                            phoneContacts.getString(phoneContacts.getColumnIndex(Phone.CONTACT_ID)),
-                            cursor.getLong(cursor.getColumnIndex(MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID)),
-                            cursor.getString(cursor.getColumnIndex(MinyanPrayerSchedulesTable.COLUMN_PRAYER_NAME)),
-                            cursor.getString(cursor.getColumnIndex(MinyanPrayerSchedulesTable.COLUMN_DAY_NAME)),
-                            cursor.getString(cursor.getColumnIndex(MinyanPrayerSchedulesTable.COLUMN_PRAYER_HOUR)),
-                            cursor.getString(cursor.getColumnIndex(MinyanPrayerSchedulesTable.COLUMN_PRAYER_MIN)),
-                            cursor.getInt(cursor.getColumnIndex(MinyanPrayerSchedulesTable.COLUMN_IS_ACTIVE))
+						minyanContactsMatrix.addRow(new Object[]{
+                                phoneContacts.getLong(phoneContacts.getColumnIndex(Phone._ID)),
+                                phoneContacts.getString(phoneContacts.getColumnIndex(Phone.PHOTO_THUMBNAIL_URI)),
+                                phoneContacts.getString(phoneContacts.getColumnIndex(Phone.DISPLAY_NAME)),
+                                phoneContacts.getString(phoneContacts.getColumnIndex(Phone.NUMBER)),
+                                phoneContacts.getString(phoneContacts.getColumnIndex(Phone.LOOKUP_KEY)),
+                                phoneContacts.getString(phoneContacts.getColumnIndex(Phone.CONTACT_ID)),
+                                cursor.getLong(cursor.getColumnIndex(MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID))
                         });
 
 						break;
@@ -309,19 +337,21 @@ public class MinyanMateContentProvider extends ContentProvider {
 //			return Uri.parse(PATH_CONTACTS + "/" + id);
 			
 		case CONTACTS:
-			// If desubscribed, do not allow adding
-			Cursor subscrier = sqlDb.query(MinyanSubscriptionsTable.TABLE_SUBSCRIPTIONS, 
-					null, MinyanSubscriptionsTable.COLUMN_CONTACT_LOOKUP_KEY + "=?", 
-					new String[] { (String) values.get(MinyanContactsTable.COLUMN_PHONE_NUMBER_ID) },
-					null, null, null);
-			
-			boolean isSubscribed = true;
-			
-			if (subscrier.moveToFirst()) {
-				
-				isSubscribed = (subscrier.getInt(subscrier.getColumnIndex(MinyanSubscriptionsTable.COLUMN_IS_SUBSCRIBED))
-                        == 1);
-			}
+
+            boolean isSubscribed = true;
+
+            // TODO implement this
+            // If desubscribed, do not allow adding
+//            Cursor subscriber = sqlDb.query(MinyanSubscriptionsTable.TABLE_SUBSCRIPTIONS,
+//                    null, MinyanSubscriptionsTable.COLUMN_CONTACT_LOOKUP_KEY + "=?",
+//                    new String[] { (String) values.get(MinyanContactsTable.COLUMN_PHONE_NUMBER_ID) },
+//                    null, null, null);
+//
+//			if (subscriber.moveToFirst()) {
+//
+//				isSubscribed = (subscriber.getInt(subscriber.getColumnIndex(MinyanSubscriptionsTable.COLUMN_IS_SUBSCRIBED))
+//                        == 1);
+//			}
 			
 			
 			if (isSubscribed) {
@@ -427,11 +457,6 @@ public class MinyanMateContentProvider extends ContentProvider {
                 Phone.LOOKUP_KEY,
                 Phone.CONTACT_ID,
                 MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID,
-                MinyanPrayerSchedulesTable.COLUMN_PRAYER_NAME,
-                MinyanPrayerSchedulesTable.COLUMN_DAY_NAME,
-                MinyanPrayerSchedulesTable.COLUMN_PRAYER_HOUR,
-                MinyanPrayerSchedulesTable.COLUMN_PRAYER_MIN,
-                MinyanPrayerSchedulesTable.COLUMN_IS_ACTIVE
         };
 		
 		public static final int PHONE_NUMBER_ID = 0;
@@ -440,13 +465,30 @@ public class MinyanMateContentProvider extends ContentProvider {
 		public static final int PHONE_NUMBER = 3;
 		public static final int LOOKUP_KEY = 4;
         public static final int CONTACT_ID = 5;
-        public static final int SCHEDULE_ID = 6;
-        public static final int PRAYER_NAME = 7;
-        public static final int PRAYER_DAY = 8;
-        public static final int PRAYER_HOUR = 9;
-        public static final int PRAYER_MIN = 10;
-        public static final int IS_PRAYER_ACTIVE = 11;
+        public static final int CONTACT_SCHEDULE_ID = 6;
+
 	}
+
+    public static class ContactScheduleMatrix {
+
+        public static final String[] matrixAttrs = new String[] {
+                MinyanPrayerSchedulesTable.COLUMN_PRAYER_SCHEDULE_ID,
+                MinyanPrayerSchedulesTable.COLUMN_DAY_NAME,
+                MinyanPrayerSchedulesTable.COLUMN_PRAYER_NAME,
+                MinyanPrayerSchedulesTable.COLUMN_PRAYER_HOUR,
+                MinyanPrayerSchedulesTable.COLUMN_PRAYER_MIN,
+                MinyanContactsTable.COLUMN_MINYAN_CONTACT_ID,
+                MinyanContactsTable.COLUMN_PHONE_NUMBER_ID
+        };
+
+        public static final int PRAYER_SCHEDULE_ID = 0;
+        public static final int PRAYER_DAY = 1;
+        public static final int PRAYER_NAME = 2;
+        public static final int PRAYER_HOUR = 3;
+        public static final int PRAYER_MIN = 4;
+        public static final int CONTACT_ID = 5;
+        public static final int PHONE_ID = 6;
+    }
 	
 	/**
 	 * Contains the projection in {@link #queryProj} and the matrixcursor

@@ -1,7 +1,6 @@
 package org.minyanmate.minyanmate;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -12,7 +11,6 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -131,6 +129,7 @@ public class ContactsManagerFragment extends Fragment implements
     private void saveContactData(Uri data) {
         String phoneNumberId = data.getLastPathSegment();
 
+        // FIXME this isn't catching existing contacts
         // Check whether the contact is already entered into the table, if so, ignore the selection
         Cursor temp1 = getActivity().getContentResolver().query(
                 MinyanMateContentProvider.CONTENT_URI_CONTACTS, null,
@@ -139,6 +138,7 @@ public class ContactsManagerFragment extends Fragment implements
 
         if (temp1.getCount() > 0) {
             Toast.makeText(getActivity(), "Contact already exists!", Toast.LENGTH_SHORT).show();
+            temp1.close();
             return;
         }
         temp1.close();
@@ -152,25 +152,19 @@ public class ContactsManagerFragment extends Fragment implements
         if (temp2.moveToFirst()) {
             if ( temp2.getString(temp2.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)) != null)
             {
-                // TODO replace this
-                // Save result
-                ContentValues values = new ContentValues();
-//                values.put(MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID, scheduleId);
-                values.put(MinyanContactsTable.COLUMN_PHONE_NUMBER_ID, phoneNumberId);
 
-                if ( getActivity().getContentResolver()
-                        .insert(MinyanMateContentProvider.CONTENT_URI_CONTACTS, values) != null)
+                // Begin activity
 
-                    Toast.makeText(getActivity(), "Added successfully!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), ContactManagerActivity.class);
+                intent.putExtra(ContactManagerActivity.PHONE_ID, phoneNumberId);
+                getActivity().startActivity(intent);
 
-                else
-                    Toast.makeText(getActivity(), "Failed to save contact!", Toast.LENGTH_SHORT).show();
             } else // this code doesn't appear to be reachable, either a phone uri exists or it doesn't
                 Toast.makeText(getActivity(), "Contact has no phone number! Not added!", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(getActivity(), "Failed to save contact!", Toast.LENGTH_SHORT).show();
         }
-
+        // is this reached?
         temp2.close();
     }
 
@@ -191,16 +185,12 @@ public class ContactsManagerFragment extends Fragment implements
         return null;
     }
 
-    // TODO enable the adapter to have dynamic callbacks
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
 
         switch(cursorLoader.getId()) {
 
             case CONTACT_LOADER:
-                // FIXME do this
-
-                Log.d("Contacts Cursor Size", Integer.toString(cursor.getCount()));
 
                 CursorAdapter adapter = new RemovableContactListAdapter(getActivity(), cursor,
                         new RemovableContactListAdapter.IndistinctContactCallbacks());

@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.database.MinyanPrayerSchedulesTable;
+import org.minyanmate.minyanmate.models.FullMinyanSchedule;
 import org.minyanmate.minyanmate.models.MinyanSchedule;
 
 import java.util.concurrent.TimeUnit;
@@ -28,7 +29,7 @@ implements TimePickerDialog.OnTimeSetListener {
 	private int id;
 	int minute;
 	int hour;
-	MinyanSchedule schedule;
+	FullMinyanSchedule schedule;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -63,7 +64,7 @@ implements TimePickerDialog.OnTimeSetListener {
         return timePickerDialog;
     }
 
-	public void initialize(int id, int hour, int minute, MinyanSchedule sched) {
+	public void initialize(int id, int hour, int minute, FullMinyanSchedule sched) {
 		this.minute = minute;
 		this.hour = hour;
 		this.id = id;
@@ -96,7 +97,7 @@ implements TimePickerDialog.OnTimeSetListener {
 			if (id == 1 && adjacentSchedules.getCount() == 1 // if first event, only check forwards 
 					&& adjacentSchedules.moveToFirst()) {
 				
-				MinyanSchedule nextSched = MinyanSchedule.schedFromCursor(adjacentSchedules);
+				FullMinyanSchedule nextSched = FullMinyanSchedule.scheduleFromCursor(adjacentSchedules);
 				long nextWindowLength = nextSched.getSchedulingWindowLength();
 				long nextSchedStartTime = TimeUnit.HOURS.toMillis(nextSched.getHour()) + TimeUnit.MINUTES.toMillis(nextSched.getMinute());
 				
@@ -114,7 +115,7 @@ implements TimePickerDialog.OnTimeSetListener {
 			} else if (adjacentSchedules.getCount() == 1     // else assume last event and only check backwards
 					&& adjacentSchedules.moveToFirst()) {
 				
-				MinyanSchedule previousSched = MinyanSchedule.schedFromCursor(adjacentSchedules);
+				MinyanSchedule previousSched = FullMinyanSchedule.scheduleFromCursor(adjacentSchedules);
 				
 				long prevSchedEndTime = TimeUnit.HOURS.toMillis(previousSched.getHour()) + TimeUnit.MINUTES.toMillis(previousSched.getMinute());
 				
@@ -135,12 +136,12 @@ implements TimePickerDialog.OnTimeSetListener {
 					  */
 				
 				adjacentSchedules.moveToFirst();			
-				MinyanSchedule previousSched = MinyanSchedule.schedFromCursor(adjacentSchedules);
+				FullMinyanSchedule previousSched = FullMinyanSchedule.scheduleFromCursor(adjacentSchedules);
 				
 				long prevSchedEndTime = TimeUnit.HOURS.toMillis(previousSched.getHour()) + TimeUnit.MINUTES.toMillis(previousSched.getMinute());
 				
 				adjacentSchedules.moveToNext();
-				MinyanSchedule nextSched = MinyanSchedule.schedFromCursor(adjacentSchedules);
+				FullMinyanSchedule nextSched = FullMinyanSchedule.scheduleFromCursor(adjacentSchedules);
 				
 				long nextWindowLength = nextSched.getSchedulingWindowLength();
 				long nextSchedStartTime = TimeUnit.HOURS.toMillis(nextSched.getHour()) + TimeUnit.MINUTES.toMillis(nextSched.getMinute());

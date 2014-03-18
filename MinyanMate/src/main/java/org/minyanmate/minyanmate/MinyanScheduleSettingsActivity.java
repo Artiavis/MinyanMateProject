@@ -35,7 +35,7 @@ import org.minyanmate.minyanmate.database.MinyanPrayerSchedulesTable;
 import org.minyanmate.minyanmate.dialogs.ScheduleTimePickerFragment;
 import org.minyanmate.minyanmate.dialogs.ScheduleWindowPickerFragent;
 import org.minyanmate.minyanmate.dialogs.TermsOfService;
-import org.minyanmate.minyanmate.models.MinyanSchedule;
+import org.minyanmate.minyanmate.models.FullMinyanSchedule;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -55,7 +55,7 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 	public final static int PICK_CONTACT = 10;
 	
 	private int scheduleId;
-	private MinyanSchedule schedule;
+	private FullMinyanSchedule schedule;
 	
 	private TextView timeTextView;
 	private TextView windowTextView;
@@ -189,11 +189,11 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
         // Initizlize the saved result
         input.setText(previousInviteMessage, TextView.BufferType.EDITABLE);
         // Initialize the preview of the full mesesage
-        msgPreviewTextView.setText("Preview: " + MinyanSchedule.formatInviteMessage(v.getContext(),input.getText().toString(),
+        msgPreviewTextView.setText("Preview: " + FullMinyanSchedule.formatInviteMessage(v.getContext(), input.getText().toString(),
                 prayerName, prayerHour, prayerMinute));
         // Initialize the character counter
         charactersLeftTextView.setText(
-                MinyanSchedule.SCHEDULE_MESSAGE_SIZE_LIMIT - input.getText().length() + " characters left");
+                FullMinyanSchedule.SCHEDULE_MESSAGE_SIZE_LIMIT - input.getText().length() + " characters left");
 
         // When editing the message, update the preview and the character limit count
         input.addTextChangedListener(new TextWatcher() {
@@ -203,8 +203,8 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
                 charactersLeftTextView.setText(
-                        MinyanSchedule.SCHEDULE_MESSAGE_SIZE_LIMIT - input.getText().length() + " characters left");
-                msgPreviewTextView.setText("Preview: " + MinyanSchedule.formatInviteMessage(v.getContext(),
+                        FullMinyanSchedule.SCHEDULE_MESSAGE_SIZE_LIMIT - input.getText().length() + " characters left");
+                msgPreviewTextView.setText("Preview: " + FullMinyanSchedule.formatInviteMessage(v.getContext(),
                         input.getText().toString(), prayerName, prayerHour, prayerMinute));
             }
 
@@ -217,14 +217,14 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
                 .setView(customMessageView)
                 .setTitle("Modify Custom Message")
                 .setMessage("You can add a brief foreword of at most " +
-                        MinyanSchedule.SCHEDULE_MESSAGE_SIZE_LIMIT + " characters below.")
+                        FullMinyanSchedule.SCHEDULE_MESSAGE_SIZE_LIMIT + " characters below.")
 
                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int whichButton) {
                         String msg = input.getText().toString();
 
-                        if (msg.length() <= MinyanSchedule.SCHEDULE_MESSAGE_SIZE_LIMIT) {
+                        if (msg.length() <= FullMinyanSchedule.SCHEDULE_MESSAGE_SIZE_LIMIT) {
                             ContentValues values = new ContentValues();
                             values.put(MinyanPrayerSchedulesTable.COLUMN_SCHEDULE_MESSAGE, msg);
 
@@ -361,7 +361,7 @@ public class MinyanScheduleSettingsActivity extends FragmentActivity
 		
 		case TIME_LOADER:
 			cursor.moveToFirst();
-			schedule = MinyanSchedule.schedFromCursor(cursor);
+			schedule = FullMinyanSchedule.scheduleFromCursor(cursor);
             String formattedPrayerTime = formatTimeTextView(this, schedule.getHour(), schedule.getMinute());
             timeTextView.setText(schedule.getPrayerName() + " begins at " + formattedPrayerTime);
 			setTitle(schedule.getDay() + " - " + schedule.getPrayerName());

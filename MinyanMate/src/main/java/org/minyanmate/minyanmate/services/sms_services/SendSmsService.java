@@ -22,8 +22,8 @@ import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.database.MinyanContactsTable;
 import org.minyanmate.minyanmate.database.MinyanEventsTable;
 import org.minyanmate.minyanmate.database.MinyanGoersTable;
+import org.minyanmate.minyanmate.models.FullMinyanSchedule;
 import org.minyanmate.minyanmate.models.InviteStatus;
-import org.minyanmate.minyanmate.models.MinyanSchedule;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -160,7 +160,7 @@ public class SendSmsService extends WakefulIntentService {
                 null, null, null, null
                 );
         if (c.moveToNext()) {
-            MinyanSchedule sched = MinyanSchedule.schedFromCursor(c);
+            FullMinyanSchedule sched = FullMinyanSchedule.scheduleFromCursor(c);
             c.close();
             Log.d("SendSmsService", "Scheduling Minyan " + sched.getId());
 
@@ -198,7 +198,7 @@ public class SendSmsService extends WakefulIntentService {
                 String name = contactsToBeInvited.getString(MinyanMateContentProvider.ContactMatrix.DISPLAY_NAME);
                 long phoneNumId = contactsToBeInvited.getLong(MinyanMateContentProvider.ContactMatrix.PHONE_NUMBER_ID);
                 String number = contactsToBeInvited.getString(MinyanMateContentProvider.ContactMatrix.PHONE_NUMBER);
-                String fullInviteMessage = MinyanSchedule.formatInviteMessage(this, sched.getInviteMessage(),
+                String fullInviteMessage = FullMinyanSchedule.formatInviteMessage(this, sched.getInviteMessage(),
                         sched.getPrayerName(), sched.getHour(), sched.getMinute());
 
                 SmsInvite smsInvite = new SmsInvite(fullInviteMessage, number, phoneNumId, name);
@@ -254,7 +254,7 @@ public class SendSmsService extends WakefulIntentService {
 
         if (scheduleCursor.moveToFirst()) {
 
-            MinyanSchedule schedule = MinyanSchedule.schedFromCursor(scheduleCursor);
+            FullMinyanSchedule schedule = FullMinyanSchedule.scheduleFromCursor(scheduleCursor);
             scheduleCursor.close();
 
             Cursor phoneCursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone._ID + "=?",
@@ -268,7 +268,7 @@ public class SendSmsService extends WakefulIntentService {
                         ContactsContract.CommonDataKinds.Phone.NUMBER));
                 phoneCursor.close();
 
-                String fullInviteMessage = MinyanSchedule.formatInviteMessage(this, schedule.getInviteMessage(),
+                String fullInviteMessage = FullMinyanSchedule.formatInviteMessage(this, schedule.getInviteMessage(),
                         schedule.getPrayerName(), schedule.getHour(), schedule.getMinute());
 
                 SmsInvite smsInvite = new SmsInvite(fullInviteMessage, number, phoneNumberId, name);
@@ -319,14 +319,14 @@ public class SendSmsService extends WakefulIntentService {
     }
 
     @Deprecated
-    private void sendInviteSms(MinyanSchedule sched, long eventId, String name, long phoneNumId, String number) {
+    private void sendInviteSms(FullMinyanSchedule sched, long eventId, String name, long phoneNumId, String number) {
 
         ContentValues inviteValues;
 
         Log.i("SendSmsService", "Inviting " + name);
         SmsManager smsm = SmsManager.getDefault();
 
-        String fullInviteMessage = MinyanSchedule.formatInviteMessage(this, sched.getInviteMessage(),
+        String fullInviteMessage = FullMinyanSchedule.formatInviteMessage(this, sched.getInviteMessage(),
                 sched.getPrayerName(), sched.getHour(), sched.getMinute());
 
         //  fire intent to log the invited recipient in the Goers table if the message was received

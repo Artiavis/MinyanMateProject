@@ -3,6 +3,7 @@ package org.minyanmate.minyanmate.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract.Contacts;
@@ -15,6 +16,7 @@ import android.widget.ImageButton;
 import android.widget.QuickContactBadge;
 import android.widget.TextView;
 
+import org.minyanmate.minyanmate.ContactManagerActivity;
 import org.minyanmate.minyanmate.R;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider.ContactMatrix;
@@ -49,10 +51,10 @@ public class RemovableContactListAdapter extends CursorAdapter {
 		TextView nameText = (TextView) view.findViewById(R.id.removableContactName);
 		ImageButton imgButton = (ImageButton) view.findViewById(R.id.removableRemoveButton);
 		
-		long contactId = cur.getLong(ContactMatrix.CONTACT_ID);
+		final long contactId = cur.getLong(ContactMatrix.CONTACT_ID);
 		final String lookUpKey = cur.getString(ContactMatrix.LOOKUP_KEY);
-        final String phoneNumberId = cur.getString(ContactMatrix.PHONE_NUMBER_ID);
-        final int scheduleId = cur.getInt(ContactMatrix.SCHEDULE_ID);
+        final int phoneNumberId = cur.getInt(ContactMatrix.PHONE_NUMBER_ID);
+        final int minyanScheduleId = cur.getInt(ContactMatrix.CONTACT_SCHEDULE_ID);
 		Uri contactUri = Contacts.getLookupUri(contactId, lookUpKey);
 
 		nameText.setText(cur.getString(ContactMatrix.DISPLAY_NAME));
@@ -65,6 +67,25 @@ public class RemovableContactListAdapter extends CursorAdapter {
 			badge.setImageURI(imageUri);
 		}
 
+        /*
+        *  If removableContactsCallbacks is an instance of IndistinctContactsCallbacks,
+        *  it's because it's meant to make the contact name have a callback.
+        */
+        if (removableContactCallbacks instanceof IndistinctContactCallbacks) {
+            nameText.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    removableContactCallbacks.onClickTextView(c, phoneNumberId);
+                }
+            });
+        }
+
+        /*
+        * Need to set a callback on the ImageButton. Either the View being generated represents
+        * a multitude of contact instances, in which case they should all be deleted; or the View being
+        * generated represents only a single instance of a single contact, in which case only that
+        * one should be deleted.
+        */
 		imgButton.setOnClickListener(new OnClickListener() {
 		
 			@Override
@@ -77,7 +98,8 @@ public class RemovableContactListAdapter extends CursorAdapter {
 				        case DialogInterface.BUTTON_POSITIVE:
 				            //Yes button clicked
 
-                            removableContactCallbacks.delete(c, phoneNumberId, String.valueOf(scheduleId));
+                            removableContactCallbacks.delete(c,
+                                    Integer.toString(phoneNumberId), String.valueOf(minyanScheduleId));
 
 				            break;
 
@@ -102,16 +124,28 @@ public class RemovableContactListAdapter extends CursorAdapter {
 				inflate(R.layout.fragment_removable_contact, viewGroup, false);
 	}
 
+    /**
+     * An interface to pass into this adapter so that it can have different behavior when used in
+     * different contexts. (This eliminates having redundant files and boilerplate code.) There
+     * are two callbacks: {@link #delete(android.content.Context, String, String)}, which is called
+     * when the ImageButton is pressed, to delete either a single person from a single schedule,
+     * or a single person from many schedules; and {@link #onClickTextView(android.content.Context, int)},
+     * which is called when the TextView.
+     */
     static public interface RemovableContactCallbacks {
 
-        public void onClick();
+        public void onClickTextView(Context c, int phoneNumberId);
         public void delete(Context c, String phoneNumberId, String scheduleId);
     }
 
+    /**
+     * This implementation is called for {@link org.minyanmate.minyanmate.MinyanScheduleSettingsActivity}
+     * and it deletes only a single contact from a single schedule. It isn't meant for TextViews.
+     */
     static public class DistinctContactCallbacks implements RemovableContactCallbacks {
 
         @Override
-        public void onClick() {
+        public void onClickTextView(Context c, int phoneNumberId) {
             return;
         }
 
@@ -126,10 +160,11 @@ public class RemovableContactListAdapter extends CursorAdapter {
 
     static public class IndistinctContactCallbacks implements RemovableContactCallbacks {
 
-        // TODO implement an interface for starting {@link ContactManagerActivity}
         @Override
-        public void onClick() {
-
+        public void onClickTextView(Context c, int phoneNumberId) {
+            Intent intent = new Intent(c, ContactManagerActivity.class);
+            intent.putExtra(ContactManagerActivity.PHONE_ID, phoneNumberId);
+            c.startActivity(intent);
         }
 
         @Override

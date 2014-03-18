@@ -1,6 +1,7 @@
 package org.minyanmate.minyanmate;
 
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
@@ -10,7 +11,7 @@ import android.widget.ExpandableListView;
 
 import org.minyanmate.minyanmate.adapters.ScheduleExpandableListAdapter;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
-import org.minyanmate.minyanmate.database.MinyanPrayerSchedulesTable;
+import org.minyanmate.minyanmate.models.ContactSchedule;
 import org.minyanmate.minyanmate.models.MinyanSchedule;
 
 import java.util.ArrayList;
@@ -35,46 +36,55 @@ public class ContactManagerActivity extends FragmentActivity
         super();
     }
 
+    // Expandable ListView and adapter
     private ExpandableListView expListView;
-    private List<String> listDataHeader;
-
-    private HashMap<String, List<MinyanSchedule>> listDataChild;
     private ScheduleExpandableListAdapter listAdapter;
+    // Variables for expandablelistviewadapter
+    private List<String> listDataHeader;
+    private HashMap<String, List<MinyanSchedule>> listDataChild;
+
+    // other variables
+    public static final String PHONE_ID = "phoneNumberId";
+    private int phoneNumberId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_minyan_list);
 
+        // Restore state
+        phoneNumberId = getIntent().getIntExtra(PHONE_ID, 0);
 
+        // phoneNumberId should *always* have a positive value
+        assert (phoneNumberId != 0);
+
+        // Loader Callbacks
         getSupportLoaderManager().initLoader(0, null, this);
 
+        // Adapter
         expListView = (ExpandableListView) findViewById(R.id.minyanList);
 
         listDataHeader = new ArrayList<String>();
         listDataChild = new HashMap<String, List<MinyanSchedule>>();
-        listAdapter = new ScheduleExpandableListAdapter(this, listDataHeader, listDataChild);
+        listAdapter = new ScheduleExpandableListAdapter(this, listDataHeader, listDataChild,
+                new ScheduleExpandableListAdapter.ContactScheduleAdapterCallbacks(phoneNumberId));
 
         expListView.setAdapter(listAdapter);
     }
 
-    // TODO replace this with the joined SCHEDULE/CONTACT matrix
-    // TODO enable the adapter to have dynamic callbacks
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle bundle) {
         CursorLoader cursorLoader = new CursorLoader(this,
-                MinyanMateContentProvider.CONTENT_URI_SCHEDULES, null, null, null,
-                MinyanPrayerSchedulesTable.COLUMN_DAY_NUM + ", "
-                        + MinyanPrayerSchedulesTable.COLUMN_PRAYER_HOUR + ", "
-                        + MinyanPrayerSchedulesTable.COLUMN_PRAYER_MIN);
+                Uri.parse(MinyanMateContentProvider.CONTENT_URI_CONTACT_SCHEDULES + "/" + phoneNumberId),
+                null, null, null, null);
         return cursorLoader;
     }
 
+    // FIXME only shows preselected stuff, this isn't good
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
-        List<MinyanSchedule> prayerTimes = MinyanSchedule.cursorToScheduleList(data);
+        List<ContactSchedule> prayerTimes = ContactSchedule.contactScheduleListFromCursor(data);
         listDataChild = new HashMap<String, List<MinyanSchedule>>();
         listDataHeader = new ArrayList<String>();
         for(MinyanSchedule prayer : prayerTimes) {
@@ -98,6 +108,5 @@ public class ContactManagerActivity extends FragmentActivity
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         loader = null;
-
     }
 }

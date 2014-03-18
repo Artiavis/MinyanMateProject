@@ -11,6 +11,7 @@ import android.util.Log;
 
 import org.minyanmate.minyanmate.R;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
+import org.minyanmate.minyanmate.models.FullMinyanSchedule;
 import org.minyanmate.minyanmate.models.MinyanSchedule;
 import org.minyanmate.minyanmate.services.sms_services.SendSmsService;
 
@@ -23,7 +24,7 @@ import java.util.TimeZone;
  */
 public class MinyanRegistrar {
 
-	public static void registerMinyanEvent(Context context, MinyanSchedule sched, TimeZone timeZone) {
+	public static void registerMinyanEvent(Context context, FullMinyanSchedule sched, TimeZone timeZone) {
 		
 		Log.d("MinyanRegistrar", "Inside MinyanRegistrar registering minyan " + sched.getId());
 		
@@ -73,7 +74,7 @@ public class MinyanRegistrar {
 	 * to go off. Most likely incurs a large performance penalty for performing every calculation
 	 * every time. 
 	 * @param context the {@link android.content.Context}
-	 * @param cursor the {@link android.database.Cursor} to the {@link org.minyanmate.minyanmate.models.MinyanSchedule}s
+	 * @param cursor the {@link android.database.Cursor} to the {@link org.minyanmate.minyanmate.models.FullMinyanSchedule}s
      *               to schedule
 	 */
 	public static void registerMinyanEvents(Context context, Cursor cursor) {
@@ -85,7 +86,7 @@ public class MinyanRegistrar {
 		TimeZone timeZone = TimeZone.getTimeZone(timeZoneId);
 		while (cursor.moveToNext()) {
 			
-			MinyanSchedule sched = MinyanSchedule.schedFromCursor(cursor);
+			FullMinyanSchedule sched = FullMinyanSchedule.scheduleFromCursor(cursor);
 			
 			// Try and cancel a minyan assuming one is scheduled
 			cancelMinyanEvent(context, sched);

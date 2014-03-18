@@ -15,6 +15,7 @@ import android.widget.ExpandableListView;
 import org.minyanmate.minyanmate.adapters.ScheduleExpandableListAdapter;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
 import org.minyanmate.minyanmate.database.MinyanPrayerSchedulesTable;
+import org.minyanmate.minyanmate.models.FullMinyanSchedule;
 import org.minyanmate.minyanmate.models.MinyanSchedule;
 
 import java.util.ArrayList;
@@ -49,7 +50,8 @@ public class MinyanScheduleListFragment extends Fragment implements
 		
 		listDataHeader = new ArrayList<String>();
 		listDataChild = new HashMap<String, List<MinyanSchedule>>();
-		listAdapter = new ScheduleExpandableListAdapter(context, listDataHeader, listDataChild);
+		listAdapter = new ScheduleExpandableListAdapter(context, listDataHeader, listDataChild,
+                new ScheduleExpandableListAdapter.ScheduleListAdapterCallbacks());
 		
 		expListView.setAdapter(listAdapter);
 		
@@ -69,7 +71,7 @@ public class MinyanScheduleListFragment extends Fragment implements
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 		
-		List<MinyanSchedule> prayerTimes = MinyanSchedule.cursorToScheduleList(data);
+		List<MinyanSchedule> prayerTimes = FullMinyanSchedule.cursorToScheduleList(data);
 		listDataChild = new HashMap<String, List<MinyanSchedule>>();
 		listDataHeader = new ArrayList<String>();
 		for(MinyanSchedule prayer : prayerTimes) {
