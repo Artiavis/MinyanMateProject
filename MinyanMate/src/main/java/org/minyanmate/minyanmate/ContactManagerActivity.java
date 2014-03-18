@@ -80,7 +80,6 @@ public class ContactManagerActivity extends FragmentActivity
         return cursorLoader;
     }
 
-    // FIXME only shows preselected stuff, this isn't good
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
 
