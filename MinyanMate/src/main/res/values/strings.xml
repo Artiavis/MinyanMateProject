@@ -77,6 +77,21 @@
 		 of any third party, and/or your violation of these Terms.</p>]]>
     </string>
 
+
+    <!-- Tutorial Strings -->
+
+        <!-- Scheduler Tutorial -->
+        <string name="scheduleTutorial_checkTitle">Activate Scheduler</string>
+        <string name="scheduleTutorial_checkDesc">
+            Check or uncheck a box to tell Minyan Mate whether to schedule a minyan.
+        </string>
+
+        <string name="scheduleTutorial_clickTitle">Edit Minyan Settings</string>
+        <string name="scheduleTutorial_clickDesc">
+            Click on a prayer to make changes to it.
+        </string>
+
+
     <string name="isForwardingPreference">isForwardingCheckBox</string>
     <string name="timezonePreference">timezonePreferenceList</string>
     <string name="forwardContactPreference">forwardContactRingtonePreference</string>

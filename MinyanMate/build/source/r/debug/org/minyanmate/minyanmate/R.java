@@ -13,71 +13,133 @@ public final class R {
         public static final int minimal_timezones_list=0x7f050001;
     }
     public static final class attr {
+        /** <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+         */
+        public static final int showcaseViewStyle=0x7f010000;
+        /** <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+         */
+        public static final int sv_backgroundColor=0x7f010001;
+        /** <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+         */
+        public static final int sv_buttonBackgroundColor=0x7f010004;
+        /** <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+         */
+        public static final int sv_buttonForegroundColor=0x7f010005;
+        /** <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a string value, using '\\;' to escape characters such as '\\n' or '\\uxxxx' for a unicode character.
+         */
+        public static final int sv_buttonText=0x7f010006;
+        /** <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+         */
+        public static final int sv_detailTextAppearance=0x7f010007;
+        /** <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+         */
+        public static final int sv_detailTextColor=0x7f010002;
+        /** <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+         */
+        public static final int sv_showcaseColor=0x7f010009;
+        /** <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+         */
+        public static final int sv_titleTextAppearance=0x7f010008;
+        /** <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+         */
+        public static final int sv_titleTextColor=0x7f010003;
     }
     public static final class dimen {
         public static final int activity_horizontal_margin=0x7f060000;
         public static final int activity_vertical_margin=0x7f060001;
     }
     public static final class drawable {
-        public static final int collections_go_to_today_light=0x7f020000;
-        public static final int collections_view_as_list_dark=0x7f020001;
-        public static final int collections_view_as_list_light=0x7f020002;
-        public static final int content_discard_dark=0x7f020003;
-        public static final int content_discard_light=0x7f020004;
-        public static final int content_edit_dark=0x7f020005;
-        public static final int content_edit_light=0x7f020006;
-        public static final int content_email_light=0x7f020007;
-        public static final int device_access_time_dark=0x7f020008;
-        public static final int device_access_time_light=0x7f020009;
-        public static final int ic_action_overflow_dark=0x7f02000a;
-        public static final int ic_launcher=0x7f02000b;
-        public static final int social_add_person_dark=0x7f02000c;
-        public static final int social_add_person_light=0x7f02000d;
-        public static final int social_cc_bcc_dark=0x7f02000e;
-        public static final int social_cc_bcc_light=0x7f02000f;
-        public static final int social_chat_light=0x7f020010;
-        public static final int social_person_light=0x7f020011;
-        public static final int social_share_light=0x7f020012;
+        public static final int btn_cling_normal=0x7f020000;
+        public static final int btn_cling_pressed=0x7f020001;
+        public static final int cling=0x7f020002;
+        public static final int cling_bleached=0x7f020003;
+        public static final int cling_button_bg=0x7f020004;
+        public static final int collections_go_to_today_light=0x7f020005;
+        public static final int collections_view_as_list_dark=0x7f020006;
+        public static final int collections_view_as_list_light=0x7f020007;
+        public static final int content_discard_dark=0x7f020008;
+        public static final int content_discard_light=0x7f020009;
+        public static final int content_edit_dark=0x7f02000a;
+        public static final int content_edit_light=0x7f02000b;
+        public static final int content_email_light=0x7f02000c;
+        public static final int device_access_time_dark=0x7f02000d;
+        public static final int device_access_time_light=0x7f02000e;
+        public static final int hand=0x7f02000f;
+        public static final int ic_action_overflow_dark=0x7f020010;
+        public static final int ic_launcher=0x7f020011;
+        public static final int social_add_person_dark=0x7f020012;
+        public static final int social_add_person_light=0x7f020013;
+        public static final int social_cc_bcc_dark=0x7f020014;
+        public static final int social_cc_bcc_light=0x7f020015;
+        public static final int social_chat_light=0x7f020016;
+        public static final int social_person_light=0x7f020017;
+        public static final int social_share_light=0x7f020018;
     }
     public static final class id {
-        public static final int action_settings=0x7f0a001f;
-        public static final int action_terms_of_service=0x7f0a0020;
-        public static final int activeMinyanFragment=0x7f0a0002;
-        public static final int activeMinyanParticipantsList=0x7f0a0004;
-        public static final int activeMinyanTime=0x7f0a0003;
-        public static final int customMessageEditText=0x7f0a0006;
-        public static final int customMessagePreview=0x7f0a0005;
-        public static final int customMessageTextLength=0x7f0a0007;
-        public static final int include_minyan_list=0x7f0a0009;
-        public static final int minyanDashboard=0x7f0a0008;
-        public static final int minyanDayHeader=0x7f0a001b;
-        public static final int minyanList=0x7f0a000c;
-        public static final int minyanListFragment=0x7f0a000a;
-        public static final int minyanSettingsFragment=0x7f0a000d;
-        public static final int minyanTimeCheckbox=0x7f0a001c;
-        public static final int minyanTimeTextview=0x7f0a001d;
-        public static final int minyan_schedule_headerText=0x7f0a000b;
-        public static final int minyan_setting_add_contactButton=0x7f0a0012;
-        public static final int minyan_setting_add_groupButton=0x7f0a0013;
-        public static final int minyan_setting_contactsList=0x7f0a0001;
-        public static final int minyan_setting_scheduleWindowTextView=0x7f0a0010;
-        public static final int minyan_setting_setScheduleWindow=0x7f0a0011;
-        public static final int minyan_setting_setTime=0x7f0a000f;
-        public static final int minyan_setting_timeTextView=0x7f0a000e;
-        public static final int moreOptsMenu_AddAnon=0x7f0a0022;
-        public static final int moreOptsMenu_AddNewContact=0x7f0a001e;
-        public static final int moreOptsMenu_AddPerson=0x7f0a0021;
-        public static final int moreOptsMenu_InviteNew=0x7f0a0023;
-        public static final int moreOptsMenu_MessageParticipants=0x7f0a0024;
-        public static final int moreOptsMenu_ShareHeadcount=0x7f0a0025;
-        public static final int pager=0x7f0a0000;
-        public static final int participantContactBadge=0x7f0a0015;
-        public static final int participantContactName=0x7f0a0016;
-        public static final int participantHeader=0x7f0a0014;
-        public static final int removableContactBadge=0x7f0a0018;
-        public static final int removableContactName=0x7f0a0019;
-        public static final int removableRemoveButton=0x7f0a0017;
-        public static final int sendMessageParticipantsList=0x7f0a001a;
+        public static final int action_settings=0x7f070022;
+        public static final int action_terms_of_service=0x7f070023;
+        public static final int activeMinyanFragment=0x7f070005;
+        public static final int activeMinyanParticipantsList=0x7f070007;
+        public static final int activeMinyanTime=0x7f070006;
+        public static final int customMessageEditText=0x7f070009;
+        public static final int customMessagePreview=0x7f070008;
+        public static final int customMessageTextLength=0x7f07000a;
+        public static final int include_minyan_list=0x7f07000c;
+        public static final int minyanDashboard=0x7f07000b;
+        public static final int minyanDayHeader=0x7f07001e;
+        public static final int minyanList=0x7f07000f;
+        public static final int minyanListFragment=0x7f07000d;
+        public static final int minyanSettingsFragment=0x7f070010;
+        public static final int minyanTimeCheckbox=0x7f07001f;
+        public static final int minyanTimeTextview=0x7f070020;
+        public static final int minyan_schedule_headerText=0x7f07000e;
+        public static final int minyan_setting_add_contactButton=0x7f070015;
+        public static final int minyan_setting_add_groupButton=0x7f070016;
+        public static final int minyan_setting_contactsList=0x7f070004;
+        public static final int minyan_setting_scheduleWindowTextView=0x7f070013;
+        public static final int minyan_setting_setScheduleWindow=0x7f070014;
+        public static final int minyan_setting_setTime=0x7f070012;
+        public static final int minyan_setting_timeTextView=0x7f070011;
+        public static final int moreOptsMenu_AddAnon=0x7f070025;
+        public static final int moreOptsMenu_AddNewContact=0x7f070021;
+        public static final int moreOptsMenu_AddPerson=0x7f070024;
+        public static final int moreOptsMenu_InviteNew=0x7f070026;
+        public static final int moreOptsMenu_MessageParticipants=0x7f070027;
+        public static final int moreOptsMenu_ShareHeadcount=0x7f070028;
+        public static final int pager=0x7f070003;
+        public static final int participantContactBadge=0x7f070018;
+        public static final int participantContactName=0x7f070019;
+        public static final int participantHeader=0x7f070017;
+        public static final int removableContactBadge=0x7f07001b;
+        public static final int removableContactName=0x7f07001c;
+        public static final int removableRemoveButton=0x7f07001a;
+        public static final int sendMessageParticipantsList=0x7f07001d;
+        public static final int showcase_button=0x7f070000;
+        public static final int showcase_sub_text=0x7f070001;
+        public static final int showcase_title_text=0x7f070002;
     }
     public static final class layout {
         public static final int actionbar_minyan_mate=0x7f030000;
@@ -92,25 +154,32 @@ public final class R {
         public static final int fragment_participant_header=0x7f030009;
         public static final int fragment_particpant_child=0x7f03000a;
         public static final int fragment_removable_contact=0x7f03000b;
-        public static final int message_participants_dialog=0x7f03000c;
-        public static final int minyan_day=0x7f03000d;
-        public static final int minyan_time=0x7f03000e;
+        public static final int handy=0x7f03000c;
+        public static final int message_participants_dialog=0x7f03000d;
+        public static final int minyan_day=0x7f03000e;
+        public static final int minyan_time=0x7f03000f;
+        public static final int showcase_button=0x7f030010;
     }
     public static final class menu {
-        public static final int contacts_more_options=0x7f090000;
-        public static final int minyan_mate=0x7f090001;
-        public static final int minyan_more_options=0x7f090002;
+        public static final int contacts_more_options=0x7f0a0000;
+        public static final int minyan_mate=0x7f0a0001;
+        public static final int minyan_more_options=0x7f0a0002;
     }
     public static final class string {
-        public static final int about_app=0x7f070000;
-        public static final int action_settings=0x7f070001;
-        public static final int app_name=0x7f070002;
-        public static final int forwardContactPreference=0x7f070003;
-        public static final int isForwardingPreference=0x7f070004;
-        public static final int terms_of_service=0x7f070005;
-        public static final int timezonePreference=0x7f070006;
-        public static final int title_active_minyan=0x7f070007;
-        public static final int title_edit_minyans=0x7f070008;
+        public static final int about_app=0x7f080000;
+        public static final int action_settings=0x7f080001;
+        public static final int app_name=0x7f080002;
+        public static final int forwardContactPreference=0x7f080003;
+        public static final int isForwardingPreference=0x7f080004;
+        public static final int ok=0x7f080005;
+        public static final int scheduleTutorial_checkDesc=0x7f080006;
+        public static final int scheduleTutorial_checkTitle=0x7f080007;
+        public static final int scheduleTutorial_clickDesc=0x7f080008;
+        public static final int scheduleTutorial_clickTitle=0x7f080009;
+        public static final int terms_of_service=0x7f08000a;
+        public static final int timezonePreference=0x7f08000b;
+        public static final int title_active_minyan=0x7f08000c;
+        public static final int title_edit_minyans=0x7f08000d;
     }
     public static final class style {
         /** 
@@ -121,16 +190,186 @@ public final class R {
  API 11 theme customizations can go here. 
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f080000;
+        public static final int AppBaseTheme=0x7f090000;
         /**  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f080001;
-        public static final int Theme_Default=0x7f080002;
-        public static final int Theme_FullScreen=0x7f080003;
-        public static final int Theme_NoTitle=0x7f080004;
-        public static final int Theme_Transparent=0x7f080005;
+        public static final int AppTheme=0x7f090001;
+        public static final int CustomAppTheme=0x7f090002;
+        public static final int CustomDetailText=0x7f090003;
+        public static final int CustomShowcaseTheme=0x7f090004;
+        public static final int CustomTitle=0x7f090005;
+        public static final int ShowcaseButton=0x7f090006;
+        public static final int ShowcaseView=0x7f090007;
+        public static final int ShowcaseView_Light=0x7f090008;
+        public static final int TextAppearance_ShowcaseView_Detail=0x7f090009;
+        public static final int TextAppearance_ShowcaseView_Detail_Light=0x7f09000a;
+        public static final int TextAppearance_ShowcaseView_Title=0x7f09000b;
+        public static final int TextAppearance_ShowcaseView_Title_Light=0x7f09000c;
+        public static final int Theme_Default=0x7f09000d;
+        public static final int Theme_FullScreen=0x7f09000e;
+        public static final int Theme_NoTitle=0x7f09000f;
+        public static final int Theme_Transparent=0x7f090010;
     }
     public static final class xml {
         public static final int preferences=0x7f040000;
     }
+    public static final class styleable {
+        /** Attributes that can be used with a CustomTheme.
+           <p>Includes the following attributes:</p>
+           <table>
+           <colgroup align="left" />
+           <colgroup align="left" />
+           <tr><th>Attribute</th><th>Description</th></tr>
+           <tr><td><code>{@link #CustomTheme_showcaseViewStyle org.minyanmate.minyanmate:showcaseViewStyle}</code></td><td></td></tr>
+           </table>
+           @see #CustomTheme_showcaseViewStyle
+         */
+        public static final int[] CustomTheme = {
+            0x7f010000
+        };
+        /**
+          <p>This symbol is the offset where the {@link org.minyanmate.minyanmate.R.attr#showcaseViewStyle}
+          attribute's value can be found in the {@link #CustomTheme} array.
+
+
+          <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+          @attr name org.minyanmate.minyanmate:showcaseViewStyle
+        */
+        public static final int CustomTheme_showcaseViewStyle = 0;
+        /** Attributes that can be used with a ShowcaseView.
+           <p>Includes the following attributes:</p>
+           <table>
+           <colgroup align="left" />
+           <colgroup align="left" />
+           <tr><th>Attribute</th><th>Description</th></tr>
+           <tr><td><code>{@link #ShowcaseView_sv_backgroundColor org.minyanmate.minyanmate:sv_backgroundColor}</code></td><td></td></tr>
+           <tr><td><code>{@link #ShowcaseView_sv_buttonBackgroundColor org.minyanmate.minyanmate:sv_buttonBackgroundColor}</code></td><td></td></tr>
+           <tr><td><code>{@link #ShowcaseView_sv_buttonForegroundColor org.minyanmate.minyanmate:sv_buttonForegroundColor}</code></td><td></td></tr>
+           <tr><td><code>{@link #ShowcaseView_sv_buttonText org.minyanmate.minyanmate:sv_buttonText}</code></td><td></td></tr>
+           <tr><td><code>{@link #ShowcaseView_sv_detailTextAppearance org.minyanmate.minyanmate:sv_detailTextAppearance}</code></td><td></td></tr>
+           <tr><td><code>{@link #ShowcaseView_sv_detailTextColor org.minyanmate.minyanmate:sv_detailTextColor}</code></td><td></td></tr>
+           <tr><td><code>{@link #ShowcaseView_sv_showcaseColor org.minyanmate.minyanmate:sv_showcaseColor}</code></td><td></td></tr>
+           <tr><td><code>{@link #ShowcaseView_sv_titleTextAppearance org.minyanmate.minyanmate:sv_titleTextAppearance}</code></td><td></td></tr>
+           <tr><td><code>{@link #ShowcaseView_sv_titleTextColor org.minyanmate.minyanmate:sv_titleTextColor}</code></td><td></td></tr>
+           </table>
+           @see #ShowcaseView_sv_backgroundColor
+           @see #ShowcaseView_sv_buttonBackgroundColor
+           @see #ShowcaseView_sv_buttonForegroundColor
+           @see #ShowcaseView_sv_buttonText
+           @see #ShowcaseView_sv_detailTextAppearance
+           @see #ShowcaseView_sv_detailTextColor
+           @see #ShowcaseView_sv_showcaseColor
+           @see #ShowcaseView_sv_titleTextAppearance
+           @see #ShowcaseView_sv_titleTextColor
+         */
+        public static final int[] ShowcaseView = {
+            0x7f010001, 0x7f010002, 0x7f010003, 0x7f010004,
+            0x7f010005, 0x7f010006, 0x7f010007, 0x7f010008,
+            0x7f010009
+        };
+        /**
+          <p>This symbol is the offset where the {@link org.minyanmate.minyanmate.R.attr#sv_backgroundColor}
+          attribute's value can be found in the {@link #ShowcaseView} array.
+
+
+          <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+          @attr name org.minyanmate.minyanmate:sv_backgroundColor
+        */
+        public static final int ShowcaseView_sv_backgroundColor = 0;
+        /**
+          <p>This symbol is the offset where the {@link org.minyanmate.minyanmate.R.attr#sv_buttonBackgroundColor}
+          attribute's value can be found in the {@link #ShowcaseView} array.
+
+
+          <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+          @attr name org.minyanmate.minyanmate:sv_buttonBackgroundColor
+        */
+        public static final int ShowcaseView_sv_buttonBackgroundColor = 3;
+        /**
+          <p>This symbol is the offset where the {@link org.minyanmate.minyanmate.R.attr#sv_buttonForegroundColor}
+          attribute's value can be found in the {@link #ShowcaseView} array.
+
+
+          <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+          @attr name org.minyanmate.minyanmate:sv_buttonForegroundColor
+        */
+        public static final int ShowcaseView_sv_buttonForegroundColor = 4;
+        /**
+          <p>This symbol is the offset where the {@link org.minyanmate.minyanmate.R.attr#sv_buttonText}
+          attribute's value can be found in the {@link #ShowcaseView} array.
+
+
+          <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a string value, using '\\;' to escape characters such as '\\n' or '\\uxxxx' for a unicode character.
+          @attr name org.minyanmate.minyanmate:sv_buttonText
+        */
+        public static final int ShowcaseView_sv_buttonText = 5;
+        /**
+          <p>This symbol is the offset where the {@link org.minyanmate.minyanmate.R.attr#sv_detailTextAppearance}
+          attribute's value can be found in the {@link #ShowcaseView} array.
+
+
+          <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+          @attr name org.minyanmate.minyanmate:sv_detailTextAppearance
+        */
+        public static final int ShowcaseView_sv_detailTextAppearance = 6;
+        /**
+          <p>This symbol is the offset where the {@link org.minyanmate.minyanmate.R.attr#sv_detailTextColor}
+          attribute's value can be found in the {@link #ShowcaseView} array.
+
+
+          <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+          @attr name org.minyanmate.minyanmate:sv_detailTextColor
+        */
+        public static final int ShowcaseView_sv_detailTextColor = 1;
+        /**
+          <p>This symbol is the offset where the {@link org.minyanmate.minyanmate.R.attr#sv_showcaseColor}
+          attribute's value can be found in the {@link #ShowcaseView} array.
+
+
+          <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+          @attr name org.minyanmate.minyanmate:sv_showcaseColor
+        */
+        public static final int ShowcaseView_sv_showcaseColor = 8;
+        /**
+          <p>This symbol is the offset where the {@link org.minyanmate.minyanmate.R.attr#sv_titleTextAppearance}
+          attribute's value can be found in the {@link #ShowcaseView} array.
+
+
+          <p>Must be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+          @attr name org.minyanmate.minyanmate:sv_titleTextAppearance
+        */
+        public static final int ShowcaseView_sv_titleTextAppearance = 7;
+        /**
+          <p>This symbol is the offset where the {@link org.minyanmate.minyanmate.R.attr#sv_titleTextColor}
+          attribute's value can be found in the {@link #ShowcaseView} array.
+
+
+          <p>May be a reference to another resource, in the form "<code>@[+][<i>package</i>:]<i>type</i>:<i>name</i></code>"
+or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>name</i></code>".
+<p>May be a color value, in the form of "<code>#<i>rgb</i></code>", "<code>#<i>argb</i></code>",
+"<code>#<i>rrggbb</i></code>", or "<code>#<i>aarrggbb</i></code>".
+          @attr name org.minyanmate.minyanmate:sv_titleTextColor
+        */
+        public static final int ShowcaseView_sv_titleTextColor = 2;
+    };
 }

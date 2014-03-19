@@ -34,7 +34,7 @@ public class MinyanScheduleListFragment extends Fragment implements
 	
 	private List<String> listDataHeader;
 	private HashMap<String, List<MinyanSchedule>> listDataChild;
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -97,5 +97,4 @@ public class MinyanScheduleListFragment extends Fragment implements
 		loader = null;
 		
 	}
-
 }

@@ -1,0 +1,36 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.9.+'
+    }
+}
+
+apply plugin: 'android-library'
+
+dependencies {
+    repositories {
+        mavenCentral()
+    }
+
+    compile files('libs/android-support-v4.jar','libs/nineoldandroids-2.4.0.jar')
+//    compile fileTree(dir: 'libs', include: '*.jar')
+//    compile 'com.android.support:support-v4:19.0.+'
+//    compile 'com.nineoldandroids:library:2.4.0+'
+//    compile 'com.nineoldandroids:library:2.4.0@jar'
+}
+
+android {
+	compileSdkVersion 19
+	buildToolsVersion '19.0.0'
+	
+	sourceSets {
+		main {
+			manifest.srcFile 'AndroidManifest.xml'
+			java.srcDirs = ['src']
+			res.srcDirs = ['res']
+		}
+	}
+}

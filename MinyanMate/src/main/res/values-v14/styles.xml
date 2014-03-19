@@ -12,4 +12,26 @@
     <style name="Theme.Default" parent="@android:style/Theme"></style>
     <style name="Theme.NoTitle" parent="@android:style/Theme.NoTitleBar"></style>
     <style name="Theme.FullScreen" parent="@android:style/Theme.NoTitleBar.Fullscreen"></style>
+
+    <!-- For ShowcaseViews -->
+    <style name="CustomTitle" parent="TextAppearance.ShowcaseView.Title">
+        <item name="android:textColor">#B26200</item>
+    </style>
+
+    <style name="CustomDetailText" parent="TextAppearance.ShowcaseView.Detail">
+        <item name="android:textColor">#DCFFD0</item>
+    </style>
+
+    <style name="CustomShowcaseTheme" parent="ShowcaseView.Light">
+        <item name="sv_backgroundColor">#340089B2</item>
+        <item name="sv_buttonBackgroundColor">#CF3119</item>
+        <item name="sv_buttonText">Next</item>
+        <item name="sv_titleTextAppearance">@style/CustomTitle</item>
+        <item name="sv_detailTextAppearance">@style/CustomDetailText</item>
+    </style>
+
+    <style name="CustomAppTheme" parent="AppBaseTheme">
+        <item name="showcaseViewStyle">@style/CustomShowcaseTheme</item>
+    </style>
+
 </resources>

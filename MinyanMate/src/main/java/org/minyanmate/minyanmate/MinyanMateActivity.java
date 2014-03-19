@@ -1,6 +1,7 @@
 package org.minyanmate.minyanmate;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,6 +16,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.espian.showcaseview.ShowcaseView;
+import com.espian.showcaseview.targets.ActionItemTarget;
+
 import org.minyanmate.minyanmate.dialogs.TermsOfService;
 
 import java.util.Locale;
@@ -26,7 +30,7 @@ public class MinyanMateActivity extends FragmentActivity implements
     /**
 	 * The {@link ViewPager} that will host the section contents.
 	 */
-    private ViewPager mViewPager;
+    ViewPager mViewPager;
 
     public MinyanMateActivity() {
         super();
@@ -37,8 +41,9 @@ public class MinyanMateActivity extends FragmentActivity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_minyan_mate);
 
-        // Check if first app install, if so, initialize TimeZone
-        initializeTimeZone();
+        // Check if first app install, if so, initialize
+        initializeFirstInstall();
+
 
 		// Set up the action bar.
 		final ActionBar actionBar = getActionBar();
@@ -86,9 +91,126 @@ public class MinyanMateActivity extends FragmentActivity implements
                     .setIcon(mSectionsPagerAdapter.getPageIcon(i))
                     .setTabListener(this));
 		}
+
+        // Show tutorial
+        if (PreferenceManager.getDefaultSharedPreferences(this).getBoolean("tutorial", true)) {
+            showTutorial();
+        }
 	}
 
+    public void showTutorial() {
 
+        Log.d("Inside showTutorial()","Clearing preferences");
+
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        settings.edit().clear().commit();
+
+        Log.d("Inside showTutorial()","Entering Tutorial");
+        // Open first tab
+        mViewPager.setCurrentItem(2);
+//        getActionBar().getTabAt(0).getCustomView();
+        final ShowcaseView.ConfigOptions co = new ShowcaseView.ConfigOptions();
+        co.hideOnClickOutside = false;
+        co.block = true;
+
+        final ShowcaseView sv1;
+        final Activity activity = this;
+
+        sv1 = ShowcaseView.insertShowcaseView(new ActionItemTarget(this, R.id.moreOptsMenu_AddNewContact),
+                this, "Add to Minyan", "Add a person to count or invite another person", co);
+        sv1.show();
+//
+//        sv1.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                ShowcaseView sv2 = ShowcaseView.insertShowcaseView(
+//                    new ActionItemTarget(activity, R.id.moreOptsMenu_MessageParticipants),
+//                    activity, "Add to Minyan", "Add a person to count or invite another person", co);
+//
+//                sv2.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        ShowcaseView sv3 = ShowcaseView.insertShowcaseView(
+//                        new ActionItemTarget(activity, R.id.moreOptsMenu_ShareHeadcount),
+//                        activity, "Add to Minyan", "Add a person to count or invite another person", co);
+//                        sv3.show();
+//                    }
+//                });
+//                sv2.show();
+//            }
+//        });
+//
+//        sv1.show();
+//        ShowcaseViewBuilder builder= new ShowcaseViewBuilder(this);
+//        bu.setText("Minyan Dashboard", "This tab acts as a dashboard when viewing active minyans")
+//                .setConfigOptions(co).build().show();
+//        getActionBar().getTabAt(0).getCustomView();
+//        sv = ShowcaseView.insertShowcaseView(ShowcaseView.NONE,
+//                this, "Add to Minyan", "Add a person to count or invite another person", co);
+//        sv.show();
+
+//        sv = ShowcaseView.insertShowcaseView(new ViewTarget(mViewPager.getChildAt(0)), this,
+//                "Minyan Dashboard", "This tab acts as a dashboard when viewing active minyans", co);
+//        sv.show();
+
+//        sv = ShowcaseView.insertShowcaseView(new ActionItemTarget(this, R.id.moreOptsMenu_AddPerson),
+//                this, "Add to Minyan", "Add a person to count or invite another person", co);
+//        sv.show();
+
+//        ShowcaseViews views = new TabbedShowcaseViews(this, new ShowcaseViews.OnShowcaseAcknowledged() {
+//            @Override
+//            public void onShowCaseAcknowledged(ShowcaseView showcaseView) {
+//
+//            }
+//        }, mViewPager);
+
+//        ShowcaseViews views = new ShowcaseViews(this);
+//
+//        views.addView(new ShowcaseViews.ItemViewProperties(R.id.moreOptsMenu_AddPerson,
+//                R.string.scheduleTutorial_clickTitle, R.string.scheduleTutorial_clickDesc, co));
+////        ), false);
+//        views.addView(new ShowcaseViews.ItemViewProperties(R.id.moreOptsMenu_MessageParticipants,
+//                R.string.scheduleTutorial_clickTitle, R.string.scheduleTutorial_clickDesc, co));
+////        ), false);
+//        views.addView(new ShowcaseViews.ItemViewProperties(R.id.moreOptsMenu_ShareHeadcount,
+//                R.string.scheduleTutorial_clickTitle, R.string.scheduleTutorial_clickDesc, co));
+////        ), true);
+//
+//        views.show();
+
+/*//            expListView.expandGroup(0);
+//            ShowcaseViewBuilder showcaseViewBuilder = new ShowcaseViewBuilder(getActivity());
+//            showcaseViewBuilder.setShowcaseView(
+//                    ((LinearLayout) listAdapter.getChild(0,0)).findViewById(R.id.minyanTimeCheckbox)
+//            );
+//            expListView.getAdapter().getView(0, null, null);
+//            View parent = ((LinearLayout) listAdapter.getChild(0,0));
+//            int checkViewId = getActivity().findViewById(R.id.minyanTimeCheckbox).getId();
+//            int textViewId = getActivity().findViewById(R.id.minyanTimeTextview).getId();
+//            getActivity().findViewByI
+        ShowcaseView.ConfigOptions co = new ShowcaseView.ConfigOptions();
+//            co.hideOnClickOutside = true;
+
+//            ShowcaseViews showcaseViews = new ShowcaseViews(getActivity(),
+                new ShowcaseViews.OnShowcaseAcknowledged() {
+                    @Override
+                    public void onShowCaseAcknowledged(ShowcaseView showcaseView) {
+                        PreferenceManager.getDefaultSharedPreferences(getActivity())
+                                .edit().putBoolean(SCHEDULE_TUTORIAL, false);
+                    }
+                });
+
+        showcaseViews.addView(new ShowcaseViews.ItemViewProperties(//R.id.minyanTimeCheckbox,
+                R.string.scheduleTutorial_checkTitle, R.string.scheduleTutorial_checkDesc));
+        showcaseViews.addView(new ShowcaseViews.ItemViewProperties(//R.id.minyanTimeTextview,
+                R.string.scheduleTutorial_clickTitle, R.string.scheduleTutorial_clickDesc));
+
+        Log.d("Inside showTutorial()","Showing Tutorial");
+
+        showcaseViews.show();
+//            showcaseView = ShowcaseView.insertShowcaseView(R.id.moreOptsMenu_AddPerson, getActivity(), "Test", "testing", co);*/
+
+    }
 
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -190,6 +312,18 @@ public class MinyanMateActivity extends FragmentActivity implements
 		}
 	}
 
+    /**
+     * This is called whenever entering the application to check the User Preferences for variables
+     * which may need to be initialized.
+     */
+    private void initializeFirstInstall() {
+        initializeTimeZone();
+    }
+
+    /**
+     * Check whether the application has had a timezone initialized. If not, intialize to current
+     * time zone.
+     */
     private void initializeTimeZone() {
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);

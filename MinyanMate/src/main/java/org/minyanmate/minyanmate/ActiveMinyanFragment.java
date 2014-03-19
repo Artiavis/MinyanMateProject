@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.commonsware.cwac.wakeful.WakefulIntentService;
+import com.espian.showcaseview.ShowcaseView;
 
 import org.minyanmate.minyanmate.adapters.ParticipantsExpandableListAdapter;
 import org.minyanmate.minyanmate.contentprovider.MinyanMateContentProvider;
@@ -70,7 +71,7 @@ public class ActiveMinyanFragment extends Fragment implements
     private long startTime;
     private long endTime;
 
-    // Codes and data for moreOptsBtn menu
+    ShowcaseView showcaseView;
 
 
 	public ActiveMinyanFragment() {

@@ -1,1 +1,1 @@
-include ':MinyanMate'
+include ':MinyanMate', ':libraries:showcaseview'
