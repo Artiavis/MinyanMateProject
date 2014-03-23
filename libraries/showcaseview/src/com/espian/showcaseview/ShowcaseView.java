@@ -63,6 +63,10 @@ public class ShowcaseView extends RelativeLayout
     public static final int INNER_CIRCLE_RADIUS = 94;
     private static final Interpolator INTERPOLATOR = new AccelerateDecelerateInterpolator();
 
+//    private static final String PREFS_SHOWCASE_INTERNAL = "showcase_internal";
+    private static final String DEFAULT_SHOWCASE_COLOR = "#33B5E5";
+    private static final int OK_BUTTON_HEIGHT = 12;
+
     private int showcaseX = -1;
     private int showcaseY = -1;
     private float showcaseRadius = -1;
@@ -107,7 +111,7 @@ public class ShowcaseView extends RelativeLayout
         mBackgroundColor = styled
                 .getInt(R.styleable.ShowcaseView_sv_backgroundColor, Color.argb(128, 80, 80, 80));
         int showcaseColor = styled
-                .getColor(R.styleable.ShowcaseView_sv_showcaseColor, Color.parseColor("#33B5E5"));
+                .getColor(R.styleable.ShowcaseView_sv_showcaseColor, Color.parseColor(DEFAULT_SHOWCASE_COLOR));
 
         int titleTextAppearance = styled
                 .getResourceId(R.styleable.ShowcaseView_sv_titleTextAppearance,
@@ -158,7 +162,7 @@ public class ShowcaseView extends RelativeLayout
                 lps = (LayoutParams) generateDefaultLayoutParams();
                 lps.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
                 lps.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                int margin = ((Number) (metricScale * 12)).intValue();
+                int margin = ((Number) (metricScale * OK_BUTTON_HEIGHT)).intValue();
                 lps.setMargins(margin, margin, margin, margin);
             }
             mEndButton.setLayoutParams(lps);
@@ -399,6 +403,12 @@ public class ShowcaseView extends RelativeLayout
 
         //Draw background color
         canvas.drawColor(mBackgroundColor);
+
+        int[] attrs = {R.attr.sv_overlayBackgroundColor};
+        TypedArray styleId = getContext().obtainStyledAttributes(R.style.ShowcaseView, attrs);
+        int overlayColor = styleId.getColor(0, Color.BLACK);
+        canvas.drawColor(overlayColor);
+        styleId.recycle();
 
         // Draw the showcase drawable
         if (!mHasNoTarget) {
