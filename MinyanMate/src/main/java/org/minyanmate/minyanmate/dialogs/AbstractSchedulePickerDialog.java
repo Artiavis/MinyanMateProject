@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractSchedulePickerDialog extends DialogFragment 
 implements TimePickerDialog.OnTimeSetListener {
+    public static final String TAG = "BaseSchedulePicker";
 
     boolean ignoreTimeSet = true;
 
@@ -35,19 +36,18 @@ implements TimePickerDialog.OnTimeSetListener {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         final TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(), this, hour, minute,
-                (this instanceof ScheduleWindowPickerFragent ?
-                       true : DateFormat.is24HourFormat(getActivity())));
+                (this instanceof ScheduleWindowPickerFragent || DateFormat.is24HourFormat(getActivity())));
 
         timePickerDialog.setButton(DialogInterface.BUTTON_POSITIVE, "Set",
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
                         ignoreTimeSet = false;
-                        Log.d("Inside TimePickerDialog for all SDK's", "SDK Version: " + Build.VERSION.SDK_INT);
-                        Log.d("Inside TimePickerDialog", "Device Manufactorer: " + Build.MANUFACTURER);
+                        Log.d(TAG, "SDK Version: " + Build.VERSION.SDK_INT);
+                        Log.d(TAG, "Device Manufactorer: " + Build.MANUFACTURER);
                         // doesn't seem to work on Samsung device ?
                         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH || "samsung".equalsIgnoreCase(Build.MANUFACTURER)) {
-                            Log.d("Inside TimePickerDialog for Pre-ICS or Samsungs", "SDK Version: " + Build.VERSION.SDK_INT);
+                            Log.d(TAG, "Inside TimePickerDialog for Pre-ICS or Samsungs");
                             timePickerDialog.onClick(dialog, i);
                         }
                     }

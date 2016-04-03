@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -48,6 +49,8 @@ import java.util.List;
 
 public class ActiveMinyanFragment extends Fragment implements
 	LoaderManager.LoaderCallbacks<Cursor>{
+
+    private static final String TAG = "ActiveMinyanFragment";
 
     // Codes for LoaderManager
 	private static final int EVENT = 1;
@@ -121,7 +124,7 @@ public class ActiveMinyanFragment extends Fragment implements
                 if (ExpandableListView.getPackedPositionType(info.packedPosition) == ExpandableListView.PACKED_POSITION_TYPE_CHILD)
                 {
                     int groupNum = ExpandableListView.getPackedPositionGroup(info.packedPosition);
-                    Log.d("Group Number in onCreateContextMenu", String.valueOf(groupNum));
+                    Log.d(TAG, "Tag number " + String.valueOf(groupNum));
 
                     menu.setHeaderTitle("Move participant");
 
@@ -162,9 +165,12 @@ public class ActiveMinyanFragment extends Fragment implements
     @Override
     public void onPause() {
         super.onPause();
-        getResources().getDrawable(R.drawable.social_chat_light).setAlpha(255);
-        getResources().getDrawable(R.drawable.social_share_light).setAlpha(255);
-        getResources().getDrawable(R.drawable.social_add_person_light).setAlpha(255);
+        Resources resources = getResources();
+        if (resources != null) {
+            resources.getDrawable(R.drawable.social_chat_light).setAlpha(255);
+            resources.getDrawable(R.drawable.social_share_light).setAlpha(255);
+            resources.getDrawable(R.drawable.social_add_person_light).setAlpha(255);
+        }
     }
 
     /**
@@ -178,7 +184,7 @@ public class ActiveMinyanFragment extends Fragment implements
         // Disable buttons if context is invalid
         long currTime = System.currentTimeMillis();
 
-        isEventCurrent = ((scheduleTime <= currTime) && (currTime <= endTime)) ? true : false;
+        isEventCurrent = ((scheduleTime <= currTime) && (currTime <= endTime));
         getActivity().invalidateOptionsMenu();
     }
 
@@ -254,8 +260,9 @@ public class ActiveMinyanFragment extends Fragment implements
                     break;
             }
 
-        } else
-            Toast.makeText(getActivity(), "Minyan expired!", Toast.LENGTH_SHORT);
+        } else {
+            Toast.makeText(getActivity(), "Minyan expired!", Toast.LENGTH_SHORT).show();
+        }
 
         return false;
     }

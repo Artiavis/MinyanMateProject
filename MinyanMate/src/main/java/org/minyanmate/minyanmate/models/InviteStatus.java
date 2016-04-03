@@ -12,7 +12,7 @@ import org.minyanmate.minyanmate.database.MinyanGoersTable;
 		
 		private final String text;
 		
-		private InviteStatus(final String text) {
+		InviteStatus(final String text) {
 			this.text = text;
 		}
 		

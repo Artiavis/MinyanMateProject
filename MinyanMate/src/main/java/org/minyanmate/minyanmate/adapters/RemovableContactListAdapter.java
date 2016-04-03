@@ -133,10 +133,10 @@ public class RemovableContactListAdapter extends CursorAdapter {
      * or a single person from many schedules; and {@link #onClickTextView(android.content.Context, int, String)},
      * which is called when the TextView.
      */
-    static public interface RemovableContactCallbacks {
+    public interface RemovableContactCallbacks {
 
-        public void onClickTextView(Context c, int phoneNumberId, String displayName);
-        public void delete(Context c, String phoneNumberId, String scheduleId);
+        void onClickTextView(Context c, int phoneNumberId, String displayName);
+        void delete(Context c, String phoneNumberId, String scheduleId);
     }
 
     /**
@@ -147,7 +147,6 @@ public class RemovableContactListAdapter extends CursorAdapter {
 
         @Override
         public void onClickTextView(Context c, int phoneNumberId, String displayName) {
-            return;
         }
 
         @Override

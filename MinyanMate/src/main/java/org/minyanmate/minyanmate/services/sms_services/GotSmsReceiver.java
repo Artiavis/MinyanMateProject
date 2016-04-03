@@ -47,14 +47,14 @@ public class GotSmsReceiver extends BroadcastReceiver{
 
                 final Object[] pdusObj = (Object[]) bundle.get("pdus");
 
-                for (int i = 0; i < pdusObj.length; i++) {
+                for (Object aPdusObj : pdusObj) {
 
-                    SmsMessage currentMessage = SmsMessage.createFromPdu((byte[]) pdusObj[i]);
+                    SmsMessage currentMessage = SmsMessage.createFromPdu((byte[]) aPdusObj);
                     String phoneNumber = currentMessage.getOriginatingAddress();
                     String response = currentMessage.getDisplayMessageBody();
 
 
-                    Log.i("SmsReceiver", "senderNum: "+ phoneNumber + "; response: " + response);
+                    Log.i("SmsReceiver", "senderNum: " + phoneNumber + "; response: " + response);
 
                     //If SMS doesn't contain one of the two predefined responses, don't attempt to process it
                     if (!response.toLowerCase(Locale.ENGLISH).contains(POSITIVE_RESPONSE) &&
@@ -66,10 +66,10 @@ public class GotSmsReceiver extends BroadcastReceiver{
                     //Get phone ID associated with phone number which sent SMS
                     Uri contentURI = Uri.withAppendedPath(Phone.CONTENT_FILTER_URI, Uri.encode(phoneNumber));
 
-                    Cursor c = cr.query(contentURI, new String[] { Phone.DISPLAY_NAME, Phone._ID},
+                    Cursor c = cr.query(contentURI, new String[]{Phone.DISPLAY_NAME, Phone._ID},
                             null, null, null);
 
-                    if(c.getCount() < 1) {
+                    if (c.getCount() < 1) {
                         Log.e("SmsReceiver", "Unidentifiable Phone Number");
                         return;
                     }
@@ -88,12 +88,12 @@ public class GotSmsReceiver extends BroadcastReceiver{
 
                     String selection = MinyanGoersTable.COLUMN_PHONE_NUMBER_ID + " = ?"
                             + " AND " + MinyanGoersTable.QUERY_LATEST_GOERS;
-                    String[] selectionArgs = new String[] { Long.toString(senderPhoneNumberId) };
+                    String[] selectionArgs = new String[]{Long.toString(senderPhoneNumberId)};
                     String sortOrder = null;
 
                     c = cr.query(contentURI, projection, selection, selectionArgs, sortOrder);
 
-                    if(c.getCount() < 1) {
+                    if (c.getCount() < 1) {
                         Log.e("SmsReceiver", "Phone Number isn't associated with a MinyanMate Goer");
                         return;
                     }
@@ -107,25 +107,25 @@ public class GotSmsReceiver extends BroadcastReceiver{
                     switch (inviteStatus) {
                         case 2:
                         case 3:
-                            Log.i("SmsReceiver", "Already received RSVP from "+senderDisplayName+", updating to "+response+".");
+                            Log.i("SmsReceiver", "Already received RSVP from " + senderDisplayName + ", updating to " + response + ".");
                     }
 
-                    if(response.toLowerCase(Locale.ENGLISH).contains(POSITIVE_RESPONSE))
+                    if (response.toLowerCase(Locale.ENGLISH).contains(POSITIVE_RESPONSE))
                         responseCode = InviteStatus.ATTENDING;
-                    else if(response.toLowerCase(Locale.ENGLISH).contains(NEGATIVE_RESPONSE))
+                    else if (response.toLowerCase(Locale.ENGLISH).contains(NEGATIVE_RESPONSE))
                         responseCode = InviteStatus.NOT_ATTENDING;
 
                     ContentValues goerUpdates = new ContentValues();
                     goerUpdates.put(MinyanGoersTable.COLUMN_INVITE_STATUS, InviteStatus.toInteger(responseCode));
 
                     selection = MinyanGoersTable.COLUMN_PHONE_NUMBER_ID + " = ? AND " + MinyanGoersTable.COLUMN_MINYAN_EVENT_ID + " = ?";
-                    selectionArgs = new String[] { Long.toString(senderPhoneNumberId), Integer.toString(eventId) };
+                    selectionArgs = new String[]{Long.toString(senderPhoneNumberId), Integer.toString(eventId)};
 
                     int rowsUpdated = cr.update(MinyanMateContentProvider.CONTENT_URI_EVENT_GOERS, goerUpdates, selection, selectionArgs);
 
-                    if(rowsUpdated < 1)
+                    if (rowsUpdated < 1)
                         Log.e("SmsReceiver", "MinyanMateGoersTable Update Failed");
-                    else if(rowsUpdated > 1)
+                    else if (rowsUpdated > 1)
                         Log.e("SmsReceiver", "MinyanMateGoersTable Updated Too Many Rows");
 
                     c.close();

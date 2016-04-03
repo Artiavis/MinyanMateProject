@@ -113,20 +113,18 @@ public class MinyanMateContentProvider extends ContentProvider {
                     minyan_schedule_id WHERE contact_phone_id ISNULL OR contact_phone_id = ?;
                 * */
 
-                String query = new StringBuilder()
-                        .append("SELECT ").append(TextUtils.join(",",ContactScheduleMatrix.matrixAttrs))
-                        .append(" FROM ")
-                        .append(MinyanPrayerSchedulesTable.TABLE_MINYAN_PRAYER_SCHEDULES)
-                        .append(" LEFT JOIN (SELECT * FROM (SELECT * FROM ")
-                        .append(MinyanContactsTable.TABLE_MINYAN_CONTACTS).append(" WHERE ")
-                        .append(MinyanContactsTable.COLUMN_PHONE_NUMBER_ID).append(" = ")
-                        .append(lastPartOfUrl).append(")) ON ")
-                        .append(MinyanPrayerSchedulesTable.COLUMN_PRAYER_SCHEDULE_ID).append(" = ")
-                        .append(MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID).append(" WHERE ")
-                        .append(MinyanContactsTable.COLUMN_PHONE_NUMBER_ID).append(" ISNULL OR ")
-                        .append(MinyanContactsTable.COLUMN_PHONE_NUMBER_ID).append(" = ")
-                        .append(lastPartOfUrl)
-                        .toString();
+                String query = "SELECT " + TextUtils.join(",", ContactScheduleMatrix.matrixAttrs) +
+						" FROM " +
+						MinyanPrayerSchedulesTable.TABLE_MINYAN_PRAYER_SCHEDULES +
+						" LEFT JOIN (SELECT * FROM (SELECT * FROM " +
+						MinyanContactsTable.TABLE_MINYAN_CONTACTS + " WHERE " +
+						MinyanContactsTable.COLUMN_PHONE_NUMBER_ID + " = " +
+						lastPartOfUrl + ")) ON " +
+						MinyanPrayerSchedulesTable.COLUMN_PRAYER_SCHEDULE_ID + " = " +
+						MinyanContactsTable.COLUMN_MINYAN_SCHEDULE_ID + " WHERE " +
+						MinyanContactsTable.COLUMN_PHONE_NUMBER_ID + " ISNULL OR " +
+						MinyanContactsTable.COLUMN_PHONE_NUMBER_ID + " = " +
+						lastPartOfUrl;
 
                 Log.d("Contact Schedule Query", query);
 

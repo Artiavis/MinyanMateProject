@@ -163,9 +163,9 @@ public class ScheduleExpandableListAdapter extends BaseExpandableListAdapter {
      * be used for checkboxes, but not for textviews. If the adapter is being used for
      * {@link org.minyanmate.minyanmate.MinyanScheduleListFragment}, it should have both.
      */
-    public static interface ScheduleAdapterCallbacks {
-        public void onClickTextView(Context c, int prayerId);
-        public void onCheck(Context c, boolean isChecked, int prayerId);
+    public interface ScheduleAdapterCallbacks {
+        void onClickTextView(Context c, int prayerId);
+        void onCheck(Context c, boolean isChecked, int prayerId);
     }
 
     public static class ScheduleListAdapterCallbacks implements ScheduleAdapterCallbacks {
@@ -203,8 +203,7 @@ public class ScheduleExpandableListAdapter extends BaseExpandableListAdapter {
 
         @Override
         public void onClickTextView(Context c, int prayerId) {
-            return;
-        }
+		}
 
         @Override
         public void onCheck(Context c, boolean isChecked, int prayerId) {
